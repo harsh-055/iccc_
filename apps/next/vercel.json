@@ -1,0 +1,12 @@
+{
+    "rewrites": [
+      { "source": "/api/:path*", "destination": "/api/:path*" }
+    ],
+    "crons": [
+      {
+        "path": "/api/refresh",
+        "schedule": "*/10 * * * *"
+      }
+    ]
+  }
+  
