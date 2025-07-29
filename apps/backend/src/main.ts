@@ -66,7 +66,7 @@ async function bootstrap() {
       description: 'Local Development Server',
       variables: {
         port: {
-          default: '3000',
+          default: '80',
           enum: ['8080', '3000', '5000'],
           description: 'Available server ports',
         },
@@ -78,7 +78,7 @@ async function bootstrap() {
   SwaggerModule.setup('api-docs', app, document);
 
   // Set global API prefix
-  // app.setGlobalPrefix('/api/v1');
+  app.setGlobalPrefix('/api/v1');
 
   // Apply global exception filters and validation pipes
   // app.useGlobalFilters(new SupertokensExceptionFilter());
@@ -93,6 +93,7 @@ async function bootstrap() {
   const port = configService.get<number>('PORT', 3000);
   await app.listen(port);
   console.log(`🚀 Server running at http://localhost:${port}/api/v1`);
+  console.log(`📄 Swagger Docs available at http://localhost:${port}/api-docs`);
 }
 
 bootstrap();

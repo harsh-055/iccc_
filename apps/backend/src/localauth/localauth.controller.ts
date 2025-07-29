@@ -1,16 +1,18 @@
-import { Controller, Post, Body, UsePipes, Logger, Req, UseGuards, Get, Res } from '@nestjs/common';
-// import { User, Prisma } from '../../generated/client';
+import { Controller, Post, Body, Logger, Req, UseGuards, Get, Res } from '@nestjs/common';
+
 import { LocalauthService } from './localauth.service';
 // import { JoiValidationPipe } from '../joi.validation.pipes';
 // import signupSchema from './joiSchema/localauth.schema';
 // import { SignInDto, SignUpDto } from './joiSchema/localauth.dto';
-import { ApiBody, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiProperty, ApiResponse, ApiTags,ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from './localauth.guard';
 import { SignupDto } from './dto/signup.dto';
+import {LoginDto} from './dto/signin.dto';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('localauth')
 @ApiTags('localauth')
+@ApiBearerAuth()
 export class LocalauthController {
     private logger = new Logger(LocalauthController.name);
 
@@ -31,11 +33,17 @@ export class LocalauthController {
             }
         }
         @Post('login')
+        @ApiOperation({ summary: 'User login' })
+        @ApiResponse({ status: 200, description: 'Login successful', type: LoginDto})
+        @ApiResponse({ status: 401, description: 'Invalid credentials' })
+        @ApiResponse({ status: 400, description: 'Validation failed' })
         @Throttle({ default: { limit: 1, ttl: 6000 } })
         @UseGuards(ThrottlerGuard) 
-        async login(@Body() data: any, @Req() req: Request): Promise<any> {
+        async login(@Body() data: LoginDto, @Req() req: Request): Promise<any> {
             return this.localAuthService.login(req, data);
         }
+
+        
         @UseGuards(AuthGuard)
         @Get('getSessions')
         async getProfile(@Req() req){

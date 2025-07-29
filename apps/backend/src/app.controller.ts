@@ -39,7 +39,7 @@ export class AppController {
    */
   // @Throttle({ default: { limit: 1, ttl: 6000 } })
   // @UseGuards(ThrottlerGuard) 
-  @Get()
+  @Get('/hello')
   getHello(): string {
     this.appService.getHello();
     return 'Hello World';

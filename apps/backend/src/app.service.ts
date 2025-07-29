@@ -1,70 +1,33 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { CACHE_MANAGER,Cache } from '@nestjs/cache-manager';
+import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
+
 @Injectable()
-export class AppService {
+export class AppService implements OnModuleInit {
   constructor(
-    @InjectQueue('mail-queue') private readonly mailQueue:Queue,@Inject(CACHE_MANAGER) private cacheManager: Cache
-  ) {
-    
-  }
-  async getCache(): Promise<any> {
-    // let value = await this.cacheManager.get('key');
-    // if (!value) {
-    //   console.log('Cache miss')
-    //   value = 1;
-    //   await this.cacheManager.set('key', value);
-    //   return {value:value,message:"Cache miss"}
-    // }
-    // else if(value ==5){
-    //     this.cacheManager.del('key');
-    // }
-    // else{
-    //     await this.cacheManager.set('key', Number(value)+1);
-    // }
-    // return {
-    //   value:value,
-    // };
+    @InjectQueue('mail-queue') private readonly mailQueue: Queue,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
-
-    //expiry cache
-    // let value = await this.cacheManager.get('key');
-    // if(value){
-    //   return {
-    //     message:'Cache hit',
-    //   }
-    // }
-    // this.cacheManager.set('key',{value:1},10000);
-    // return {
-    //   message:'Cache miss',
-    // }
-
-    console.log('I am beign hit')
-    return {
-      message:'Hello There',
+  // 👇 Runs when app starts
+  async onModuleInit() {
+    if (process.env.NODE_ENV !== 'production') {
+      setInterval(async () => {
+        const counts = await this.mailQueue.getJobCounts();
+        // console.log('[📊 BullMQ Health]', counts);
+      }, 5000); // log every 5s
     }
-    
   }
-  getHello(): string {
-    // this.mailQueue.add('send-mail', {
-    //   to: 'nishchal.tiwari@lenscorp.ai',
-    //   subject: 'Test',
-    //   text: 'This is a test',
-    // });
-    // this.mailQueue.add('send-verification-mail', {
-    //   to: 'nishchal.tiwari@lenscorp.ai',
-    // });
-    // console.log('Sendingg Message')
-    // this.mailQueue.add('send-verification-sms', {
-    //   to: '9369599622',
-    // });
-    // this.mailQueue.add('send-verification-whatsapp-message', {
-    //   to: '9369599622',
-    // })
 
+  async getCache(): Promise<any> {
+    console.log('I am being hit');
+    return { message: 'Hello There' };
+  }
 
-
-    return 'Hello World!';
+  async getHello(): Promise<string> {
+    // Add a test job to the queue
+    await this.mailQueue.add('test-job', { message: 'Hello BullMQ Health Check' });
+    return '✅ Test job added to BullMQ!';
   }
 }

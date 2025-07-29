@@ -10,6 +10,7 @@ import { ExpressAdapter } from "@bull-board/express";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
 import { WinstonModule } from 'nest-winston';
 import winstonInstance from './configs/winston.config';
+import { DatabaseModule } from '../database/database.module';
 
 // Custom Modules
 import { AuthModule } from './auth/auth.module';
@@ -18,6 +19,8 @@ import { CronModule } from './cron/cron.module';
 import { UtilsModule } from './utils/utils.module';
 import { FileStorageModule } from './file-storage/file-storage.module';
 import { HealthModule } from './health/health.module';
+
+import { MailProcessor } from '../mail.processor';
 
 // Controllers & Services
 import { AppController } from './app.controller';
@@ -31,8 +34,9 @@ import { validate } from './configs/env.config';
 import { TransportConsumer } from './consumers/transport.consumer';
 
 // WebSockets
-import { WebsocketsGateway } from './websocket/websocket.gateway';
+
 import { LocalauthModule } from './localauth/localauth.module';
+import {WebsocketModule} from './websocket/websocket.module';
 
 @Module({
   imports: [
@@ -100,11 +104,16 @@ import { LocalauthModule } from './localauth/localauth.module';
     FileStorageModule,
     HealthModule,
     LocalauthModule,
+    DatabaseModule,
+    WebsocketModule,
+    
+
   ],
   controllers: [AppController],
   providers: [
     AppService,
     TransportConsumer,
+    MailProcessor,
     
     // Global Rate Limiting Guard
     {
@@ -118,8 +127,7 @@ import { LocalauthModule } from './localauth/localauth.module';
       useClass: CacheInterceptor,
     },
 
-    // WebSocket Gateway
-    WebsocketsGateway,
+   
   ],
 })
 export class AppModule {}
