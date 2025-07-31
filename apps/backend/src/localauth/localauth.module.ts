@@ -17,6 +17,7 @@ import { MfaService } from './utils/mfa.service';
   }),
 ],
   providers: [LocalauthService,AuthHelper,JWTService,MfaService],
-  controllers: [LocalauthController]
+  controllers: [LocalauthController],
+  exports: [AuthHelper, LocalauthService, JWTService, MfaService]
 })
 export class LocalauthModule {}

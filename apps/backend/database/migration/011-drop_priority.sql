@@ -1,0 +1,2 @@
+ALTER TABLE roles DROP COLUMN IF EXISTS priority;
+ALTER TABLE roles DROP COLUMN IF EXISTS display_name;

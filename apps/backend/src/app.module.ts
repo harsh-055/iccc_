@@ -19,9 +19,12 @@ import { CronModule } from './cron/cron.module';
 import { UtilsModule } from './utils/utils.module';
 import { FileStorageModule } from './file-storage/file-storage.module';
 import { HealthModule } from './health/health.module';
-
+import { TenantModule } from './tenant/tenant.module';
+import { PermissionModule } from './permissions/permission.module';
 import { MailProcessor } from '../mail.processor';
-
+import { RoleModule } from './role/role.module';
+import { RbacModule } from './rbac/rbac.module';
+import { UserModule } from './user/user.module';
 // Controllers & Services
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -37,6 +40,7 @@ import { TransportConsumer } from './consumers/transport.consumer';
 
 import { LocalauthModule } from './localauth/localauth.module';
 import {WebsocketModule} from './websocket/websocket.module';
+import { SiteModule } from './site/site.module';
 
 @Module({
   imports: [
@@ -106,8 +110,12 @@ import {WebsocketModule} from './websocket/websocket.module';
     LocalauthModule,
     DatabaseModule,
     WebsocketModule,
-    
-
+    SiteModule,
+    TenantModule,
+    PermissionModule,
+    RoleModule,
+    RbacModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [
