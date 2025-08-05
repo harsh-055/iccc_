@@ -56,7 +56,15 @@ async function bootstrap() {
     .setVersion('3.0')
     .setContact('API Support', 'https://www.lenscorp.ai', 'support@lenscorp.ai')
     .setExternalDoc('More API Info', 'https://www.lenscorp.ai')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Enter JWT token',
+      },
+      'Bearer',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
@@ -90,7 +98,7 @@ async function bootstrap() {
   // app.useGlobalFilters(new HttpExceptionFilter());
 
   // Start the application
-  const port = configService.get<number>('PORT', 3000);
+  const port = configService.get<number>('PORT', 8080);
   await app.listen(port);
   console.log(`🚀 Server running at http://localhost:${port}/api/v1`);
   console.log(`📄 Swagger Docs available at http://localhost:${port}/api-docs`);

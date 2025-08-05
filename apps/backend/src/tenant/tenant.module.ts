@@ -2,7 +2,7 @@ import { Module, forwardRef } from '@nestjs/common';
 import { TenantService } from './tenant.service';
 import { TenantController } from './tenant.controller';
 import { RbacModule } from '../rbac/rbac.module';
-import { DatabaseService } from '../../database/database.service';
+
 import { PermissionModule } from '../permissions/permission.module';
 import { RoleModule } from '../role/role.module';
 import { JwtModule } from '@nestjs/jwt';
@@ -24,7 +24,7 @@ import { TenantGuard } from './guards/tenant.guard';
     }),
     ConfigModule
   ],
-  providers: [TenantService, DatabaseService, TenantGuard],
+  providers: [TenantService, TenantGuard],
   controllers: [TenantController],
   exports: [TenantService],
 })

@@ -8,13 +8,13 @@ import { UtilsModule } from '../utils/utils.module';
 import { RoleModule } from '../role/role.module';
 import { SharedAuthModule } from '../shared/auth.module';
 import { RbacModule } from '../rbac/rbac.module';
-import { DatabaseModule } from '../../database/database.module';
+
 import { LocalauthModule } from '../localauth/localauth.module';
 // PrismaService is now globally available through PrismaModule
 
 @Module({
   imports: [
-    DatabaseModule,
+
     LocalauthModule,
     UtilsModule,
     forwardRef(() => RoleModule),

@@ -40,7 +40,7 @@ import { TransportConsumer } from './consumers/transport.consumer';
 
 import { LocalauthModule } from './localauth/localauth.module';
 import {WebsocketModule} from './websocket/websocket.module';
-import { SiteModule } from './site/site.module';
+
 
 @Module({
   imports: [
@@ -110,7 +110,7 @@ import { SiteModule } from './site/site.module';
     LocalauthModule,
     DatabaseModule,
     WebsocketModule,
-    SiteModule,
+
     TenantModule,
     PermissionModule,
     RoleModule,

@@ -69,6 +69,24 @@ export class UpdateUserDto extends PartialType(
   @IsUUID('4')
   @IsOptional()
   tenantId?: string;
+
+  @ApiProperty({
+    description: 'Parent username to assign to this user (use this OR parentId, not both)',
+    example: 'admin_user',
+    required: false
+  })
+  @IsString()
+  @IsOptional()
+  parent?: string;
+
+  @ApiProperty({
+    description: 'Parent user ID to assign to this user (use this OR parent, not both)',
+    example: '550e8400-e29b-41d4-a716-446655440001',
+    required: false
+  })
+  @IsUUID('4')
+  @IsOptional()
+  parentId?: string;
 }
 
 

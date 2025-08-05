@@ -41,23 +41,23 @@ export class UserFilterDto extends PaginationDto {
   @IsUUID('4', { each: true })
   roleIds?: string[];
 
-  @ApiProperty({
-    description: 'Filter by site ID',
-    required: false,
-    type: String
-  })
-  @IsOptional()
-  @IsUUID('4')
-  siteId?: string;
+  // @ApiProperty({
+  //   description: 'Filter by site ID',
+  //   required: false,
+  //   type: String
+  // })
+  // @IsOptional()
+  // @IsUUID('4')
+  // siteId?: string;
   
-  @ApiProperty({
-    description: 'Filter by group ID',
-    required: false,
-    type: String
-  })
-  @IsOptional()
-  @IsUUID('4')
-  groupId?: string;
+  // @ApiProperty({
+  //   description: 'Filter by group ID',
+  //   required: false,
+  //   type: String
+  // })
+  // @IsOptional()
+  // @IsUUID('4')
+  // groupId?: string;
 
   @ApiProperty({
     description: 'Filter by suspension status',

@@ -1,8 +1,6 @@
-import { IsNotEmpty, IsString, IsArray, IsOptional, IsUUID, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsString, IsArray, IsOptional, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-
-import { SYSTEM_ROLES, SystemRoleName } from '../../common/constants/system-roles';
 
 export class CreateRoleDto {
   @ApiProperty({ 
@@ -41,35 +39,18 @@ export class CreateRoleDto {
   @IsUUID('4', { each: true, message: 'Each permission ID must be a valid UUID' })
   permissionIds?: string[];
 
-  @ApiProperty({ 
-    description: 'IDs of users to assign to this role',
-    example: ['user-uuid1', 'user-uuid2'],
-    required: false,
-    type: [String]
-  })
-  @IsOptional()
-  @IsArray({ message: 'User IDs must be an array' })
-  @IsUUID('4', { each: true, message: 'Each user ID must be a valid UUID' })
-  userIds?: string[];
+  // @ApiProperty({ 
+  //   description: 'IDs of users to assign to this role',
+  //   example: ['user-uuid1', 'user-uuid2'],
+  //   required: false,
+  //   type: [String]
+  // })
+  // @IsOptional()
+  // @IsArray({ message: 'User IDs must be an array' })
+  // @IsUUID('4', { each: true, message: 'Each user ID must be a valid UUID' })
+  // userIds?: string[];
 
-  @ApiProperty({ 
-    description: 'Explicit assignment level for this role (ADMIN,USER). If not provided, system will auto-classify based on permissions.',
-    example: SYSTEM_ROLES.ADMIN,
-    required: false,
-    enum: SYSTEM_ROLES
-  })
-  @IsOptional()
-  @IsEnum(SYSTEM_ROLES, { message: 'Assignment level must be a valid SystemRole' })
-  assignmentLevel?: SystemRoleName;
 
-  @ApiProperty({ 
-    description: 'Who can assign this role to users. If not provided, uses hierarchy rules.',
-    example: ['dealer-role-id', 'admin-role-id'],
-    required: false,
-    type: [String]
-  })
-  @IsOptional()
-  @IsArray({ message: 'Assignable by roles must be an array' })
-  @IsUUID('4', { each: true, message: 'Each assignable by role ID must be a valid UUID' })
-  assignableByRoleIds?: string[];
+
+
 } 

@@ -12,7 +12,7 @@ import { Session } from './auth/session.decorator';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { AppService } from './app.service';
 import { CacheKey, CacheTTL } from '@nestjs/cache-manager';
-import { CreateUserDto } from './test.dto';
+import { CreateUserDto } from './user/dto/create-user.dto';
 
 /**
  * Application Controller

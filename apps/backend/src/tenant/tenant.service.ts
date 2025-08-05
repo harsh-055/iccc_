@@ -41,11 +41,9 @@ export class TenantService {
     const [tenants, countResult] = await Promise.all([
       this.prisma.query(`
         SELECT t.*, 
-               COUNT(DISTINCT u.id) as user_count,
-               COUNT(DISTINCT s.id) as site_count
+               COUNT(DISTINCT u.id) as user_count
         FROM tenants t
         LEFT JOIN users u ON t.id = u.tenant_id
-        LEFT JOIN sites s ON t.id = s.tenant_id
         GROUP BY t.id
         ORDER BY t.name ASC
         LIMIT $1 OFFSET $2
@@ -58,7 +56,6 @@ export class TenantService {
         ...tenant,
         _count: {
           users: parseInt(tenant.user_count) || 0,
-          sites: parseInt(tenant.site_count) || 0,
         }
       })),
       count: parseInt(countResult[0].count),
@@ -106,11 +103,9 @@ export class TenantService {
     const result = await this.prisma.query(`
       SELECT t.*, 
              COUNT(DISTINCT u.id) as user_count,
-             COUNT(DISTINCT s.id) as site_count,
              COUNT(DISTINCT r.id) as role_count
       FROM tenants t
       LEFT JOIN users u ON t.id = u.tenant_id
-      LEFT JOIN sites s ON t.id = s.tenant_id
       LEFT JOIN roles r ON t.id = r.tenant_id
       WHERE t.id = $1
       GROUP BY t.id
@@ -125,7 +120,6 @@ export class TenantService {
       ...tenant,
       _count: {
         users: parseInt(tenant.user_count) || 0,
-        sites: parseInt(tenant.site_count) || 0,
         roles: parseInt(tenant.role_count) || 0,
       }
     };

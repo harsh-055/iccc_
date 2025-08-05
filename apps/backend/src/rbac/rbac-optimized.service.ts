@@ -255,11 +255,11 @@ export class RbacOptimizedService {
         WHERE u.id = $1
       `, [userId]);
 
-      if (userResult.length === 0) {
+      if (userResult.rows.length === 0) {
         return false;
       }
 
-      const user = userResult[0];
+      const user = userResult.rows[0];
 
       // Check if user is an admin (simplified from super admin)
       const isAdmin = await this.isAdminCached(userId);
@@ -381,11 +381,11 @@ export class RbacOptimizedService {
         WHERE u.id = $1
       `, [userId]);
 
-      if (userResult.length === 0) {
+      if (userResult.rows.length === 0) {
         return false;
       }
 
-      const user = userResult[0];
+      const user = userResult.rows[0];
 
       // Check if user is an admin
       const isAdmin = await this.isAdminCached(userId);
@@ -499,11 +499,11 @@ export class RbacOptimizedService {
         WHERE u.id = $1
       `, [userId]);
 
-      if (userResult.length === 0) {
+      if (userResult.rows.length === 0) {
         return [];
       }
 
-      const user = userResult[0];
+      const user = userResult.rows[0];
       const directPermissions = user.direct_permissions || [];
       const rolePermissions = user.role_permissions || [];
 

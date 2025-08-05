@@ -33,10 +33,10 @@ export class RoleController {
     • **User roles**: Get limited self-service permissions
     
     **Features:**
-    • Assign multiple users to the role during creation
-    • Assign multiple permissions to the role
-    • Validates that all users and permissions exist
-    • Automatically clears RBAC cache for assigned users
+    • Assign multiple permissions to the role during creation
+    • Validates that all permissions exist
+    • Role creation is separate from user assignment
+    • Users can be assigned later via separate endpoints
     
     **Role Types:**
     • **Admin-type roles**: Get management permissions for the system
@@ -45,23 +45,35 @@ export class RoleController {
   })
   @ApiResponse({ 
     status: HttpStatus.CREATED, 
-    description: 'The role has been successfully created with assigned users and permissions.',
+    description: 'The role has been successfully created with assigned permissions.',
     schema: {
       type: 'object',
       properties: {
         id: { type: 'string', example: '789e0123-e89b-12d3-a456-426614174222' },
         name: { type: 'string', example: 'HR Manager' },
         description: { type: 'string', example: 'HR Manager role with user management permissions' },
-        tenantId: { type: 'string', example: '123e4567-e89b-12d3-a456-426614174000' },
+        tenant_id: { type: 'string', example: '123e4567-e89b-12d3-a456-426614174000' },
         is_system: { type: 'boolean', example: false },
+        is_active: { type: 'boolean', example: true },
+        created_at: { type: 'string', example: '2025-01-27T10:30:00Z' },
+        updated_at: { type: 'string', example: '2025-01-27T10:30:00Z' },
         permissions: { type: 'array', items: { type: 'object' } },
-        userRoles: { type: 'array', items: { type: 'object' } }
+        users: { type: 'array', example: [] },
+        user_count: { type: 'number', example: 0 }
       }
     }
   })
   @ApiResponse({ 
     status: HttpStatus.CONFLICT, 
     description: 'Role with this name already exists in the tenant.'
+  })
+  @ApiResponse({ 
+    status: HttpStatus.BAD_REQUEST, 
+    description: 'Invalid input data or permissions not found'
+  })
+  @ApiResponse({ 
+    status: HttpStatus.NOT_FOUND, 
+    description: 'Tenant not found'
   })
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.roleService.create(createRoleDto);
@@ -754,10 +766,9 @@ export class RoleController {
       throw new BadRequestException(`Invalid role type. Must be one of: ${validRoleTypes.join(', ')}`);
     }
     
-    // Get all permissions for the user's tenant
+    // Get all permissions (no tenant filtering)
     const allPermissions = await this.database.query(
-      `SELECT * FROM permissions WHERE tenant_id = $1 ORDER BY name ASC`,
-      [req.user.tenantId]
+      `SELECT * FROM permissions ORDER BY name ASC`
     );
     
     // Filter permissions based on role type
@@ -815,19 +826,19 @@ export class RoleController {
       'roles': 'Role Management', 
       'permissions': 'Permission Management',
       'tenants': 'Tenant Management',
-      'sites': 'Site Management',
-      'devices': 'Device Management',
-      'groups': 'Group Management',
-      'events': 'Event Management',
-      'logs': 'Log Management',
-      'reports': 'Reports & Analytics',
-      'dashboards': 'Dashboard Management',
-      'notifications': 'Notification Management',
-      'system_config': 'System Configuration',
-      'api': 'API Management',
-      'security': 'Security Management',
-      'schedules': 'Schedule Management',
-      'credentials': 'Credential Management'
+
+      // 'devices': 'Device Management',
+      // // 'groups': 'Group Management',
+      // // 'events': 'Event Management',
+      // 'logs': 'Log Management',
+      // 'reports': 'Reports & Analytics',
+      // 'dashboards': 'Dashboard Management',
+      // 'notifications': 'Notification Management',
+      // 'system_config': 'System Configuration',
+      // 'api': 'API Management',
+      // 'security': 'Security Management',
+      // 'schedules': 'Schedule Management',
+      // 'credentials': 'Credential Management'
     };
     
     return moduleMap[resource.toLowerCase()] || 'Other';

@@ -123,11 +123,11 @@ export class RbacService {
         GROUP BY u.id
       `, [userId]);
 
-      if (userResult.length === 0) {
+      if (userResult.rows.length === 0) {
         return 0;
       }
 
-      const user = userResult[0];
+      const user = userResult.rows[0];
       const roles = user.roles || [];
 
       // Check for Admin role
@@ -264,12 +264,12 @@ export class RbacService {
         WHERE u.id = $1
       `, [userId]);
 
-      if (userResult.length === 0) {
+      if (userResult.rows.length === 0) {
         console.log(`[RBAC] User not found for userId=${userId}`);
         return false;
       }
 
-      const user = userResult[0];
+      const user = userResult.rows[0];
 
       // Check if user is an admin (simplified from super admin)
       const isAdmin = await this.isAdminCached(userId);

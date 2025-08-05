@@ -27,9 +27,9 @@ export class PermissionService {
 
       // Create permission
       const result = await this.database.query(
-        `INSERT INTO permissions (name, resource, action, description, tenant_id, created_at, updated_at) 
-         VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING id`,
-        [name, resource, action, description, roleId|| null]
+        `INSERT INTO permissions (name, resource, action, description, created_at, updated_at) 
+         VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING id`,
+        [name, resource, action, description]
       );
 
       // Get the created permission
@@ -94,7 +94,7 @@ export class PermissionService {
     if (resource && action) {
       const duplicatePermission = await this.database.query(
         `SELECT id FROM permissions 
-         WHERE resource = $1 AND action = $2 AND tenant_id IS NULL AND id != $3`,
+         WHERE resource = $1 AND action = $2 AND id != $3`,
         [resource, action, id]
       );
 

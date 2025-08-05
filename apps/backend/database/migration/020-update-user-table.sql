@@ -1,0 +1,4 @@
+ALTER TABLE users 
+DROP COLUMN IF EXISTS account_id,
+DROP COLUMN IF EXISTS created_by,
+DROP COLUMN IF EXISTS site_id;

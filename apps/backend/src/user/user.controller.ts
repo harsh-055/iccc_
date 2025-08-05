@@ -4,7 +4,6 @@ import { UserService } from './user.service';
 import { 
   CreateUserDto, 
   UpdateUserDto, 
-  BulkCreateUsersDto, 
   SuspendUserDto, 
   UserFilterDto,
   UserResponseDto,
@@ -14,7 +13,6 @@ import { AuthPermissionGuard } from '../permissions/guards/auth-permission.guard
 import { RequirePermissions } from '../permissions/decorators/require-permission.decorator';
 import { Public } from '../permissions/decorators/public.decorators';
 import { EnhancedRolePermissionService } from './services/user-role-permission.service';
-import { RoleService } from '../role/role.service';
 
 @Controller('users')
 @ApiTags('users')
@@ -25,12 +23,14 @@ export class UserController {
 
   constructor(
     private readonly userService: UserService,
-    private readonly enhancedRolePermissionService: EnhancedRolePermissionService,
-    private readonly roleService: RoleService
+    private readonly enhancedRolePermissionService: EnhancedRolePermissionService
   ) {}
 
+
+
+  
   @Post()
-  @RequirePermissions('users', 'create')
+  @RequirePermissions('users:create')
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ 
     status: 201, 
@@ -44,27 +44,46 @@ export class UserController {
     type: CreateUserDto,
     description: 'User creation data',
     examples: {
-      basicUser: {
-        summary: 'Create basic user',
+      systemRoleUser: {
+        summary: 'Create user with system role',
         value: {
           firstName: 'John',
           lastName: 'Doe',
           email: 'john.doe@example.com',
-          contactNumber: '+1234567890',
-          userRole: '550e8400-e29b-41d4-a716-446655440000',
-          password: 'SecurePass123!'
+          phoneNumber: '+1234567890',
+          password: 'SecurePass123!',
+          userRole: 'admin',
+          parent: 'parent_username',
+          tenantName: 'example-tenant',
+          isMfaEnabled: false,
+  
         }
       },
-      userWithParent: {
-        summary: 'Create user with parent hierarchy',
+      customRoleUser: {
+        summary: 'Create user with custom roles',
         value: {
           firstName: 'Jane',
           lastName: 'Smith',
           email: 'jane.smith@example.com',
-          contactNumber: '+1234567891',
-          userRole: '550e8400-e29b-41d4-a716-446655440000',
-          parent: '660e8400-e29b-41d4-a716-446655440000',
-          password: 'SecurePass123!'
+          phoneNumber: '+1234567891',
+          password: 'SecurePass123!',
+          roleName: 'custom-manager-role',
+          parent: 'admin_username',
+          tenantName: 'example-tenant',
+          permissionNames: ['users:read', 'reports:view']
+        }
+      },
+      multipleCustomRoles: {
+        summary: 'Create user with multiple custom roles',
+        value: {
+          firstName: 'Bob',
+          lastName: 'Johnson',
+          email: 'bob.johnson@example.com',
+          phoneNumber: '+1234567892',
+          password: 'SecurePass123!',
+          roleNames: ['role-1', 'role-2'],
+          parent: 'manager_username',
+          tenantName: 'example-tenant'
         }
       }
     }
@@ -90,77 +109,17 @@ export class UserController {
     }
   }
 
-  @Post('bulk')
-  @RequirePermissions('users', 'create')
-  @ApiOperation({ summary: 'Create multiple users in bulk' })
-  @ApiResponse({ 
-    status: 201, 
-    description: 'Bulk user creation completed',
-    schema: {
-      type: 'object',
-      properties: {
-        successful: { type: 'array', items: { type: 'object' } },
-        failed: { type: 'array', items: { type: 'object' } },
-        totalAttempted: { type: 'number' },
-        totalSuccessful: { type: 'number' },
-        totalFailed: { type: 'number' },
-        summary: { type: 'string' },
-        validationErrors: { type: 'array', items: { type: 'object' } }
-      }
-    }
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request - Invalid bulk data' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
-  @ApiBody({
-    type: BulkCreateUsersDto,
-    description: 'Bulk user creation data',
-    examples: {
-      bulkUsers: {
-        summary: 'Create multiple users',
-        value: {
-          users: [
-            {
-              firstName: 'John',
-              lastName: 'Doe',
-              email: 'john.doe@example.com',
-              userRole: '550e8400-e29b-41d4-a716-446655440000',
-              password: 'SecurePass123!'
-            },
-            {
-              firstName: 'Jane',
-              lastName: 'Smith',
-              email: 'jane.smith@example.com',
-              userRole: '550e8400-e29b-41d4-a716-446655440000',
-              password: 'SecurePass123!'
-            }
-          ],
-          skipDuplicates: true
-        }
-      }
-    }
-  })
-  async createBulk(@Body() bulkCreateUsersDto: BulkCreateUsersDto) {
-    try {
-      const result = await this.userService.createBulk(bulkCreateUsersDto);
-      
-      this.logger.log(
-        `Bulk user creation completed: ${result.totalSuccessful}/${result.totalAttempted} successful`,
-        'UserController'
-      );
-      
-      return result;
-    } catch (error) {
-      this.logger.error(
-        `Failed to create users in bulk: ${error.message}`,
-        error.stack,
-        'UserController'
-      );
-      throw error;
-    }
+  @Get('tenant/:tenantId/parents')
+  @RequirePermissions('users:read')
+  @ApiOperation({ summary: 'Get potential parent users for dropdown' })
+  @ApiResponse({ status: 200, description: 'List of potential parents' })
+  async getParentOptions(@Param('tenantId') tenantId: string) {
+    return this.userService.getParentOptions(tenantId);
   }
 
+
   @Get()
-  @RequirePermissions('users', 'read')
+  @RequirePermissions('users:read')
   @ApiOperation({ summary: 'Get all users with pagination and filtering' })
   @ApiResponse({ 
     status: 200, 
@@ -199,7 +158,7 @@ export class UserController {
       const result = await this.userService.findAll(options);
       
       this.logger.log(
-        `Retrieved ${result.items.length} users (page ${result.page} of ${result.pages})`,
+        `Retrieved ${result.data.length} users (page ${result.page} of ${result.totalPages})`,
         'UserController'
       );
       
@@ -215,7 +174,7 @@ export class UserController {
   }
 
   @Get(':id')
-  @RequirePermissions('users', 'read')
+  @RequirePermissions('users:read')
   @ApiOperation({ summary: 'Get a user by ID' })
   @ApiResponse({ 
     status: 200, 
@@ -228,7 +187,7 @@ export class UserController {
   @ApiQuery({ name: 'includeInactive', required: false, type: Boolean, description: 'Include inactive users' })
   async findOne(@Param('id') id: string, @Query('includeInactive') includeInactive?: boolean) {
     try {
-      const result = await this.userService.findOne(id, includeInactive);
+      const result = await this.userService.findOne(id);
       
       this.logger.log(
         `Retrieved user: ${id}`,
@@ -248,7 +207,7 @@ export class UserController {
   }
 
   @Patch(':id')
-  @RequirePermissions('users', 'update')
+  @RequirePermissions('users:update')
   @ApiOperation({ summary: 'Update a user' })
   @ApiResponse({ 
     status: 200, 
@@ -277,12 +236,7 @@ export class UserController {
           roleId: '660e8400-e29b-41d4-a716-446655440000'
         }
       },
-      updateSites: {
-        summary: 'Update user sites',
-        value: {
-          siteIds: ['site-uuid-1', 'site-uuid-2']
-        }
-      }
+
     }
   })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
@@ -306,8 +260,56 @@ export class UserController {
     }
   }
 
+  @Patch(':id/parent')
+  @RequirePermissions('users:update')
+  @ApiOperation({ summary: 'Update user parent relationship' })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @ApiResponse({ status: 200, description: 'Parent updated successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiBody({
+    description: 'Parent update data',
+    examples: {
+      byUsername: {
+        summary: 'Update parent by username',
+        value: {
+          parent: 'admin_user'
+        }
+      },
+      byId: {
+        summary: 'Update parent by ID',
+        value: {
+          parentId: '550e8400-e29b-41d4-a716-446655440001'
+        }
+      }
+    }
+  })
+  async updateParent(
+    @Param('id') id: string, 
+    @Body() updateData: { parent?: string; parentId?: string }
+  ) {
+    try {
+      const result = await this.userService.update(id, updateData);
+      
+      this.logger.log(
+        `User parent updated successfully: ${id}`,
+        'UserController',
+        id
+      );
+      
+      return result;
+    } catch (error) {
+      this.logger.error(
+        `Failed to update user parent ${id}: ${error.message}`,
+        error.stack,
+        'UserController'
+      );
+      throw error;
+    }
+  }
+
   @Delete(':id')
-  @RequirePermissions('users', 'delete')
+  @RequirePermissions('users:delete')
   @ApiOperation({ summary: 'Soft delete a user (deactivate)' })
   @ApiResponse({ 
     status: 200, 
@@ -346,7 +348,7 @@ export class UserController {
   }
 
   @Post(':id/reactivate')
-  @RequirePermissions('users', 'update')
+  @RequirePermissions('users:update')
   @ApiOperation({ summary: 'Reactivate a deactivated user' })
   @ApiResponse({ 
     status: 200, 
@@ -385,7 +387,7 @@ export class UserController {
   }
 
   @Post(':id/suspend')
-  @RequirePermissions('users', 'update')
+  @RequirePermissions('users:update')
   @ApiOperation({ summary: 'Suspend a user' })
   @ApiResponse({ 
     status: 200, 
@@ -435,7 +437,7 @@ export class UserController {
   }
 
   @Post(':id/unsuspend')
-  @RequirePermissions('users', 'update')
+  @RequirePermissions('users:update')
   @ApiOperation({ summary: 'Unsuspend a user' })
   @ApiResponse({ 
     status: 200, 
@@ -475,7 +477,7 @@ export class UserController {
 
   // Tenant-aware endpoints for multi-tenant operations
   @Get('tenant/:id')
-  @RequirePermissions('users', 'read')
+  @RequirePermissions('users:read')
   @ApiOperation({ summary: 'Get a user by ID with tenant isolation check' })
   @ApiResponse({ 
     status: 200, 
@@ -488,7 +490,7 @@ export class UserController {
   async findOneWithTenantCheck(@Param('id') id: string, @Req() req: any) {
     try {
       const requesterTenantId = req.user?.tenantId || null;
-      const result = await this.userService.findOneWithTenantCheck(id, requesterTenantId);
+      const result = await this.userService.findOne(id);
       
       this.logger.log(
         `Retrieved user with tenant check: ${id}`,
@@ -509,7 +511,7 @@ export class UserController {
   }
 
   @Patch('tenant/:id')
-  @RequirePermissions('users', 'update')
+  @RequirePermissions('users:update')
   @ApiOperation({ summary: 'Update a user with tenant isolation check' })
   @ApiResponse({ 
     status: 200, 
@@ -523,7 +525,7 @@ export class UserController {
   async updateWithTenantCheck(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Req() req: any) {
     try {
       const requesterTenantId = req.user?.tenantId || null;
-      const result = await this.userService.updateWithTenantCheck(id, updateUserDto, requesterTenantId);
+      const result = await this.userService.update(id, updateUserDto);
       
       this.logger.log(
         `User updated with tenant check: ${id}`,
@@ -544,7 +546,7 @@ export class UserController {
   }
 
   @Delete('tenant/:id')
-  @RequirePermissions('users', 'delete')
+  @RequirePermissions('users:delete')
   @ApiOperation({ summary: 'Delete a user with tenant isolation check' })
   @ApiResponse({ status: 200, description: 'User deleted successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
@@ -553,7 +555,7 @@ export class UserController {
   async removeWithTenantCheck(@Param('id') id: string, @Req() req: any) {
     try {
       const requesterTenantId = req.user?.tenantId || null;
-      const result = await this.userService.removeWithTenantCheck(id, requesterTenantId);
+      const result = await this.userService.remove(id);
       
       this.logger.log(
         `User deleted with tenant check: ${id}`,

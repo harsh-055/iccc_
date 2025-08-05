@@ -33,8 +33,11 @@ class LocalAuthUserResponseDto {
   @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
   id: string;
   
-  @ApiProperty({ example: 'John Doe' })
-  name: string;
+  @ApiProperty({ example: 'John' })
+  firstName: string;
+
+  @ApiProperty({ example: 'Doe' })
+  lastName: string;
   
   @ApiProperty({ example: 'john.doe@example.com' })
   email: string;
@@ -115,7 +118,8 @@ export class LocalauthController {
                 newOrganization: {
                     summary: 'Create a new organization',
                     value: {
-                        name: 'John Doe',
+                        firstName: 'John',
+                        lastName : 'Doe',
                         email: 'john.doe@example.com',
                         password: 'Password123',
                         confirmPassword: 'Password123',
@@ -128,13 +132,42 @@ export class LocalauthController {
                 joinOrganization: {
                     summary: 'Join an existing organization',
                     value: {
-                        name: 'Jane Smith',
+                        firstName: 'Jane',
+                        lastName: 'Smith',
                         email: 'jane.smith@example.com',
                         password: 'Password123',
                         confirmPassword: 'Password123',
                         phoneNumber: '+11234567891',
                         isOrganizationCreator: false,
                         tenantId: '550e8400-e29b-41d4-a716-446655440000'
+                    }
+                },
+                withParentUser: {
+                    summary: 'Signup with parent user (manager/lead assignment)',
+                    value: {
+                        firstName: 'Bob',
+                        lastName: 'Johnson',
+                        email: 'bob.johnson@example.com',
+                        password: 'Password123',
+                        confirmPassword: 'Password123',
+                        phoneNumber: '+11234567892',
+                        isOrganizationCreator: false,
+                        tenantId: '550e8400-e29b-41d4-a716-446655440000',
+                        parentId: '550e8400-e29b-41d4-a716-446655440001'
+                    }
+                },
+                withParentName: {
+                    summary: 'Signup with parent name (alternative to parentId)',
+                    value: {
+                        firstName: 'Alice',
+                        lastName: 'Manager',
+                        email: 'alice.manager@example.com',
+                        password: 'Password123',
+                        confirmPassword: 'Password123',
+                        phoneNumber: '+11234567893',
+                        isOrganizationCreator: false,
+                        tenantId: '550e8400-e29b-41d4-a716-446655440000',
+                        parentName: 'John Doe'
                     }
                 }
             }
@@ -146,8 +179,8 @@ export class LocalauthController {
             } catch (error) {
                 this.logger.error('Error during signup', error);
                 
-                // Check if this is a PrismaClientKnownRequestError (unique constraint)
-                if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+                // Check if this is a PostgreSQL unique constraint violation
+                if (error.code === '23505' && error.constraint && error.constraint.includes('email')) {
                     throw new ForbiddenException('A user with this email already exists');
                 }
                 

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException, InternalServerErrorException, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, InternalServerErrorException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { DatabaseService } from '../../database/database.service';
@@ -13,7 +13,7 @@ export class RoleService {
   ) {}
 
   async create(createRoleDto: CreateRoleDto) {
-    const { name, description, permissionIds, tenantId, userIds } = createRoleDto;
+    const { name, description, permissionIds, tenantId } = createRoleDto;
 
     // Check if role name already exists in this tenant
     const existingRoleResult = await this.database.query(
@@ -21,23 +21,8 @@ export class RoleService {
       [name, tenantId || null]
     );
 
-    if (existingRoleResult.length > 0) {
+    if (existingRoleResult.rows.length > 0) {
       throw new ConflictException(`Role with name "${name}" already exists in this tenant`);
-    }
-
-    // Validate users exist if userIds provided
-    if (userIds && userIds.length > 0) {
-      const existingUsersResult = await this.database.query(
-        `SELECT id FROM users WHERE id = ANY($1::uuid[])`,
-        [userIds]
-      );
-
-      const existingUserIds = existingUsersResult.map(user => user.id);
-      const nonExistentUserIds = userIds.filter(id => !existingUserIds.includes(id));
-      
-      if (nonExistentUserIds.length > 0) {
-        throw new NotFoundException(`Users not found: ${nonExistentUserIds.join(', ')}`);
-      }
     }
 
     // Create the role
@@ -47,37 +32,64 @@ export class RoleService {
       [name, description, tenantId, false] // is_system = false for custom roles
     );
 
-    const role = roleResult[0];
+    if (!roleResult || roleResult.rows.length === 0) {
+      throw new InternalServerErrorException('Failed to create role - no result returned from database');
+    }
+
+    const role = roleResult.rows[0];
 
     // Connect permissions if provided
     if (permissionIds && permissionIds.length > 0) {
       for (const permissionId of permissionIds) {
-        await this.database.query(
-          `INSERT INTO role_permissions (role_id, permission_id, assigned_at) 
-           VALUES ($1, $2, NOW())`,
-          [role.id, permissionId]
-        );
+        try {
+          await this.database.query(
+            `INSERT INTO role_permissions (role_id, permission_id, assigned_at) 
+             VALUES ($1, $2, NOW())`,
+            [role.id, permissionId]
+          );
+        } catch (error) {
+          // If permission assignment fails, clean up the created role
+          await this.database.query(`DELETE FROM roles WHERE id = $1`, [role.id]);
+          throw new BadRequestException(`Failed to assign permission ${permissionId} to role: ${error.message}`);
+        }
       }
     }
 
-    // Assign users to role if provided
-    if (userIds && userIds.length > 0) {
-      for (const userId of userIds) {
-        await this.database.query(
-          `INSERT INTO user_roles (user_id, role_id, assigned_at) 
-           VALUES ($1, $2, NOW())`,
-          [userId, role.id]
-        );
-      }
+    // Note: User assignment is now handled separately via assignRoleToUser/assignRoleToUsers methods
+    // This keeps role creation focused on role definition only
 
-      // Clear RBAC cache for assigned users
-      for (const userId of userIds) {
-        await this.rbacService.clearUserPermissionCache(userId);
-      }
-    }
+    // Return just the created role data (no users yet)
+    return {
+      id: role.id,
+      name: role.name,
+      description: role.description,
+      tenant_id: role.tenant_id,
+      is_system: role.is_system,
+      is_active: role.is_active,
+      created_at: role.created_at,
+      updated_at: role.updated_at,
+      permissions: permissionIds && permissionIds.length > 0 ? 
+        await this.getRolePermissions(role.id) : [],
+      users: [], // No users assigned yet
+      user_count: 0
+    };
+  }
 
-    // Return the role with its permissions and users
-    return this.findOne(role.id);
+  private async getRolePermissions(roleId: string) {
+    const permissionsResult = await this.database.query(`
+      SELECT p.id, p.name, p.resource, p.action, p.description
+      FROM role_permissions rp
+      JOIN permissions p ON rp.permission_id = p.id
+      WHERE rp.role_id = $1
+    `, [roleId]);
+
+    return permissionsResult.rows.map(p => ({
+      id: p.id,
+      name: p.name,
+      resource: p.resource,
+      action: p.action,
+      description: p.description
+    }));
   }
 
   async findAll() {
@@ -312,7 +324,7 @@ export class RoleService {
         [name, tenantId || currentRole.tenant_id, id]
       );
 
-      if (existingRoleResult.length > 0) {
+      if (existingRoleResult.rows.length > 0) {
         throw new ConflictException(`Role with name "${name}" already exists in this tenant`);
       }
     }
@@ -324,7 +336,7 @@ export class RoleService {
         [userIds]
       );
 
-      const existingUserIds = existingUsersResult.map(user => user.id);
+      const existingUserIds = existingUsersResult.rows.map(user => user.id);
       const nonExistentUserIds = userIds.filter(id => !existingUserIds.includes(id));
       
       if (nonExistentUserIds.length > 0) {
@@ -370,7 +382,7 @@ export class RoleService {
       }
     }
 
-    // Update user assignments if provided
+        // Update user assignments if provided
     if (userIds !== undefined) {
       // Remove all existing user-role relationships for this role
       await this.database.query(
@@ -391,17 +403,17 @@ export class RoleService {
 
       // Clear RBAC cache for all affected users (both previous and new)
       const allAffectedUserIds = [
-        ...previousUsersResult.map(ur => ur.user_id),
+        ...previousUsersResult.rows.map(ur => ur.user_id),
         ...userIds
       ];
       const uniqueAffectedUserIds = [...new Set(allAffectedUserIds)];
-      
+
       for (const userId of uniqueAffectedUserIds) {
         await this.rbacService.clearUserPermissionCache(userId);
       }
     } else if (permissionIds !== undefined) {
       // If only permissions were updated, clear cache for existing users
-      for (const userRole of previousUsersResult) {
+      for (const userRole of previousUsersResult.rows) {
         await this.rbacService.clearUserPermissionCache(userRole.user_id);
       }
     }
@@ -539,7 +551,7 @@ export class RoleService {
       [userIds]
     );
 
-    const foundUserIds = usersResult.map(user => user.id);
+          const foundUserIds = usersResult.rows.map(user => user.id);
     const notFoundUserIds = userIds.filter(id => !foundUserIds.includes(id));
 
     if (notFoundUserIds.length > 0) {
@@ -555,7 +567,7 @@ export class RoleService {
       [userIds, roleId]
     );
 
-    const existingUserIds = existingAssignmentsResult.map(assignment => assignment.user_id);
+          const existingUserIds = existingAssignmentsResult.rows.map(assignment => assignment.user_id);
     const newUserIds = userIds.filter(id => !existingUserIds.includes(id));
 
     // Create user-role relationships for users who don't already have this role
@@ -770,38 +782,13 @@ export class RoleService {
     const tenant = tenantResult[0];
 
     try {
-      // Get all system permissions (tenant_id IS NULL)
-      const systemPermissionsResult = await this.database.query(
-        `SELECT * FROM permissions WHERE tenant_id IS NULL`
+      // Get all permissions (no tenant_id filtering needed)
+      const allPermissionsResult = await this.database.query(
+        `SELECT * FROM permissions`
       );
 
-      // Create tenant-specific copies of system permissions
-      const tenantPermissions = [];
-      for (const systemPermission of systemPermissionsResult) {
-        // Check if tenant permission already exists
-        const existingTenantPermissionResult = await this.database.query(
-          `SELECT * FROM permissions 
-           WHERE resource = $1 AND action = $2 AND tenant_id = $3`,
-          [systemPermission.resource, systemPermission.action, tenantId]
-        );
-
-        if (existingTenantPermissionResult.length === 0) {
-          const tenantPermissionResult = await this.database.query(
-            `INSERT INTO permissions (name, resource, action, description, tenant_id, created_at, updated_at) 
-             VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING *`,
-            [
-              systemPermission.name,
-              systemPermission.resource,
-              systemPermission.action,
-              systemPermission.description,
-              tenantId
-            ]
-          );
-          tenantPermissions.push(tenantPermissionResult[0]);
-        } else {
-          tenantPermissions.push(existingTenantPermissionResult[0]);
-        }
-      }
+      // Use all permissions for tenant roles
+      const tenantPermissions = allPermissionsResult;
 
       // Create tenant-specific roles
       const systemRoles = ['Admin', 'User']; // Simplified from original complex hierarchy
@@ -919,10 +906,9 @@ export class RoleService {
 
     const role = roleResult[0];
 
-    // Get all tenant-specific permissions
+    // Get all permissions (no tenant filtering)
     const allTenantPermissionsResult = await this.database.query(
-      `SELECT * FROM permissions WHERE tenant_id = $1 ORDER BY resource ASC, action ASC`,
-      [tenantId]
+      `SELECT * FROM permissions ORDER BY resource ASC, action ASC`
     );
 
     // Filter permissions based on role type (Admin gets all, User gets limited)
@@ -947,7 +933,7 @@ export class RoleService {
     `, [roleId]);
 
     // Create a set of permission IDs that the role has
-    const rolePermissionIds = new Set(rolePermissionsResult.map(p => p.id));
+    const rolePermissionIds = new Set(rolePermissionsResult.rows.map(p => p.id));
 
     // Group permissions by category (resource) and format the response
     const permissionsByCategory = {};
@@ -998,7 +984,7 @@ export class RoleService {
     // Convert resource names to user-friendly categories
     const categoryMap = {
       'dashboard': 'Dashboard',
-      'site': 'Site Management',
+
       'device': 'Device Management',
       'user': 'User Management',
       'role': 'Role Management',
@@ -1034,7 +1020,7 @@ export class RoleService {
 
     const resourceMap = {
       'dashboard': 'Dashboard',
-      'site': 'Sites',
+
       'device': 'Devices',
       'user': 'Users',
       'role': 'Roles',
@@ -1095,12 +1081,12 @@ export class RoleService {
     // Validate that all permission IDs exist and belong to the tenant
     if (permissionIds.length > 0) {
       const validPermissionsResult = await this.database.query(
-        `SELECT * FROM permissions WHERE id = ANY($1::uuid[]) AND tenant_id = $2`,
-        [permissionIds, tenantId]
+        `SELECT * FROM permissions WHERE id = ANY($1::uuid[])`,
+        [permissionIds]
       );
 
-      if (validPermissionsResult.length !== permissionIds.length) {
-        const foundIds = validPermissionsResult.map(p => p.id);
+      if (validPermissionsResult.rows.length !== permissionIds.length) {
+        const foundIds = validPermissionsResult.rows.map(p => p.id);
         const invalidIds = permissionIds.filter(id => !foundIds.includes(id));
         throw new ConflictException(`Permission IDs not found in tenant "${tenant.name}": ${invalidIds.join(', ')}`);
       }
@@ -1114,12 +1100,12 @@ export class RoleService {
       [roleId]
     );
 
-    const currentPermissionIds = new Set(currentPermissionsResult.map(p => p.id));
+    const currentPermissionIds = new Set(currentPermissionsResult.rows.map(p => p.id));
     const newPermissionIds = new Set(permissionIds);
 
     // Calculate what needs to be added and removed
     const toAdd = permissionIds.filter(id => !currentPermissionIds.has(id));
-    const toRemove = currentPermissionsResult
+    const toRemove = currentPermissionsResult.rows
       .filter(p => !newPermissionIds.has(p.id))
       .map(p => p.id);
 

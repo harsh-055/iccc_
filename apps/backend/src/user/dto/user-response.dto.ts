@@ -72,37 +72,24 @@ export class PermissionDto {
   @ApiProperty({ description: 'Action this permission allows' })
   action: string;
 
-  @ApiProperty({ description: 'Tenant ID this permission belongs to', required: false })
-  tenantId?: string;
+  // Removed tenantId as permissions are now global
 }
 
-export class SiteDto {
-  @ApiProperty({ description: 'Site ID' })
-  id: string;
 
-  @ApiProperty({ description: 'Site name' })
-  name: string;
 
-  @ApiProperty({ description: 'Site address', required: false })
-  address?: string;
+// export class GroupDto {
+//   @ApiProperty({ description: 'Group ID' })
+//   id: string;
 
-  @ApiProperty({ description: 'Site image', required: false })
-  image?: string;
-}
+//   @ApiProperty({ description: 'Group name' })
+//   name: string;
 
-export class GroupDto {
-  @ApiProperty({ description: 'Group ID' })
-  id: string;
+//   @ApiProperty({ description: 'Group description', required: false })
+//   description?: string;
 
-  @ApiProperty({ description: 'Group name' })
-  name: string;
-
-  @ApiProperty({ description: 'Group description', required: false })
-  description?: string;
-
-  @ApiProperty({ description: 'Tenant ID this group belongs to' })
-  tenantId: string;
-}
+//   @ApiProperty({ description: 'Tenant ID this group belongs to' })
+//   tenantId: string;
+// }
 
 export class MfaDto {
   @ApiProperty({ description: 'MFA ID' })
@@ -144,8 +131,8 @@ export class UserResponseDto {
   @ApiProperty({ description: 'User ID' })
   id: string;
 
-  @ApiProperty({ description: 'Auto-generated 8-10 digit account ID' })
-  accountId: string;
+  // @ApiProperty({ description: 'Auto-generated 8-10 digit account ID' })
+  // accountId: string;
 
   @ApiProperty({ description: 'User name' })
   name: string;
@@ -156,8 +143,8 @@ export class UserResponseDto {
   @ApiProperty({ description: 'User phone number', required: false })
   phoneNumber?: string;
 
-  @ApiProperty({ description: 'User image', required: false })
-  image?: string;
+  // @ApiProperty({ description: 'User image', required: false })
+  // image?: string;
 
   @Exclude()
   password: string;
@@ -166,7 +153,7 @@ export class UserResponseDto {
   isMfaEnabled: boolean;
 
   @ApiProperty({ description: 'Whether the user account is locked' })
-  isLocked: boolean;
+
 
   @ApiProperty({ description: 'Whether the user account is suspended (soft-deleted)' })
   isSuspended: boolean;
@@ -194,21 +181,17 @@ export class UserResponseDto {
   @Type(() => RoleDto)
   role?: RoleDto;
 
-  @ApiProperty({ description: 'Primary site (legacy)', required: false })
-  @Type(() => SiteDto)
-  site?: SiteDto;
+
 
   @ApiProperty({ description: 'Tenant information', required: false })
   @Type(() => TenantDto)
   tenant?: TenantDto;
 
-  @ApiProperty({ description: 'Sites the user has access to', type: [SiteDto] })
-  @Type(() => SiteDto)
-  sites: SiteDto[];
 
-  @ApiProperty({ description: 'Groups the user belongs to', type: [GroupDto] })
-  @Type(() => GroupDto)
-  groups: GroupDto[];
+
+  // @ApiProperty({ description: 'Groups the user belongs to', type: [GroupDto] })
+  // @Type(() => GroupDto)
+  // groups: GroupDto[];
 
   @ApiProperty({ description: 'Direct permissions', type: [PermissionDto] })
   @Type(() => PermissionDto)
@@ -229,15 +212,15 @@ export class UserResponseDto {
   @ApiProperty({ description: 'Site IDs associated with the user', type: [String], required: false })
   siteIds?: string[];
 
-  @ApiProperty({ description: 'Group IDs associated with the user', type: [String], required: false })
-  groupIds?: string[];
+  // @ApiProperty({ description: 'Group IDs associated with the user', type: [String], required: false })
+  // groupIds?: string[];
 
   @ApiProperty({ description: 'All permissions for the user (including from roles)', type: [PermissionDto] })
   @Type(() => PermissionDto)
   permissions: PermissionDto[];
 
-  @ApiProperty({ description: 'Whether the user has admin remote access privileges' })
-  adminRemoteAccess?: boolean;
+  // @ApiProperty({ description: 'Whether the user has admin remote access privileges' })
+  // adminRemoteAccess?: boolean;
 
   @ApiProperty({ description: 'User timezone', required: false })
   timezone?: string;
