@@ -1,7 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { PermissionController } from './permission.controller';
 import { PermissionService } from './permission.service';
-// import { PredefinedPermissionsService } from './services/predefined-permissions.service';
+import { GlobalPermissionsService } from './services/global-permissions.service';
 import { PermissionGuard } from './guards/permission.guard';
 import { AuthPermissionGuard } from './guards/auth-permission.guard';
 import { UtilsModule } from '../utils/utils.module';
@@ -24,10 +24,10 @@ import { LocalauthModule } from '../localauth/localauth.module';
   controllers: [PermissionController],
   providers: [
     PermissionService, 
-    // PredefinedPermissionsService,
+    GlobalPermissionsService,
     PermissionGuard,
     AuthPermissionGuard
   ],
-  exports: [PermissionService, PermissionGuard, AuthPermissionGuard]
+  exports: [PermissionService, GlobalPermissionsService, PermissionGuard, AuthPermissionGuard]
 })
 export class PermissionModule {}

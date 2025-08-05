@@ -68,7 +68,7 @@ class RolePermissionSeeder {
       this.logger.log(`Found Admin role with ${currentPermissions.length} existing permissions`);
 
       // Get all ADMIN and BOTH type permissions (system-level only)
-      const adminPermissions: Permission[] = await this.database.query(
+      const adminPermissionsResult = await this.database.query(
         `SELECT id, name, resource, action 
          FROM permissions 
          WHERE tenant_id IS NULL 
@@ -88,6 +88,8 @@ class RolePermissionSeeder {
          ORDER BY name`,
         []
       );
+      
+      const adminPermissions: Permission[] = adminPermissionsResult.rows;
 
       this.logger.log(`Found ${adminPermissions.length} total admin-type permissions`);
 
@@ -150,15 +152,15 @@ class RolePermissionSeeder {
         ['User']
       );
 
-      if (userRoleResult.length === 0) {
+      if (userRoleResult.rows.length === 0) {
         this.logger.error('User role not found. Please create the User role first.');
         return;
       }
 
-      const userRole = userRoleResult[0];
+      const userRole = userRoleResult.rows[0];
 
       // Get all END_USER type permissions
-      const endUserPermissions: Permission[] = await this.database.query(
+      const endUserPermissionsResult = await this.database.query(
         `SELECT p.id, p.name, p.resource, p.action
          FROM permissions p
          WHERE p.tenant_id IS NULL
@@ -181,6 +183,8 @@ class RolePermissionSeeder {
          )`,
         [userRole.id]
       );
+      
+      const endUserPermissions: Permission[] = endUserPermissionsResult.rows;
 
       this.logger.log(`Found ${endUserPermissions.length} end-user permissions to assign`);
 

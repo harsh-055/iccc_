@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { IFileStorage } from "./interface/IFileStorage";
 import * as AWS from "aws-sdk";
 import { ConfigService } from "@nestjs/config";
-import { Multer } from "multer";
 
 @Injectable()
 export class AwsS3Service implements IFileStorage {
@@ -22,7 +21,7 @@ export class AwsS3Service implements IFileStorage {
     }
   }
 
-  async uploadFile(file: Multer.File): Promise<string> {
+  async uploadFile(file: any): Promise<string> {
     const params: AWS.S3.PutObjectRequest = {
       Bucket: this.bucketName,
       Key: `${Date.now()}-${file.originalname}`, // Unique file name

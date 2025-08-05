@@ -14,7 +14,7 @@ export class LocalStorageService implements IFileStorage {
     this.baseUrl = this.configService.get("BASE_URL") || "http://localhost:3000";
   }
 
-  async uploadFile(file: Multer.File): Promise<string> {
+  async uploadFile(file: any): Promise<string> {
     const filePath = path.join(this.storagePath, file.filename);
     await fs.writeFile(filePath, file.buffer);
     

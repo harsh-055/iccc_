@@ -11,34 +11,34 @@ export class PermissionService {
   constructor(private database: DatabaseService) {}
 
   async create(createPermissionDto: CreatePermissionDto) {
-    const { name, resource, action, description, roleId } = createPermissionDto;
+    const { name, resource, action, description, tenantId } = createPermissionDto;
 
     try {
-      // Check if permission already exists
+      // Check if permission already exists (global or tenant-specific)
       const existingPermission = await this.database.query(
         `SELECT id FROM permissions 
-         WHERE resource = $1 AND action = $2 AND tenant_id = $3`,
-        [resource, action, roleId || null]
+         WHERE resource = $1 AND action = $2 AND (tenant_id = $3 OR tenant_id IS NULL)`,
+        [resource, action, tenantId || null]
       );
 
-      if (existingPermission.length > 0) {
+      if (existingPermission.rows.length > 0) {
         throw new ConflictException(`Permission for "${action}" on "${resource}" already exists`);
       }
 
-      // Create permission
+      // Create permission (can be global or tenant-specific)
       const result = await this.database.query(
-        `INSERT INTO permissions (name, resource, action, description, created_at, updated_at) 
-         VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING id`,
-        [name, resource, action, description]
+        `INSERT INTO permissions (name, resource, action, description, tenant_id, created_at, updated_at) 
+         VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING id`,
+        [name, resource, action, description, tenantId || null]
       );
 
       // Get the created permission
       const newPermission = await this.database.query(
         `SELECT * FROM permissions WHERE id = $1`,
-        [result[0].id]
+        [result.rows[0].id]
       );
 
-      return newPermission[0];
+      return newPermission.rows[0];
     } catch (error) {
       if (error instanceof ConflictException) {
         throw error;
@@ -52,13 +52,72 @@ export class PermissionService {
     return this.database.query(`
       SELECT p.*, 
              COUNT(rp.role_id) as role_count,
-             COUNT(up.user_id) as user_count
+             COUNT(up.user_id) as user_count,
+             CASE 
+               WHEN p.tenant_id IS NULL THEN 'global'
+               ELSE 'tenant-specific'
+             END as permission_type
       FROM permissions p
       LEFT JOIN role_permissions rp ON p.id = rp.permission_id
       LEFT JOIN user_permissions up ON p.id = up.permission_id
       GROUP BY p.id
       ORDER BY p.name ASC
     `);
+  }
+
+  /**
+   * Get global permissions (shared across all tenants)
+   */
+  async findGlobalPermissions() {
+    return this.database.query(`
+      SELECT p.*, 
+             COUNT(rp.role_id) as role_count,
+             COUNT(up.user_id) as user_count
+      FROM permissions p
+      LEFT JOIN role_permissions rp ON p.id = rp.permission_id
+      LEFT JOIN user_permissions up ON p.id = up.permission_id
+      WHERE p.tenant_id IS NULL
+      GROUP BY p.id
+      ORDER BY p.name ASC
+    `);
+  }
+
+  /**
+   * Get tenant-specific permissions
+   */
+  async findTenantPermissions(tenantId: string) {
+    return this.database.query(`
+      SELECT p.*, 
+             COUNT(rp.role_id) as role_count,
+             COUNT(up.user_id) as user_count
+      FROM permissions p
+      LEFT JOIN role_permissions rp ON p.id = rp.permission_id
+      LEFT JOIN user_permissions up ON p.id = up.permission_id
+      WHERE p.tenant_id = $1
+      GROUP BY p.id
+      ORDER BY p.name ASC
+    `, [tenantId]);
+  }
+
+  /**
+   * Get all permissions available for a tenant (global + tenant-specific)
+   */
+  async findPermissionsForTenant(tenantId: string) {
+    return this.database.query(`
+      SELECT p.*, 
+             COUNT(rp.role_id) as role_count,
+             COUNT(up.user_id) as user_count,
+             CASE 
+               WHEN p.tenant_id IS NULL THEN 'global'
+               ELSE 'tenant-specific'
+             END as permission_type
+      FROM permissions p
+      LEFT JOIN role_permissions rp ON p.id = rp.permission_id
+      LEFT JOIN user_permissions up ON p.id = up.permission_id
+      WHERE p.tenant_id IS NULL OR p.tenant_id = $1
+      GROUP BY p.id
+      ORDER BY p.name ASC
+    `, [tenantId]);
   }
 
   async findBasic() {
@@ -77,11 +136,11 @@ export class PermissionService {
       [id]
     );
 
-    if (permission.length === 0) {
+    if (permission.rows.length === 0) {
       throw new NotFoundException(`Permission with ID "${id}" not found`);
     }
 
-    return permission[0];
+    return permission.rows[0];
   }
 
   async update(id: string, updatePermissionDto: UpdatePermissionDto) {
@@ -98,7 +157,7 @@ export class PermissionService {
         [resource, action, id]
       );
 
-      if (duplicatePermission.length > 0) {
+      if (duplicatePermission.rows.length > 0) {
         throw new ConflictException(`Permission for "${action}" on "${resource}" already exists`);
       }
     }

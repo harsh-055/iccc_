@@ -772,11 +772,11 @@ export class RoleController {
     );
     
     // Filter permissions based on role type
-    let availablePermissions = allPermissions;
+    let availablePermissions = allPermissions.rows;
     
     if (roleType === 'USER') {
       // Filter to only read-only and self-service permissions for User roles
-      availablePermissions = allPermissions.filter(permission => {
+      availablePermissions = allPermissions.rows.filter(permission => {
         const action = permission.action.toLowerCase();
         const permissionName = permission.name.toLowerCase();
         
@@ -808,7 +808,7 @@ export class RoleController {
     return {
       roleType,
       totalPermissions: availablePermissions.length,
-      totalAvailable: allPermissions.length,
+      totalAvailable: allPermissions.rows.length,
       permissionsByModule,
       message: `Permissions available for ${roleType} type roles`
     };

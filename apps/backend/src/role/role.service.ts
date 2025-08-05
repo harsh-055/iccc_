@@ -131,7 +131,7 @@ export class RoleService {
     `);
 
     // Add status field for backward compatibility
-    return rolesResult.map(role => ({
+    return rolesResult.rows.map(role => ({
       ...role,
       status: role.is_active || true, // Default to true if is_active doesn't exist
       _count: { userRoles: role.user_count || 0 },
@@ -179,7 +179,7 @@ export class RoleService {
       ORDER BY r.created_at DESC
     `);
 
-    return customRolesResult.map(role => ({
+    return customRolesResult.rows.map(role => ({
       ...role,
       _count: {
         permissions: role.permission_count || 0,
@@ -194,7 +194,7 @@ export class RoleService {
       SELECT id, name FROM roles ORDER BY name ASC
     `);
 
-    return basicRolesResult;
+    return basicRolesResult.rows;
   }
 
   async findByTenant(tenantId: string) {
@@ -204,7 +204,7 @@ export class RoleService {
       [tenantId]
     );
 
-    if (tenantResult.length === 0) {
+    if (tenantResult.rows.length === 0) {
       throw new NotFoundException(`Tenant with ID "${tenantId}" not found`);
     }
 
@@ -247,7 +247,7 @@ export class RoleService {
       ORDER BY r.name ASC
     `, [tenantId]);
 
-    return rolesResult.map(role => ({
+    return rolesResult.rows.map(role => ({
       ...role,
       _count: { userRoles: role.user_count || 0 },
       userRoles: (role.users || []).map(user => ({ user }))
@@ -293,11 +293,11 @@ export class RoleService {
       GROUP BY r.id
     `, [id]);
 
-    if (roleResult.length === 0) {
+    if (roleResult.rows.length === 0) {
       throw new NotFoundException(`Role with ID "${id}" not found`);
     }
 
-    const role = roleResult[0];
+    const role = roleResult.rows[0];
 
     // Add status field for backward compatibility
     return {
@@ -451,8 +451,8 @@ export class RoleService {
     );
 
     // Clear RBAC cache for all users who had this role
-    if (usersWithRoleResult.length > 0) {
-      for (const userRole of usersWithRoleResult) {
+    if (usersWithRoleResult.rows.length > 0) {
+      for (const userRole of usersWithRoleResult.rows) {
         await this.rbacService.clearUserPermissionCache(userRole.user_id);
       }
     }
@@ -476,7 +476,7 @@ export class RoleService {
       [userId]
     );
 
-    if (userResult.length === 0) {
+    if (userResult.rows.length === 0) {
       throw new NotFoundException(`User with ID "${userId}" not found`);
     }
 
@@ -489,7 +489,7 @@ export class RoleService {
       [userId, roleId]
     );
 
-    if (existingAssignmentResult.length === 0) {
+    if (existingAssignmentResult.rows.length === 0) {
       // Create user-role relationship
       await this.database.query(
         `INSERT INTO user_roles (user_id, role_id, assigned_at) 
@@ -538,7 +538,7 @@ export class RoleService {
       GROUP BY u.id
     `, [userId]);
 
-    return userWithRolesResult[0];
+    return userWithRolesResult.rows[0];
   }
 
   /**
@@ -652,7 +652,7 @@ export class RoleService {
         [accountId]
       );
 
-      if (existingUserResult.length === 0) {
+      if (existingUserResult.rows.length === 0) {
         return accountId;
       }
 
@@ -679,11 +679,11 @@ export class RoleService {
       [tenantId]
     );
 
-    if (tenantResult.length === 0) {
+    if (tenantResult.rows.length === 0) {
       throw new NotFoundException('Tenant not found');
     }
 
-    const tenant = tenantResult[0];
+    const tenant = tenantResult.rows[0];
 
     // Check if user already exists
     const existingUserResult = await this.database.query(
@@ -691,7 +691,7 @@ export class RoleService {
       [userData.email]
     );
 
-    if (existingUserResult.length > 0) {
+    if (existingUserResult.rows.length > 0) {
       throw new ConflictException('User with this email already exists');
     }
 
@@ -709,7 +709,7 @@ export class RoleService {
         ['Admin', tenantId]
       );
 
-      if (tenantAdminRole.length === 0) {
+      if (tenantAdminRole.rows.length === 0) {
         const createRoleResult = await this.database.query(
           `INSERT INTO roles (name, description, tenant_id, is_system, created_at, updated_at) 
            VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING *`,
@@ -718,7 +718,7 @@ export class RoleService {
         tenantAdminRole = createRoleResult;
       }
 
-      const adminRole = tenantAdminRole[0];
+      const adminRole = tenantAdminRole.rows[0];
 
       // Generate unique account ID
       const accountId = await this.generateUniqueAccountId();
@@ -730,7 +730,7 @@ export class RoleService {
         [userData.name, userData.email, accountId, hashedPassword, userData.phoneNumber, tenantId]
       );
 
-      const user = userResult[0];
+      const user = userResult.rows[0];
 
       // Assign Admin role to user
       await this.database.query(
@@ -758,7 +758,7 @@ export class RoleService {
           description: adminRole.description,
           tenantId: adminRole.tenant_id
         },
-        permissions: permissionsCountResult[0].count
+        permissions: permissionsCountResult.rows[0].count
       };
     } catch (error) {
       throw new InternalServerErrorException(`Failed to create tenant admin: ${error.message}`);
@@ -775,11 +775,11 @@ export class RoleService {
       [tenantId]
     );
 
-    if (tenantResult.length === 0) {
+    if (tenantResult.rows.length === 0) {
       throw new NotFoundException('Tenant not found');
     }
 
-    const tenant = tenantResult[0];
+    const tenant = tenantResult.rows[0];
 
     try {
       // Get all permissions (no tenant_id filtering needed)
@@ -788,7 +788,7 @@ export class RoleService {
       );
 
       // Use all permissions for tenant roles
-      const tenantPermissions = allPermissionsResult;
+      const tenantPermissions = allPermissionsResult.rows;
 
       // Create tenant-specific roles
       const systemRoles = ['Admin', 'User']; // Simplified from original complex hierarchy
@@ -800,7 +800,7 @@ export class RoleService {
           [roleName, tenantId]
         );
 
-        if (tenantRoleResult.length === 0) {
+        if (tenantRoleResult.rows.length === 0) {
           // Create tenant role
           const description = roleName === 'Admin' 
             ? `Administrator for ${tenant.name}` 
@@ -812,7 +812,7 @@ export class RoleService {
             [roleName, description, tenantId, false]
           );
 
-          const tenantRole = createRoleResult[0];
+          const tenantRole = createRoleResult.rows[0];
 
           // Assign appropriate permissions to role
           if (roleName === 'Admin') {
@@ -823,7 +823,7 @@ export class RoleService {
                 [tenantRole.id, permission.id]
               );
 
-              if (existingRolePermissionResult.length === 0) {
+              if (existingRolePermissionResult.rows.length === 0) {
                 await this.database.query(
                   `INSERT INTO role_permissions (role_id, permission_id, assigned_at) 
                    VALUES ($1, $2, NOW())`,
@@ -849,7 +849,7 @@ export class RoleService {
                 [tenantRole.id, permission.id]
               );
 
-              if (existingRolePermissionResult.length === 0) {
+              if (existingRolePermissionResult.rows.length === 0) {
                 await this.database.query(
                   `INSERT INTO role_permissions (role_id, permission_id, assigned_at) 
                    VALUES ($1, $2, NOW())`,
@@ -861,7 +861,7 @@ export class RoleService {
 
           tenantRoles.push(tenantRole);
         } else {
-          tenantRoles.push(tenantRoleResult[0]);
+          tenantRoles.push(tenantRoleResult.rows[0]);
         }
       }
 
@@ -890,7 +890,7 @@ export class RoleService {
       [tenantId]
     );
 
-    if (tenantResult.length === 0) {
+    if (tenantResult.rows.length === 0) {
       throw new NotFoundException(`Tenant with ID "${tenantId}" not found`);
     }
 
@@ -900,11 +900,11 @@ export class RoleService {
       [roleId, tenantId]
     );
 
-    if (roleResult.length === 0) {
+    if (roleResult.rows.length === 0) {
       throw new NotFoundException(`Role with ID "${roleId}" not found in this tenant`);
     }
 
-    const role = roleResult[0];
+    const role = roleResult.rows[0];
 
     // Get all permissions (no tenant filtering)
     const allTenantPermissionsResult = await this.database.query(
@@ -913,8 +913,8 @@ export class RoleService {
 
     // Filter permissions based on role type (Admin gets all, User gets limited)
     const availablePermissions = role.name === 'Admin' 
-      ? allTenantPermissionsResult 
-      : allTenantPermissionsResult.filter(permission => {
+      ? allTenantPermissionsResult.rows 
+      : allTenantPermissionsResult.rows.filter(permission => {
           const action = permission.action.toLowerCase();
           const permissionName = permission.name.toLowerCase();
           
@@ -963,7 +963,7 @@ export class RoleService {
     });
 
     const duration = Date.now() - startTime;
-    console.log(`✅ [${new Date().toISOString()}] getRolePermissionsByCategory completed | Duration: ${duration}ms | RoleId: ${roleId} | RoleType: ${role.name} | Filtered: ${availablePermissions.length}/${allTenantPermissionsResult.length} permissions`);
+    console.log(`✅ [${new Date().toISOString()}] getRolePermissionsByCategory completed | Duration: ${duration}ms | RoleId: ${roleId} | RoleType: ${role.name} | Filtered: ${availablePermissions.length}/${allTenantPermissionsResult.rows.length} permissions`);
 
     return {
       role: {
@@ -976,7 +976,7 @@ export class RoleService {
       permissions,
       roleType: role.name,
       totalAvailablePermissions: availablePermissions.length,
-      totalAllPermissions: allTenantPermissionsResult.length
+      totalAllPermissions: allTenantPermissionsResult.rows.length
     };
   }
 
@@ -1060,11 +1060,11 @@ export class RoleService {
       [tenantId]
     );
 
-    if (tenantResult.length === 0) {
+    if (tenantResult.rows.length === 0) {
       throw new NotFoundException('Tenant not found');
     }
 
-    const tenant = tenantResult[0];
+    const tenant = tenantResult.rows[0];
 
     // Validate role exists and belongs to tenant
     const roleResult = await this.database.query(
@@ -1072,11 +1072,11 @@ export class RoleService {
       [roleId, tenantId]
     );
 
-    if (roleResult.length === 0) {
+    if (roleResult.rows.length === 0) {
       throw new NotFoundException(`Role with ID "${roleId}" not found in tenant "${tenant.name}"`);
     }
 
-    const role = roleResult[0];
+    const role = roleResult.rows[0];
 
     // Validate that all permission IDs exist and belong to the tenant
     if (permissionIds.length > 0) {
@@ -1137,7 +1137,7 @@ export class RoleService {
       }
 
       // 3. Clear RBAC cache for all users with this role since their permissions changed
-      for (const userRole of usersWithRoleResult) {
+      for (const userRole of usersWithRoleResult.rows) {
         await this.rbacService.clearUserPermissionCache(userRole.user_id);
       }
 
@@ -1162,7 +1162,7 @@ export class RoleService {
         GROUP BY r.id
       `, [roleId]);
 
-      const updatedRole = updatedRoleResult[0];
+      const updatedRole = updatedRoleResult.rows[0];
 
       const duration = Date.now() - startTime;
       console.log(`✅ [${new Date().toISOString()}] updateRolePermissions completed | Duration: ${duration}ms | RoleId: ${roleId} | Added: ${toAdd.length} | Removed: ${toRemove.length} | Total: ${permissionIds.length}`);

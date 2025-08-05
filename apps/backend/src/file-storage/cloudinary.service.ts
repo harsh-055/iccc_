@@ -15,7 +15,7 @@ export class CloudinaryService implements IFileStorage {
     });
   }
 
-  async uploadFile(file: Multer.File): Promise<string> {
+  async uploadFile(file: any): Promise<string> {
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         (error, result) => {

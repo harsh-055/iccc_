@@ -3,7 +3,6 @@ import { CreateUserDto, UpdateUserDto, PaginatedResponseDto, SuspendUserDto } fr
 import { LoggerService } from '../logger/logger.service';
 import * as bcrypt from 'bcryptjs';
 import { DatabaseService } from '../../database/database.service';
-// import { TemporaryPasswordService } from './temporary-password.service';
 import { RbacService } from '../rbac/rbac.service';
 import { LensMailService } from '../utils/mail/utils.lensMail.service';
 
@@ -20,7 +19,6 @@ export class UserService {
   constructor(
     private db: DatabaseService,
     private logger: LoggerService,
-    // private temporaryPasswordService: TemporaryPasswordService,
     @Inject(forwardRef(() => RbacService))
     private rbacService: RbacService,
     private mailService: LensMailService

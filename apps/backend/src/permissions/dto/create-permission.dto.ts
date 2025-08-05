@@ -36,11 +36,11 @@ export class CreatePermissionDto {
   description?: string;
 
   @ApiProperty({ 
-    description: 'ID of the role this permission belongs to',
+    description: 'ID of the tenant this permission belongs to (null for global permissions)',
     example: 'uuid-string',
     required: false 
   })
   @IsOptional()
-  @IsUUID('4', { message: 'Role ID must be a valid UUID' })
-  roleId?: string;
+  @IsUUID('4', { message: 'Tenant ID must be a valid UUID' })
+  tenantId?: string;
 } 

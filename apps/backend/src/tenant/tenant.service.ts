@@ -7,7 +7,7 @@ import { RoleService } from '../role/role.service';
 @Injectable()
 export class TenantService {
   constructor(
-    private readonly prisma: DatabaseService,
+    private readonly database: DatabaseService,
     private readonly rbacService: RbacService,
     @Inject(forwardRef(() => RoleService))
     private readonly roleService: RoleService,
@@ -22,13 +22,13 @@ export class TenantService {
       await this.rbacService.checkPermission(adminId, 'tenants', 'create');
     }
 
-    const result = await this.prisma.query(
+    const result = await this.database.query(
       `INSERT INTO tenants (name, description, is_active, created_at, updated_at) 
        VALUES ($1, $2, $3, NOW(), NOW()) RETURNING *`,
       [data.name, data.description || null, true]
     );
 
-    return result[0];
+    return result.rows[0];
   }
 
   /**
@@ -39,7 +39,7 @@ export class TenantService {
     await this.rbacService.checkPermission(adminId, 'tenants', 'read');
 
     const [tenants, countResult] = await Promise.all([
-      this.prisma.query(`
+      this.database.query(`
         SELECT t.*, 
                COUNT(DISTINCT u.id) as user_count
         FROM tenants t
@@ -48,17 +48,17 @@ export class TenantService {
         ORDER BY t.name ASC
         LIMIT $1 OFFSET $2
       `, [take, skip]),
-      this.prisma.query(`SELECT COUNT(*) as count FROM tenants`)
+      this.database.query(`SELECT COUNT(*) as count FROM tenants`)
     ]);
 
     return {
-      tenants: tenants.map(tenant => ({
+      tenants: tenants.rows.map(tenant => ({
         ...tenant,
         _count: {
           users: parseInt(tenant.user_count) || 0,
         }
       })),
-      count: parseInt(countResult[0].count),
+      count: parseInt(countResult.rows[0].count),
       skip,
       take,
     };
@@ -71,7 +71,7 @@ export class TenantService {
     // Check if user has permission to read tenants
     await this.rbacService.checkPermission(adminId, 'tenants', 'read');
 
-    const tenants = await this.prisma.query(`
+    const tenants = await this.database.query(`
       SELECT t.id as tenant_id, t.name as tenant_name,
              json_agg(
                json_build_object(
@@ -86,7 +86,7 @@ export class TenantService {
       ORDER BY t.name ASC
     `);
 
-    return tenants.map(tenant => ({
+    return tenants.rows.map(tenant => ({
       tenantId: tenant.tenant_id,
       tenantName: tenant.tenant_name,
       users: tenant.users || [],
@@ -100,7 +100,7 @@ export class TenantService {
     // Check if user has permission to read tenants
     await this.rbacService.checkPermission(adminId, 'tenants', 'read');
 
-    const result = await this.prisma.query(`
+    const result = await this.database.query(`
       SELECT t.*, 
              COUNT(DISTINCT u.id) as user_count,
              COUNT(DISTINCT r.id) as role_count
@@ -111,11 +111,11 @@ export class TenantService {
       GROUP BY t.id
     `, [tenantId]);
 
-    if (result.length === 0) {
+    if (result.rows.length === 0) {
       throw new NotFoundException(`Tenant with ID ${tenantId} not found`);
     }
 
-    const tenant = result[0];
+    const tenant = result.rows[0];
     return {
       ...tenant,
       _count: {
@@ -132,7 +132,7 @@ export class TenantService {
     // Check if user has permission to read tenants
     await this.rbacService.checkPermission(adminId, 'tenants', 'read');
 
-    const result = await this.prisma.query(`
+    const result = await this.database.query(`
       SELECT t.*,
              json_agg(
                json_build_object(
@@ -147,11 +147,11 @@ export class TenantService {
       GROUP BY t.id
     `, [tenantId]);
 
-    if (result.length === 0) {
+    if (result.rows.length === 0) {
       throw new NotFoundException(`Tenant with ID ${tenantId} not found`);
     }
 
-    const tenant = result[0];
+    const tenant = result.rows[0];
     const users = tenant.users || [];
 
     return {
@@ -177,12 +177,12 @@ export class TenantService {
     // Check if user has permission to update tenants
     await this.rbacService.checkPermission(adminId, 'tenants', 'update');
 
-    const tenant = await this.prisma.query(
+    const tenant = await this.database.query(
       `SELECT * FROM tenants WHERE id = $1`,
       [tenantId]
     );
 
-    if (tenant.length === 0) {
+    if (tenant.rows.length === 0) {
       throw new NotFoundException(`Tenant with ID ${tenantId} not found`);
     }
 
@@ -208,12 +208,12 @@ export class TenantService {
     updateFields.push(`updated_at = NOW()`);
     updateValues.push(tenantId);
 
-    const result = await this.prisma.query(
+    const result = await this.database.query(
       `UPDATE tenants SET ${updateFields.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
       updateValues
     );
 
-    return result[0];
+    return result.rows[0];
   }
 
   /**
@@ -224,24 +224,24 @@ export class TenantService {
     await this.rbacService.checkPermission(adminId, 'tenant-users', 'create');
 
     const [tenant, user] = await Promise.all([
-      this.prisma.query(`SELECT * FROM tenants WHERE id = $1`, [tenantId]),
-      this.prisma.query(`SELECT * FROM users WHERE id = $1`, [userId]),
+      this.database.query(`SELECT * FROM tenants WHERE id = $1`, [tenantId]),
+      this.database.query(`SELECT * FROM users WHERE id = $1`, [userId]),
     ]);
 
-    if (tenant.length === 0) {
+    if (tenant.rows.length === 0) {
       throw new NotFoundException(`Tenant with ID ${tenantId} not found`);
     }
 
-    if (user.length === 0) {
+    if (user.rows.length === 0) {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
-    const result = await this.prisma.query(
+    const result = await this.database.query(
       `UPDATE users SET tenant_id = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
       [tenantId, userId]
     );
 
-    return result[0];
+    return result.rows[0];
   }
 
   /**
@@ -251,36 +251,36 @@ export class TenantService {
     // Check if user has permission to manage tenant users
     await this.rbacService.checkPermission(adminId, 'tenant-users', 'delete');
 
-    const user = await this.prisma.query(
+    const user = await this.database.query(
       `SELECT u.*, t.id as tenant_id FROM users u 
        LEFT JOIN tenants t ON u.tenant_id = t.id 
        WHERE u.id = $1`,
       [userId]
     );
 
-    if (user.length === 0) {
+    if (user.rows.length === 0) {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
-    if (!user[0].tenant_id || user[0].tenant_id !== tenantId) {
+    if (!user.rows[0].tenant_id || user.rows[0].tenant_id !== tenantId) {
       throw new ForbiddenException(`User with ID ${userId} is not in tenant ${tenantId}`);
     }
 
     // Find the default tenant to move the user to
-    const defaultTenant = await this.prisma.query(
+    const defaultTenant = await this.database.query(
       `SELECT * FROM tenants WHERE name = 'Default' LIMIT 1`
     );
 
-    if (defaultTenant.length === 0) {
+    if (defaultTenant.rows.length === 0) {
       throw new InternalServerErrorException('Default tenant not found');
     }
 
-    const result = await this.prisma.query(
+    const result = await this.database.query(
       `UPDATE users SET tenant_id = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
-      [defaultTenant[0].id, userId]
+      [defaultTenant.rows[0].id, userId]
     );
 
-    return result[0];
+    return result.rows[0];
   }
 
   /**
@@ -297,34 +297,34 @@ export class TenantService {
     }
   ) {
     // Check if tenant name already exists
-    const existingTenant = await this.prisma.query(
+    const existingTenant = await this.database.query(
       `SELECT * FROM tenants WHERE name = $1`,
       [tenantData.name]
     );
 
-    if (existingTenant.length > 0) {
+    if (existingTenant.rows.length > 0) {
       throw new ConflictException('A tenant with this name already exists');
     }
 
     // Check if user email already exists
-    const existingUser = await this.prisma.query(
+    const existingUser = await this.database.query(
       `SELECT * FROM users WHERE email = $1`,
       [AdminData.email]
     );
 
-    if (existingUser.length > 0) {
+    if (existingUser.rows.length > 0) {
       throw new ConflictException('A user with this email already exists');
     }
 
     try {
       // Create the tenant first
-      const tenantResult = await this.prisma.query(
+      const tenantResult = await this.database.query(
         `INSERT INTO tenants (name, description, is_active, created_at, updated_at) 
          VALUES ($1, $2, $3, NOW(), NOW()) RETURNING *`,
         [tenantData.name, tenantData.description || `${tenantData.name} organization`, true]
       );
 
-      const tenant = tenantResult[0];
+      const tenant = tenantResult.rows[0];
 
       // Create admin with all permissions and roles for this tenant
       const AdminResult = await this.roleService.createTenantAdmin(

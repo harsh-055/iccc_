@@ -56,10 +56,90 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     userType: 'ADMIN'
   },
   {
+    name: 'CREATE_ROLES',
+    resource: 'roles',
+    action: 'create',
+    description: 'Create new roles',
+    module: 'Role Management',
+    userType: 'ADMIN'
+  },
+  {
+    name: 'READ_ROLES',
+    resource: 'roles',
+    action: 'read',
+    description: 'Read and view roles',
+    module: 'Role Management',
+    userType: 'ADMIN'
+  },
+  {
+    name: 'UPDATE_ROLES',
+    resource: 'roles',
+    action: 'update',
+    description: 'Update existing roles',
+    module: 'Role Management',
+    userType: 'ADMIN'
+  },
+  {
+    name: 'DELETE_ROLES',
+    resource: 'roles',
+    action: 'delete',
+    description: 'Delete roles',
+    module: 'Role Management',
+    userType: 'ADMIN'
+  },
+  {
+    name: 'ASSIGN_ROLES',
+    resource: 'roles',
+    action: 'assign',
+    description: 'Assign roles to users',
+    module: 'Role Management',
+    userType: 'ADMIN'
+  },
+  {
     name: 'MANAGE_PERMISSIONS',
     resource: 'permissions',
     action: 'manage',
     description: 'Full permission management - create, read, update, delete permissions',
+    module: 'Permission Management',
+    userType: 'ADMIN'
+  },
+  {
+    name: 'CREATE_PERMISSION',
+    resource: 'permissions',
+    action: 'create',
+    description: 'Create new permissions',
+    module: 'Permission Management',
+    userType: 'ADMIN'
+  },
+  {
+    name: 'READ_PERMISSION',
+    resource: 'permissions',
+    action: 'read',
+    description: 'Read and view permissions',
+    module: 'Permission Management',
+    userType: 'ADMIN'
+  },
+  {
+    name: 'UPDATE_PERMISSION',
+    resource: 'permissions',
+    action: 'update',
+    description: 'Update existing permissions',
+    module: 'Permission Management',
+    userType: 'ADMIN'
+  },
+  {
+    name: 'DELETE_PERMISSION',
+    resource: 'permissions',
+    action: 'delete',
+    description: 'Delete permissions',
+    module: 'Permission Management',
+    userType: 'ADMIN'
+  },
+  {
+    name: 'CREATE_PERMISSIONS',
+    resource: 'permissions',
+    action: 'create',
+    description: 'Create new permissions (plural form)',
     module: 'Permission Management',
     userType: 'ADMIN'
   },
@@ -99,6 +179,14 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'manage',
     description: 'Manage API keys, limits, and access',
     module: 'API Management',
+    userType: 'ADMIN'
+  },
+  {
+    name: 'MANAGE_SYSTEM_CONFIG',
+    resource: 'system',
+    action: 'manage_config',
+    description: 'Manage system configuration and settings',
+    module: 'System Management',
     userType: 'ADMIN'
   },
 

@@ -103,6 +103,68 @@ export class PermissionController {
     return this.permissionService.findBasic();
   }
 
+  @Get('global')
+  @ApiBearerAuth('Bearer')
+  @UseGuards(AuthPermissionGuard)
+  @RequirePermissions('READ_PERMISSION')
+  @ApiOperation({ 
+    summary: 'Get global permissions (shared across all tenants)',
+    description: 'Returns permissions that are available to all tenants (tenant_id IS NULL)'
+  })
+  @ApiResponse({ 
+    status: HttpStatus.OK, 
+    description: 'List of global permissions.' 
+  })
+  @ApiResponse({ 
+    status: HttpStatus.FORBIDDEN, 
+    description: 'Insufficient permissions.' 
+  })
+  findGlobalPermissions() {
+    return this.permissionService.findGlobalPermissions();
+  }
+
+  @Get('tenant/:tenantId')
+  @ApiBearerAuth('Bearer')
+  @UseGuards(AuthPermissionGuard)
+  @RequirePermissions('READ_PERMISSION')
+  @ApiOperation({ 
+    summary: 'Get tenant-specific permissions',
+    description: 'Returns permissions that are specific to a particular tenant'
+  })
+  @ApiParam({ name: 'tenantId', description: 'Tenant ID', type: 'string' })
+  @ApiResponse({ 
+    status: HttpStatus.OK, 
+    description: 'List of tenant-specific permissions.' 
+  })
+  @ApiResponse({ 
+    status: HttpStatus.FORBIDDEN, 
+    description: 'Insufficient permissions.' 
+  })
+  findTenantPermissions(@Param('tenantId') tenantId: string) {
+    return this.permissionService.findTenantPermissions(tenantId);
+  }
+
+  @Get('available/:tenantId')
+  @ApiBearerAuth('Bearer')
+  @UseGuards(AuthPermissionGuard)
+  @RequirePermissions('READ_PERMISSION')
+  @ApiOperation({ 
+    summary: 'Get all permissions available for a tenant (global + tenant-specific)',
+    description: 'Returns both global and tenant-specific permissions that a tenant can use'
+  })
+  @ApiParam({ name: 'tenantId', description: 'Tenant ID', type: 'string' })
+  @ApiResponse({ 
+    status: HttpStatus.OK, 
+    description: 'List of available permissions for the tenant.' 
+  })
+  @ApiResponse({ 
+    status: HttpStatus.FORBIDDEN, 
+    description: 'Insufficient permissions.' 
+  })
+  findPermissionsForTenant(@Param('tenantId') tenantId: string) {
+    return this.permissionService.findPermissionsForTenant(tenantId);
+  }
+
   @Get(':id')
   @ApiBearerAuth('Bearer')
   @UseGuards(AuthPermissionGuard)

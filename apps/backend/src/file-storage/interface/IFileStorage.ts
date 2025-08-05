@@ -1,6 +1,5 @@
-import { Multer } from 'multer';
 export interface IFileStorage {
-    uploadFile(file: Multer.File): Promise<string>;
+    uploadFile(file: any): Promise<string>;
     deleteFile(fileUrl: string): Promise<boolean>;
 }
   
