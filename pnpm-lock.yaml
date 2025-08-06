@@ -92,9 +92,6 @@ importers:
       bull-board:
         specifier: ^2.1.3
         version: 2.1.3
-      bullMQAdapter:
-        specifier: link:@bull-board/api/bullMQAdapter
-        version: link:@bull-board/api/bullMQAdapter
       bullmq:
         specifier: ^5.40.4
         version: 5.56.0
