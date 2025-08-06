@@ -13,12 +13,51 @@ export class DefaultRolesService implements OnModuleInit {
     // we only need to ensure the Default tenant exists
     this.logger.log('DefaultRolesService initialized - using SQL-seeded roles and permissions');
     
-    // Optionally ensure Default tenant exists
+    // Optionally ensure Default tenant exists with retry logic
     setTimeout(() => {
-      this.ensureDefaultTenant()
+      this.ensureDefaultTenantWithRetry()
         .then(() => this.logger.log('✅ Default tenant check completed'))
         .catch(err => this.logger.error('❌ Error checking default tenant:', err));
-    }, 1000);
+    }, 2000); // Increased delay for deployment
+  }
+
+  private async ensureDefaultTenantWithRetry(maxRetries = 3, delay = 2000) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        this.logger.log(`Attempting to ensure default tenant (attempt ${attempt}/${maxRetries})`);
+        
+        // First, test database connection
+        await this.database.query('SELECT 1');
+        this.logger.log('Database connection verified');
+        
+        const result = await this.database.query(
+          `SELECT * FROM tenants WHERE name = 'Default' LIMIT 1`
+        );
+        
+        if (!result || !result.rows || result.rows.length === 0) {
+          await this.database.query(
+            `INSERT INTO tenants (name, description, is_active, created_at, updated_at) 
+             VALUES ('Default', 'Default system tenant', true, NOW(), NOW()) 
+             ON CONFLICT (name) DO NOTHING`
+          );
+          this.logger.log('Created Default tenant');
+        } else {
+          this.logger.log('Default tenant already exists');
+        }
+        
+        return; // Success, exit the retry loop
+      } catch (error) {
+        this.logger.error(`Error ensuring default tenant (attempt ${attempt}/${maxRetries}):`, error);
+        
+        if (attempt === maxRetries) {
+          this.logger.error('Max retries reached for default tenant creation');
+          throw error;
+        }
+        
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
   }
 
   private async ensureDefaultTenant() {
