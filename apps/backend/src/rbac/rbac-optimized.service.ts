@@ -1,8 +1,8 @@
 import { Injectable, ForbiddenException, Inject, forwardRef } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { DefaultRolesService } from '../role/service/default-role.service';
-import { InjectRedis } from '@nestjs-modules/ioredis';
-import Redis from 'ioredis';
+// import { InjectRedis } from '@nestjs-modules/ioredis';
+// import Redis from 'ioredis';
 import { Logger } from '@nestjs/common';
 
 @Injectable()
@@ -13,13 +13,13 @@ export class RbacOptimizedService {
   // Changed to accept any type of value, not just boolean
   private memoryCache = new Map<string, { value: any; expires: number }>();
   private readonly MEMORY_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-  private readonly REDIS_CACHE_TTL = 10 * 60; // 10 minutes
+  // private readonly REDIS_CACHE_TTL = 10 * 60; // 10 minutes
 
   constructor(
     private readonly database: DatabaseService,
     @Inject(forwardRef(() => DefaultRolesService))
     private defaultRolesService: DefaultRolesService,
-    @InjectRedis() private readonly redisService: Redis,
+    // @InjectRedis() private readonly redisService: Redis,
   ) {
     // Clean memory cache every 5 minutes
     setInterval(() => {
@@ -42,24 +42,24 @@ export class RbacOptimizedService {
       }
 
       // 2. Check Redis cache (1 Redis operation instead of 4-5)
-      const cachedResult = await this.redisService.get(cacheKey);
-      if (cachedResult !== null) {
-        const result = cachedResult === 'true';
-        // Store in memory cache for next requests
-        this.setMemoryCache(cacheKey, result);
-        return result;
-      }
+      // const cachedResult = await this.redisService.get(cacheKey);
+      // if (cachedResult !== null) {
+      //   const result = cachedResult === 'true';
+      //   // Store in memory cache for next requests
+      //   this.setMemoryCache(cacheKey, result);
+      //   return result;
+      // }
 
       // 3. Database lookup
       const result = await this.checkPermissionFromDB(userId, resource, action);
       
       // 4. Cache in both memory and Redis (1 Redis operation instead of 4)
       this.setMemoryCache(cacheKey, result);
-      try {
-        await this.redisService.setex(cacheKey, this.REDIS_CACHE_TTL, result.toString());
-      } catch (cacheError) {
-        this.logger.warn('[RBAC] Failed to cache in Redis:', cacheError.message);
-      }
+      // try {
+      //   await this.redisService.setex(cacheKey, this.REDIS_CACHE_TTL, result.toString());
+      // } catch (cacheError) {
+      //   this.logger.warn('[RBAC] Failed to cache in Redis:', cacheError.message);
+      // }
       
       return result;
     } catch (redisError) {
@@ -82,23 +82,23 @@ export class RbacOptimizedService {
       }
 
       // Check Redis cache
-      const cachedResult = await this.redisService.get(cacheKey);
-      if (cachedResult !== null) {
-        const result = cachedResult === 'true';
-        this.setMemoryCache(cacheKey, result);
-        return result;
-      }
+      // const cachedResult = await this.redisService.get(cacheKey);
+      // if (cachedResult !== null) {
+      //   const result = cachedResult === 'true';
+      //   this.setMemoryCache(cacheKey, result);
+      //   return result;
+      // }
 
       // Database lookup
       const result = await this.defaultRolesService.isAdmin(userId);
       
       // Cache in both memory and Redis
       this.setMemoryCache(cacheKey, result);
-      try {
-        await this.redisService.setex(cacheKey, this.REDIS_CACHE_TTL, result.toString());
-      } catch (cacheError) {
-        this.logger.warn('[RBAC] Failed to cache admin result:', cacheError.message);
-      }
+      // try {
+      //   await this.redisService.setex(cacheKey, this.REDIS_CACHE_TTL, result.toString());
+      // } catch (cacheError) {
+      //   this.logger.warn('[RBAC] Failed to cache admin result:', cacheError.message);
+      // }
       
       return result;
     } catch (redisError) {
@@ -161,22 +161,22 @@ export class RbacOptimizedService {
       keysToDelete.forEach(key => this.memoryCache.delete(key));
 
       // Clear Redis cache with pattern (1 operation per key instead of complex tracking)
-      const patterns = [`rbac:${userId}:*`, `admin:${userId}`];
+      // const patterns = [`rbac:${userId}:*`, `admin:${userId}`];
       
-      for (const pattern of patterns) {
-        let cursor = '0';
-        const keysToDeleteFromRedis: string[] = [];
+      // for (const pattern of patterns) {
+      //   let cursor = '0';
+      //   const keysToDeleteFromRedis: string[] = [];
         
-        do {
-          const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 50);
-          cursor = result[0];
-          keysToDeleteFromRedis.push(...result[1]);
-        } while (cursor !== '0');
+      //   do {
+      //     const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 50);
+      //     cursor = result[0];
+      //     keysToDeleteFromRedis.push(...result[1]);
+      //   } while (cursor !== '0');
         
-        if (keysToDeleteFromRedis.length > 0) {
-          await this.redisService.del(...keysToDeleteFromRedis);
-        }
-      }
+      //   if (keysToDeleteFromRedis.length > 0) {
+      //     await this.redisService.del(...keysToDeleteFromRedis);
+      //   }
+      // }
       
     } catch (error) {
       this.logger.warn('[RBAC] Error invalidating user cache:', error.message);
@@ -192,19 +192,19 @@ export class RbacOptimizedService {
       this.memoryCache.clear();
       
       // Clear Redis cache with pattern scan (updated for Admin/User system)
-      const patterns = ['rbac:*', 'admin:*'];
+      // const patterns = ['rbac:*', 'admin:*'];
       
-      for (const pattern of patterns) {
-        let cursor = '0';
-        do {
-          const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
-          cursor = result[0];
+      // for (const pattern of patterns) {
+      //   let cursor = '0';
+      //   do {
+      //     const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+      //     cursor = result[0];
           
-          if (result[1].length > 0) {
-            await this.redisService.del(...result[1]);
-          }
-        } while (cursor !== '0');
-      }
+      //     if (result[1].length > 0) {
+      //       await this.redisService.del(...result[1]);
+      //     }
+      //   } while (cursor !== '0');
+      // }
       
       this.logger.log('RBAC cache cleared (memory + Redis)');
     } catch (error) {
@@ -315,23 +315,23 @@ export class RbacOptimizedService {
       }
 
       // 2. Check Redis cache
-      const cachedResult = await this.redisService.get(cacheKey);
-      if (cachedResult !== null) {
-        const result = cachedResult === 'true';
-        this.setMemoryCache(cacheKey, result);
-        return result;
-      }
+      // const cachedResult = await this.redisService.get(cacheKey);
+      // if (cachedResult !== null) {
+      //   const result = cachedResult === 'true';
+      //   this.setMemoryCache(cacheKey, result);
+      //   return result;
+      // }
 
       // 3. Database lookup
       const result = await this.checkPermissionByNameFromDB(userId, permissionName);
       
       // 4. Cache the result
       this.setMemoryCache(cacheKey, result);
-      try {
-        await this.redisService.setex(cacheKey, this.REDIS_CACHE_TTL, result.toString());
-      } catch (cacheError) {
-        this.logger.warn('[RBAC] Failed to cache permission by name:', cacheError.message);
-      }
+      // try {
+      //   await this.redisService.setex(cacheKey, this.REDIS_CACHE_TTL, result.toString());
+      // } catch (cacheError) {
+      //   this.logger.warn('[RBAC] Failed to cache permission by name:', cacheError.message);
+      // }
       
       return result;
     } catch (redisError) {
@@ -430,12 +430,12 @@ export class RbacOptimizedService {
       }
 
       // Check Redis cache
-      const cachedResult = await this.redisService.get(cacheKey);
-      if (cachedResult) {
-        const result = JSON.parse(cachedResult);
-        this.setMemoryCache(cacheKey, result);
-        return result;
-      }
+      // const cachedResult = await this.redisService.get(cacheKey);
+      // if (cachedResult) {
+      //   const result = JSON.parse(cachedResult);
+      //   this.setMemoryCache(cacheKey, result);
+      //   return result;
+      // }
 
       // Database lookup
       const result = await this.getUserPermissionsFromDB(userId);
@@ -443,11 +443,11 @@ export class RbacOptimizedService {
       // Cache the result
       this.setMemoryCache(cacheKey, result);
       
-      try {
-        await this.redisService.setex(cacheKey, this.REDIS_CACHE_TTL, JSON.stringify(result));
-      } catch (cacheError) {
-        this.logger.warn('[RBAC] Failed to cache user permissions:', cacheError.message);
-      }
+      // try {
+      //   await this.redisService.setex(cacheKey, this.REDIS_CACHE_TTL, JSON.stringify(result));
+      // } catch (cacheError) {
+      //   this.logger.warn('[RBAC] Failed to cache user permissions:', cacheError.message);
+      // }
       
       return result;
     } catch (redisError) {
@@ -535,27 +535,27 @@ export class RbacOptimizedService {
       this.memoryCache.clear();
       
       // Clear Redis cache with pattern matching (updated for Admin/User system)
-      const patterns = ['rbac:*', 'admin:*'];
+      // const patterns = ['rbac:*', 'admin:*'];
       
-      for (const pattern of patterns) {
-        let cursor = '0';
-        const keysToDelete: string[] = [];
+      // for (const pattern of patterns) {
+      //   let cursor = '0';
+      //   const keysToDelete: string[] = [];
         
-        do {
-          const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
-          cursor = result[0];
-          keysToDelete.push(...result[1]);
-        } while (cursor !== '0');
+      //   do {
+      //     const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+      //     cursor = result[0];
+      //     keysToDelete.push(...result[1]);
+      //   } while (cursor !== '0');
         
-        if (keysToDelete.length > 0) {
-          // Delete keys in batches to avoid memory issues
-          const batchSize = 100;
-          for (let i = 0; i < keysToDelete.length; i += batchSize) {
-            const batch = keysToDelete.slice(i, i + batchSize);
-            await this.redisService.del(...batch);
-          }
-        }
-      }
+      //   if (keysToDelete.length > 0) {
+      //     // Delete keys in batches to avoid memory issues
+      //     const batchSize = 100;
+      //     for (let i = 0; i < keysToDelete.length; i += batchSize) {
+      //       const batch = keysToDelete.slice(i, i + batchSize);
+      //       await this.redisService.del(...batch);
+      //     }
+      //   }
+      // }
       
       this.logger.log('All RBAC caches cleared successfully (memory + Redis)');
     } catch (error) {

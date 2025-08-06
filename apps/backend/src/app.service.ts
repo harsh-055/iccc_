@@ -1,12 +1,12 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
+// import { InjectQueue } from '@nestjs/bullmq';
+// import { Queue } from 'bullmq';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 
 @Injectable()
 export class AppService implements OnModuleInit {
   constructor(
-    @InjectQueue('mail-queue') private readonly mailQueue: Queue,
+    // @InjectQueue('mail-queue') private readonly mailQueue: Queue,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -14,7 +14,7 @@ export class AppService implements OnModuleInit {
   async onModuleInit() {
     if (process.env.NODE_ENV !== 'production') {
       setInterval(async () => {
-        const counts = await this.mailQueue.getJobCounts();
+        // const counts = await this.mailQueue.getJobCounts();
         // console.log('[📊 BullMQ Health]', counts);
       }, 5000); // log every 5s
     }
@@ -26,8 +26,8 @@ export class AppService implements OnModuleInit {
   }
 
   async getHello(): Promise<string> {
-    // Add a test job to the queue
-    await this.mailQueue.add('test-job', { message: 'Hello BullMQ Health Check' });
-    return '✅ Test job added to BullMQ!';
+    // Add a test job to the queue - DISABLED
+    // await this.mailQueue.add('test-job', { message: 'Hello BullMQ Health Check' });
+    return '✅ BullMQ functionality disabled!';
   }
 }

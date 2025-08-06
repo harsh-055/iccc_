@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { ZodValidationPipe } from './configs/zod-validation.pipeline';
 import { doubleCsrf } from 'csrf-csrf';
 import { ValidationPipe } from '@nestjs/common';
-import { RedisHealthService } from './health/redis-health.service';
+// import { RedisHealthService } from './health/redis-health.service';
 // ...
 // somewhere in your initialization file
 
@@ -105,24 +105,24 @@ async function bootstrap() {
   console.log(`📄 Swagger Docs available at http://localhost:${port}/api-docs`);
 
   // Trigger Redis health check on startup
-  try {
-    const redisHealthService = app.get(RedisHealthService);
-    console.log('🔍 Checking Redis health...');
-    const healthStatus = await redisHealthService.checkHealthWithHardcodedUrl();
+  // try {
+  //   const redisHealthService = app.get(RedisHealthService);
+  //   console.log('🔍 Checking Redis health...');
+  //   const healthStatus = await redisHealthService.checkHealthWithEnvironmentConfig();
     
-    if (healthStatus.status === 'healthy') {
-      console.log('✅ Redis is healthy!');
-      console.log(`   Host: ${healthStatus.redis.host}:${healthStatus.redis.port}`);
-      console.log(`   Memory: ${healthStatus.redis.memory} bytes`);
-      console.log(`   Status: ${healthStatus.redis.status}`);
-    } else {
-      console.log('❌ Redis health check failed!');
-      console.log(`   Error: ${healthStatus.redis.error}`);
-      console.log(`   Host: ${healthStatus.redis.host}:${healthStatus.redis.port}`);
-    }
-  } catch (error) {
-    console.log('❌ Failed to perform Redis health check:', error.message);
-  }
+  //   if (healthStatus.status === 'healthy') {
+  //     console.log('✅ Redis is healthy!');
+  //     console.log(`   Host: ${healthStatus.redis.host}:${healthStatus.redis.port}`);
+  //     console.log(`   Memory: ${healthStatus.redis.memory} bytes`);
+  //     console.log(`   Status: ${healthStatus.redis.status}`);
+  //   } else {
+  //     console.log('❌ Redis health check failed!');
+  //     console.log(`   Error: ${healthStatus.redis.error}`);
+  //     console.log(`   Host: ${healthStatus.redis.host}:${healthStatus.redis.port}`);
+  //   }
+  // } catch (error) {
+  //   console.log('❌ Failed to perform Redis health check:', error.message);
+  // }
 }
 
 bootstrap();

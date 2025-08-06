@@ -4,10 +4,10 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
-import { BullModule } from '@nestjs/bullmq';
-import { BullBoardModule } from '@bull-board/nestjs';
-import { ExpressAdapter } from "@bull-board/express";
-import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
+// import { BullModule } from '@nestjs/bullmq';
+// import { BullBoardModule } from '@bull-board/nestjs';
+// import { ExpressAdapter } from "@bull-board/express";
+// import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
 import { WinstonModule } from 'nest-winston';
 import winstonInstance from './configs/winston.config';
 import { DatabaseModule } from '../database/database.module';
@@ -21,7 +21,7 @@ import { FileStorageModule } from './file-storage/file-storage.module';
 import { HealthModule } from './health/health.module';
 import { TenantModule } from './tenant/tenant.module';
 import { PermissionModule } from './permissions/permission.module';
-import { MailProcessor } from '../mail.processor';
+// import { MailProcessor } from '../mail.processor';
 import { RoleModule } from './role/role.module';
 import { RbacModule } from './rbac/rbac.module';
 import { UserModule } from './user/user.module';
@@ -74,32 +74,32 @@ import {WebsocketModule} from './websocket/websocket.module';
     CacheModule.register({ isGlobal: true }),
 
     // Background Jobs (BullMQ & Redis)
-    BullModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        connection: {
-          host: configService.get<string>('REDIS_HOST', 'localhost'),
-          port: configService.get<number>('REDIS_PORT', 6379),
-          password: configService.get<string>('REDIS_PASSWORD'),
-          retryDelayOnFailover: 100,
-          maxRetriesPerRequest: 3,
-        },
-      }),
-      inject: [ConfigService],
-    }),
+    // BullModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   useFactory: async (configService: ConfigService) => ({
+    //     connection: {
+    //       host: configService.get<string>('REDIS_HOST', 'localhost'),
+    //       port: configService.get<number>('REDIS_PORT', 6379),
+    //       password: configService.get<string>('REDIS_PASSWORD'),
+    //       retryDelayOnFailover: 100,
+    //       maxRetriesPerRequest: 3,
+    //     },
+    //   }),
+    //   inject: [ConfigService],
+    // }),
 
     // Queue Registration
-    BullModule.registerQueue({ name: 'mail-queue' }),
+    // BullModule.registerQueue({ name: 'mail-queue' }),
 
     // Bull Dashboard (Queue Monitoring)
-    BullBoardModule.forRoot({
-      route: '/queues',
-      adapter: ExpressAdapter, // Can be replaced with FastifyAdapter if using Fastify
-    }),
-    BullBoardModule.forFeature({
-      name: 'mail-queue',
-      adapter: BullMQAdapter, // Use BullAdapter if using Bull instead of BullMQ
-    }),
+    // BullBoardModule.forRoot({
+    //   route: '/queues',
+    //   adapter: ExpressAdapter, // Can be replaced with FastifyAdapter if using Fastify
+    // }),
+    // BullBoardModule.forFeature({
+    //   name: 'mail-queue',
+    //   adapter: BullMQAdapter, // Use BullAdapter if using Bull instead of BullMQ
+    // }),
 
     // Scheduling (Cron Jobs)
     ScheduleModule.forRoot(),
@@ -124,7 +124,7 @@ import {WebsocketModule} from './websocket/websocket.module';
   providers: [
     AppService,
     TransportConsumer,
-    MailProcessor,
+    // MailProcessor,
     
     // Global Rate Limiting Guard
     {

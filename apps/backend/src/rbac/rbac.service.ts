@@ -1,8 +1,8 @@
 import { Injectable, ForbiddenException, Inject, forwardRef } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { DefaultRolesService } from '../role/service/default-role.service';
-import { InjectRedis } from '@nestjs-modules/ioredis';
-import Redis from 'ioredis';
+// import { InjectRedis } from '@nestjs-modules/ioredis';
+// import Redis from 'ioredis';
 import { Logger } from '@nestjs/common';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class RbacService {
     private readonly database: DatabaseService,
     @Inject(forwardRef(() => DefaultRolesService))
     private defaultRolesService: DefaultRolesService,
-    @InjectRedis() private readonly redisService: Redis,
+    // @InjectRedis() private readonly redisService: Redis,
   ) {
     // 🚀 CACHING DISABLED: Removed memory cache cleanup interval
   }
@@ -336,52 +336,52 @@ export class RbacService {
   async clearAllRbacCache(): Promise<void> {
     try {
       // Get all tracked cache keys from the master tracking set
-      const allTrackedKeys = await this.redisService.smembers('rbac_all_keys');
+      // const allTrackedKeys = await this.redisService.smembers('rbac_all_keys');
       
-      if (allTrackedKeys.length > 0) {
-        // Delete all tracked keys in batches to avoid memory issues
-        const batchSize = 100;
-        for (let i = 0; i < allTrackedKeys.length; i += batchSize) {
-          const batch = allTrackedKeys.slice(i, i + batchSize);
-          await this.redisService.del(...batch);
-        }
+      // if (allTrackedKeys.length > 0) {
+      //   // Delete all tracked keys in batches to avoid memory issues
+      //   const batchSize = 100;
+      //   for (let i = 0; i < allTrackedKeys.length; i += batchSize) {
+      //     const batch = allTrackedKeys.slice(i, i + batchSize);
+      //     await this.redisService.del(...batch);
+      //   }
         
-        // Clear the master tracking set
-        await this.redisService.del('rbac_all_keys');
-      }
+      //   // Clear the master tracking set
+      //   await this.redisService.del('rbac_all_keys');
+      // }
       
       // Get user-specific tracking sets using SCAN instead of KEYS
-      let cursor = '0';
-      const userTrackingSets: string[] = [];
+      // let cursor = '0';
+      // const userTrackingSets: string[] = [];
       
-      do {
-        const result = await this.redisService.scan(cursor, 'MATCH', 'rbac_keys:*', 'COUNT', 100);
-        cursor = result[0];
-        userTrackingSets.push(...result[1]);
-      } while (cursor !== '0');
+      // do {
+      //   const result = await this.redisService.scan(cursor, 'MATCH', 'rbac_keys:*', 'COUNT', 100);
+      //   cursor = result[0];
+      //   userTrackingSets.push(...result[1]);
+      // } while (cursor !== '0');
       
       // Clean up user tracking sets
-      if (userTrackingSets.length > 0) {
-        await this.redisService.del(...userTrackingSets);
-      }
+      // if (userTrackingSets.length > 0) {
+      //   await this.redisService.del(...userTrackingSets);
+      // }
       
-      this.logger.log(`Cleared ${allTrackedKeys.length} RBAC cache keys and ${userTrackingSets.length} tracking sets`);
+      // this.logger.log(`Cleared ${allTrackedKeys.length} RBAC cache keys and ${userTrackingSets.length} tracking sets`);
     } catch (error) {
       this.logger.error('Error clearing RBAC cache:', error);
       
       // Final fallback: clear specific patterns with SCAN (no KEYS)
       try {
-        const patterns = ['rbac:*', 'admin:*', 'rbac_keys:*']; // Changed from superadmin to admin
-        for (const pattern of patterns) {
-          let cursor = '0';
-          do {
-            const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
-            cursor = result[0];
-            if (result[1].length > 0) {
-              await this.redisService.del(...result[1]);
-            }
-          } while (cursor !== '0');
-        }
+        // const patterns = ['rbac:*', 'admin:*', 'rbac_keys:*']; // Changed from superadmin to admin
+        // for (const pattern of patterns) {
+        //   let cursor = '0';
+        //   do {
+        //     const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+        //     cursor = result[0];
+        //     if (result[1].length > 0) {
+        //       await this.redisService.del(...result[1]);
+        //     }
+        //   } while (cursor !== '0');
+        // }
         this.logger.log('Fallback RBAC cache clear completed using SCAN');
       } catch (fallbackError) {
         this.logger.error('Even fallback RBAC cache clear failed:', fallbackError);
@@ -397,29 +397,29 @@ export class RbacService {
       // 🚀 CACHING DISABLED: No memory cache to clear
       
       // Clear Redis cache using pattern matching
-      const patterns = ['rbac:*', 'admin:*']; // Changed from superadmin to admin
+      // const patterns = ['rbac:*', 'admin:*']; // Changed from superadmin to admin
       
-      for (const pattern of patterns) {
-        let cursor = '0';
-        const keysToDelete: string[] = [];
+      // for (const pattern of patterns) {
+      //   let cursor = '0';
+      //   const keysToDelete: string[] = [];
         
-        do {
-          const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
-          cursor = result[0];
-          keysToDelete.push(...result[1]);
-        } while (cursor !== '0');
+      //   do {
+      //     const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+      //     cursor = result[0];
+      //     keysToDelete.push(...result[1]);
+      //   } while (cursor !== '0');
         
-        if (keysToDelete.length > 0) {
-          // Delete keys in batches to avoid memory issues
-          const batchSize = 100;
-          for (let i = 0; i < keysToDelete.length; i += batchSize) {
-            const batch = keysToDelete.slice(i, i + batchSize);
-            await this.redisService.del(...batch);
-          }
-        }
-      }
+      //   if (keysToDelete.length > 0) {
+      //     // Delete keys in batches to avoid memory issues
+      //     const batchSize = 100;
+      //     for (let i = 0; i < keysToDelete.length; i += batchSize) {
+      //       const batch = keysToDelete.slice(i, i + batchSize);
+      //       await this.redisService.del(...batch);
+      //     }
+      //   }
+      // }
       
-      this.logger.log('All RBAC caches cleared successfully');
+      // this.logger.log('All RBAC caches cleared successfully');
     } catch (error) {
       this.logger.error('Error clearing all RBAC caches:', error);
     }
@@ -728,22 +728,22 @@ export class RbacService {
       // 🚀 CACHING DISABLED: No memory cache to clear
 
       // Clear Redis cache with simple pattern scan (no complex tracking sets)
-      const patterns = [`rbac:${userId}:*`, `admin:${userId}`]; // Changed from superadmin to admin
+      // const patterns = [`rbac:${userId}:*`, `admin:${userId}`]; // Changed from superadmin to admin
       
-      for (const pattern of patterns) {
-        let cursor = '0';
-        const keysToDeleteFromRedis: string[] = [];
+      // for (const pattern of patterns) {
+      //   let cursor = '0';
+      //   const keysToDeleteFromRedis: string[] = [];
         
-        do {
-          const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 50);
-          cursor = result[0];
-          keysToDeleteFromRedis.push(...result[1]);
-        } while (cursor !== '0');
+      //   do {
+      //     const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 50);
+      //     cursor = result[0];
+      //     keysToDeleteFromRedis.push(...result[1]);
+      //   } while (cursor !== '0');
         
-        if (keysToDeleteFromRedis.length > 0) {
-          await this.redisService.del(...keysToDeleteFromRedis);
-        }
-      }
+      //   if (keysToDeleteFromRedis.length > 0) {
+      //     await this.redisService.del(...keysToDeleteFromRedis);
+      //   }
+      // }
       
     } catch (error) {
       console.warn('[RBAC] Error invalidating user cache:', error.message);

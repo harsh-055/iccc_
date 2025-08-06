@@ -52,20 +52,20 @@ class EnvironmentVariables {
   @IsString()
   LENS_VERIFY_WHATSAPP_URL: string;
 
-  // Redis Configuration
-  @IsString()
-  REDIS_HOST: string;
+  // Redis Configuration (COMMENTED OUT)
+  // @IsString()
+  // REDIS_HOST: string;
 
-  @IsNumber()
-  @Min(0)
-  @Max(65535)
-  REDIS_PORT: number;
+  // @IsNumber()
+  // @Min(0)
+  // @Max(65535)
+  // REDIS_PORT: number;
 
-  @IsString()
-  REDIS_PASSWORD?: string;
+  // @IsString()
+  // REDIS_PASSWORD?: string;
 
-  @IsString()
-  REDIS_URL?: string;
+  // @IsString()
+  // REDIS_URL?: string;
 
 }
 
