@@ -10,6 +10,7 @@
     "build": "NODE_OPTIONS=\"--max-old-space-size=2048\" nest build && ls -la dist/",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "migrate": "tsx database/migrate.ts",
+    
     "realtime:enable": "tsx scripts/manage-realtime.ts enable",
     "realtime:disable": "tsx scripts/manage-realtime.ts disable",
     "realtime:list": "tsx scripts/manage-realtime.ts list",
