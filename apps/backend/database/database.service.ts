@@ -26,10 +26,19 @@ export class DatabaseService implements OnModuleDestroy {
   constructor() {
     this.pool = new Pool({
       connectionString: process.env.DATABASE_URL,
+      connectionTimeoutMillis: 10000, // 10 second timeout
+      idleTimeoutMillis: 30000, // 30 second idle timeout
+      max: 20, // maximum number of clients in the pool
     });
     
     this.realtimeEmitter = new EventEmitter();
-    this.initializeRealtime();
+    
+    // Initialize realtime with error handling and timeout
+    setTimeout(() => {
+      this.initializeRealtime().catch(error => {
+        console.error('Failed to initialize realtime during construction:', error);
+      });
+    }, 1000); // Delay realtime initialization to prevent blocking startup
     
     // Clean up old processed notifications every minute
     setInterval(() => {
@@ -52,34 +61,53 @@ export class DatabaseService implements OnModuleDestroy {
 
   private async initializeRealtime() {
     console.log('🔄 Initializing realtime in DatabaseService...');
-    this.subscriber = createSubscriber({
-      connectionString: process.env.DATABASE_URL,
-    });
-
-    this.subscriber.notifications.on('data_change', (payload: any) => {
-      try {
-        // Check for duplicate notifications
-        if (this.isDuplicateNotification(payload)) {
-          console.log('⚠️  Skipping duplicate notification');
-          return;
-        }
-
-        console.log('📡 DatabaseService received notification:', JSON.stringify(payload, null, 2));
-        
-        this.realtimeEmitter.emit('change', payload);
-        this.realtimeEmitter.emit(`change:${payload.table}`, payload);
-        console.log('✅ Emitted to internal event emitter');
-      } catch (error) {
-        console.error('Error parsing realtime payload:', error);
-      }
-    });
-
-    this.subscriber.events.on('error', (error: Error) => {
-      console.error('Realtime connection error:', error);
-    });
-
+    
+    // Skip realtime in production if not needed
+    if (process.env.NODE_ENV === 'production' && process.env.DISABLE_REALTIME === 'true') {
+      console.log('⚠️  Realtime disabled in production');
+      return;
+    }
+    
     try {
+      // Test database connection first
+      await this.query('SELECT 1');
+      console.log('✅ Database connection verified for realtime');
+      
+      this.subscriber = createSubscriber({
+        connectionString: process.env.DATABASE_URL,
+      });
+
+      this.subscriber.notifications.on('data_change', (payload: any) => {
+        try {
+          // Check for duplicate notifications
+          if (this.isDuplicateNotification(payload)) {
+            console.log('⚠️  Skipping duplicate notification');
+            return;
+          }
+
+          console.log('📡 DatabaseService received notification:', JSON.stringify(payload, null, 2));
+          
+          this.realtimeEmitter.emit('change', payload);
+          this.realtimeEmitter.emit(`change:${payload.table}`, payload);
+          console.log('✅ Emitted to internal event emitter');
+        } catch (error) {
+          console.error('Error parsing realtime payload:', error);
+        }
+      });
+
+      this.subscriber.events.on('error', (error: Error) => {
+        console.error('Realtime connection error:', error);
+      });
+
+      // Add timeout for connection
+      const connectionTimeout = setTimeout(() => {
+        console.error('❌ Realtime connection timeout after 10 seconds');
+        throw new Error('Realtime connection timeout');
+      }, 10000);
+
       await this.subscriber.connect();
+      clearTimeout(connectionTimeout);
+      
       await this.subscriber.listenTo('data_change');
       console.log('✅ Realtime service connected');
       
@@ -98,6 +126,7 @@ export class DatabaseService implements OnModuleDestroy {
       console.log(`📊 Active database connections: ${connectionInfo.rows.length}`);
     } catch (error) {
       console.error('Failed to initialize realtime:', error);
+      console.log('⚠️  Continuing without realtime functionality');
     }
   }
 
@@ -127,7 +156,22 @@ export class DatabaseService implements OnModuleDestroy {
   }
 
   async query<T = any>(text: string, params?: DatabaseParam[]): Promise<QueryResult<T>> {
-    return this.pool.query<T>(text, params);
+    try {
+      return await this.pool.query<T>(text, params);
+    } catch (error) {
+      console.error('Database query error:', error);
+      throw error;
+    }
+  }
+
+  async healthCheck(): Promise<boolean> {
+    try {
+      await this.query('SELECT 1');
+      return true;
+    } catch (error) {
+      console.error('Database health check failed:', error);
+      return false;
+    }
   }
 
   // Realtime management methods
