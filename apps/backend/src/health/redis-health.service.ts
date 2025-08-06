@@ -104,4 +104,60 @@ export class RedisHealthService {
       };
     }
   }
+
+  async checkHealthWithHardcodedUrl(): Promise<RedisHealthStatus> {
+    // Hardcoded Redis URL
+    const redisUrl = 'redis://default:UmzmimncikNYfqRbLWInlwSEhVemVHbY@switchback.proxy.rlwy.net:39668';
+    
+    // Create a new Redis instance with the hardcoded URL
+    const testRedis = new Redis(redisUrl);
+    
+    try {
+      // Test Redis connection
+      const pingResult = await testRedis.ping();
+      
+      // Get Redis info
+      const info = await testRedis.info();
+      
+      // Get memory usage
+      const memory = await testRedis.info('memory');
+      
+      // Close the test connection
+      await testRedis.quit();
+      
+      return {
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        redis: {
+          ping: pingResult,
+          connected: testRedis.status === 'ready',
+          status: testRedis.status,
+          memory: memory.split('\r\n').find(line => line.startsWith('used_memory:'))?.split(':')[1] || 'unknown',
+          host: 'redis.railway.internal',
+          port: 6379,
+        },
+        message: 'Redis is healthy and responding (hardcoded URL)'
+      };
+    } catch (error) {
+      // Close the test connection even if there's an error
+      try {
+        await testRedis.quit();
+      } catch (quitError) {
+        // Ignore quit errors
+      }
+      
+      return {
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        redis: {
+          connected: false,
+          status: testRedis.status,
+          error: error.message,
+          host: 'redis.railway.internal',
+          port: 6379,
+        },
+        message: 'Redis connection failed (hardcoded URL)'
+      };
+    }
+  }
 } 

@@ -47,7 +47,7 @@ import {WebsocketModule} from './websocket/websocket.module';
     // Load Environment Variables and Validate
     ConfigModule.forRoot({  
       isGlobal: true,
-      envFilePath:process.env.NODE_ENV === 'production' ? '.dev.env' : '.env',
+      envFilePath:process.env.NODE_ENV === 'production' ? '.env' : 'dev.env',
       validate,
     }),
 
