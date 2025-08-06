@@ -19,6 +19,8 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "NODE_OPTIONS=\"--max-old-space-size=2048\" node dist/src/main.js || echo 'Build failed, attempting to rebuild...' && pnpm build && node dist/src/main.js",
+    "start:prod:with-migrate": "pnpm migrate && NODE_OPTIONS=\"--max-old-space-size=2048\" node dist/src/main.js || echo 'Build failed, attempting to rebuild...' && pnpm build && pnpm migrate && node dist/src/main.js",
+    "start:with-migrations": "bash scripts/start-with-migrations.sh",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",

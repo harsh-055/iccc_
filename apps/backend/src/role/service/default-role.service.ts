@@ -18,7 +18,7 @@ export class DefaultRolesService implements OnModuleInit {
       this.ensureDefaultTenantWithRetry()
         .then(() => this.logger.log('✅ Default tenant check completed'))
         .catch(err => this.logger.error('❌ Error checking default tenant:', err));
-    }, 2000); // Increased delay for deployment
+    }, 5000); // Increased delay for deployment to allow migrations to complete
   }
 
   private async ensureDefaultTenantWithRetry(maxRetries = 3, delay = 2000) {
@@ -29,6 +29,20 @@ export class DefaultRolesService implements OnModuleInit {
         // First, test database connection
         await this.database.query('SELECT 1');
         this.logger.log('Database connection verified');
+        
+        // Check if migrations table exists (indicates migrations have run)
+        const migrationsTableExists = await this.database.query(`
+          SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' 
+            AND table_name = 'migrations'
+          );
+        `);
+        
+        if (!migrationsTableExists.rows[0].exists) {
+          this.logger.warn('⚠️  Migrations table not found, waiting for migrations to complete...');
+          await new Promise(resolve => setTimeout(resolve, 3000)); // Wait 3 more seconds
+        }
         
         const result = await this.database.query(
           `SELECT * FROM tenants WHERE name = 'Default' LIMIT 1`
