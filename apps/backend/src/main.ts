@@ -69,7 +69,18 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
+  
+  // Configure servers based on environment
+  const isProduction = process.env.NODE_ENV === 'production';
+  const railwayUrl = process.env.RAILWAY_STATIC_URL || process.env.RAILWAY_PUBLIC_DOMAIN;
+  
   document.servers = [
+    // Production server (Railway)
+    ...(isProduction && railwayUrl ? [{
+      url: `https://${railwayUrl}/api/v1`,
+      description: 'Production Server (Railway)',
+    }] : []),
+    // Development server
     {
       url: `http://localhost:{port}/api/v1`,
       description: 'Local Development Server',
