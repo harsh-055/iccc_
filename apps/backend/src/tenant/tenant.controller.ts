@@ -1,5 +1,20 @@
-import { Controller, Get, Post, Body, UseGuards, Request, HttpStatus, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+  HttpStatus,
+  Param,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger';
 import { TenantService } from './tenant.service';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { Public } from '../permissions/decorators/public.decorators';
@@ -10,22 +25,22 @@ import { RequirePermissions } from '../permissions/decorators/require-permission
 class TenantResponseDto {
   @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
   id: string;
-  
+
   @ApiProperty({ example: 'ACME Corporation' })
   name: string;
-  
-  @ApiProperty({ 
+
+  @ApiProperty({
     example: 'Global company specializing in widgets',
-    required: false 
+    required: false,
   })
   description?: string;
-  
+
   @ApiProperty({ example: true })
   isActive: boolean;
-  
+
   @ApiProperty({ example: '2023-01-01T00:00:00Z' })
   createdAt: string;
-  
+
   @ApiProperty({ example: '2023-01-01T00:00:00Z' })
   updatedAt: string;
 }
@@ -38,22 +53,23 @@ export class TenantController {
 
   @Post()
   @Public()
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Create a new tenant/organization',
-    description: 'Creates a new tenant/organization in the system. This endpoint is public and can be used by anyone to create a new organization.'
+    description:
+      'Creates a new tenant/organization in the system. This endpoint is public and can be used by anyone to create a new organization.',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'The tenant has been successfully created.',
-    type: TenantResponseDto
+    type: TenantResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid input data.'
+    description: 'Invalid input data.',
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: 'A tenant with this name already exists.'
+    description: 'A tenant with this name already exists.',
   })
   create(@Body() createTenantDto: CreateTenantDto, @Request() req) {
     const adminId = req.user?.id || null;
@@ -64,22 +80,23 @@ export class TenantController {
   @UseGuards(TenantGuard)
   @RequirePermissions('READ_TENANT')
   @ApiBearerAuth('Bearer')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get all tenants',
-    description: 'Retrieves a paginated list of all tenants. Requires authentication.'
+    description:
+      'Retrieves a paginated list of all tenants. Requires authentication.',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'List of all tenants.',
-    type: [TenantResponseDto]
+    type: [TenantResponseDto],
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: 'Unauthorized - Invalid or missing authentication token.'
+    description: 'Unauthorized - Invalid or missing authentication token.',
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions.'
+    description: 'Insufficient permissions.',
   })
   findAll(@Request() req) {
     const adminId = req.user.id;
@@ -90,9 +107,10 @@ export class TenantController {
   @UseGuards(TenantGuard)
   @RequirePermissions('READ_TENANT')
   @ApiBearerAuth('Bearer')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get all tenants with associated users',
-    description: 'Retrieves a simplified list of all tenants with their associated user information. Returns tenant ID, name, and associated users.'
+    description:
+      'Retrieves a simplified list of all tenants with their associated user information. Returns tenant ID, name, and associated users.',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -102,15 +120,15 @@ export class TenantController {
       items: {
         type: 'object',
         properties: {
-          tenantId: { 
-            type: 'string', 
+          tenantId: {
+            type: 'string',
             example: '550e8400-e29b-41d4-a716-446655440000',
-            description: 'Tenant ID' 
+            description: 'Tenant ID',
           },
-          tenantName: { 
-            type: 'string', 
+          tenantName: {
+            type: 'string',
             example: 'ACME Corporation',
-            description: 'Tenant name' 
+            description: 'Tenant name',
           },
           users: {
             type: 'array',
@@ -118,35 +136,35 @@ export class TenantController {
             items: {
               type: 'object',
               properties: {
-                id: { 
-                  type: 'string', 
+                id: {
+                  type: 'string',
                   example: '660e8400-e29b-41d4-a716-446655440001',
-                  description: 'User ID' 
+                  description: 'User ID',
                 },
-                name: { 
-                  type: 'string', 
+                name: {
+                  type: 'string',
                   example: 'John Doe',
-                  description: 'User name' 
+                  description: 'User name',
                 },
-                email: { 
-                  type: 'string', 
+                email: {
+                  type: 'string',
                   example: 'john.doe@acme.com',
-                  description: 'User email' 
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                  description: 'User email',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: 'Unauthorized - Invalid or missing authentication token.'
+    description: 'Unauthorized - Invalid or missing authentication token.',
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions - READ_TENANT permission required.'
+    description: 'Insufficient permissions - READ_TENANT permission required.',
   })
   getAllTenantsWithUsers(@Request() req) {
     const adminId = req.user.id;
@@ -157,9 +175,10 @@ export class TenantController {
   @UseGuards(TenantGuard)
   @RequirePermissions('READ_TENANT')
   @ApiBearerAuth('Bearer')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get tenant details with associated users',
-    description: 'Retrieves detailed information about a specific tenant including name, ID, and all associated user IDs. Requires authentication and READ_TENANT permission.'
+    description:
+      'Retrieves detailed information about a specific tenant including name, ID, and all associated user IDs. Requires authentication and READ_TENANT permission.',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -167,35 +186,35 @@ export class TenantController {
     schema: {
       type: 'object',
       properties: {
-        id: { 
-          type: 'string', 
+        id: {
+          type: 'string',
           example: '550e8400-e29b-41d4-a716-446655440000',
-          description: 'Unique tenant identifier' 
+          description: 'Unique tenant identifier',
         },
-        name: { 
-          type: 'string', 
+        name: {
+          type: 'string',
           example: 'ACME Corporation',
-          description: 'Tenant/organization name' 
+          description: 'Tenant/organization name',
         },
-        description: { 
-          type: 'string', 
+        description: {
+          type: 'string',
           example: 'Global company specializing in widgets',
-          description: 'Tenant description'
+          description: 'Tenant description',
         },
-        isActive: { 
-          type: 'boolean', 
+        isActive: {
+          type: 'boolean',
           example: true,
-          description: 'Whether the tenant is active' 
+          description: 'Whether the tenant is active',
         },
-        createdAt: { 
-          type: 'string', 
+        createdAt: {
+          type: 'string',
           example: '2023-01-01T00:00:00Z',
-          description: 'Tenant creation timestamp' 
+          description: 'Tenant creation timestamp',
         },
-        updatedAt: { 
-          type: 'string', 
+        updatedAt: {
+          type: 'string',
           example: '2023-01-01T00:00:00Z',
-          description: 'Last update timestamp' 
+          description: 'Last update timestamp',
         },
         users: {
           type: 'array',
@@ -203,31 +222,31 @@ export class TenantController {
           items: {
             type: 'object',
             properties: {
-              id: { 
-                type: 'string', 
+              id: {
+                type: 'string',
                 example: '660e8400-e29b-41d4-a716-446655440001',
-                description: 'User ID' 
+                description: 'User ID',
               },
-              name: { 
-                type: 'string', 
+              name: {
+                type: 'string',
                 example: 'John Doe',
-                description: 'User full name' 
+                description: 'User full name',
               },
-              email: { 
-                type: 'string', 
+              email: {
+                type: 'string',
                 example: 'john.doe@acme.com',
-                description: 'User email address' 
-              }
-            }
-          }
+                description: 'User email address',
+              },
+            },
+          },
         },
         userCount: {
           type: 'number',
           example: 15,
-          description: 'Total number of users in this tenant'
-        }
-      }
-    }
+          description: 'Total number of users in this tenant',
+        },
+      },
+    },
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
@@ -236,18 +255,22 @@ export class TenantController {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 404 },
-        message: { type: 'string', example: 'Tenant with ID 550e8400-e29b-41d4-a716-446655440000 not found' },
-        error: { type: 'string', example: 'Not Found' }
-      }
-    }
+        message: {
+          type: 'string',
+          example:
+            'Tenant with ID 550e8400-e29b-41d4-a716-446655440000 not found',
+        },
+        error: { type: 'string', example: 'Not Found' },
+      },
+    },
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: 'Unauthorized - Invalid or missing authentication token.'
+    description: 'Unauthorized - Invalid or missing authentication token.',
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions - READ_TENANT permission required.'
+    description: 'Insufficient permissions - READ_TENANT permission required.',
   })
   getTenantDetails(@Request() req, @Param('id') tenantId: string) {
     const adminId = req.user.id;
@@ -256,7 +279,7 @@ export class TenantController {
 
   @Post('with-admin')
   @Public()
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Create a new tenant with admin (Recommended)',
     description: `
     🏢 **Complete Multi-Tenant Setup in One Call**
@@ -269,7 +292,7 @@ export class TenantController {
     • Automatic permission assignments
     
     ✅ **Perfect for onboarding new businesses/organizations**
-    `
+    `,
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -281,44 +304,101 @@ export class TenantController {
           type: 'object',
           description: 'Created tenant information',
           properties: {
-            id: { type: 'string', example: '123e4567-e89b-12d3-a456-426614174000', description: 'Unique tenant ID' },
-            name: { type: 'string', example: 'ACME Corporation', description: 'Tenant name' },
-            description: { type: 'string', example: 'Global widgets and gadgets company', description: 'Tenant description' },
-            isActive: { type: 'boolean', example: true, description: 'Whether tenant is active' },
-            createdAt: { type: 'string', example: '2024-01-15T10:30:00Z', description: 'Creation timestamp' },
-            updatedAt: { type: 'string', example: '2024-01-15T10:30:00Z', description: 'Last update timestamp' }
-          }
+            id: {
+              type: 'string',
+              example: '123e4567-e89b-12d3-a456-426614174000',
+              description: 'Unique tenant ID',
+            },
+            name: {
+              type: 'string',
+              example: 'ACME Corporation',
+              description: 'Tenant name',
+            },
+            description: {
+              type: 'string',
+              example: 'Global widgets and gadgets company',
+              description: 'Tenant description',
+            },
+            isActive: {
+              type: 'boolean',
+              example: true,
+              description: 'Whether tenant is active',
+            },
+            createdAt: {
+              type: 'string',
+              example: '2024-01-15T10:30:00Z',
+              description: 'Creation timestamp',
+            },
+            updatedAt: {
+              type: 'string',
+              example: '2024-01-15T10:30:00Z',
+              description: 'Last update timestamp',
+            },
+          },
         },
         admin: {
-          type: 'object', 
+          type: 'object',
           description: 'Created admin user information',
           properties: {
-            id: { type: 'string', example: '456e7890-e89b-12d3-a456-426614174111', description: 'Admin user ID' },
-            name: { type: 'string', example: 'John Smith', description: 'Admin full name' },
-            email: { type: 'string', example: 'admin@acme.com', description: 'Admin email (login)' },
-            tenantId: { type: 'string', example: '123e4567-e89b-12d3-a456-426614174000', description: 'Associated tenant ID' }
-          }
+            id: {
+              type: 'string',
+              example: '456e7890-e89b-12d3-a456-426614174111',
+              description: 'Admin user ID',
+            },
+            name: {
+              type: 'string',
+              example: 'John Smith',
+              description: 'Admin full name',
+            },
+            email: {
+              type: 'string',
+              example: 'admin@acme.com',
+              description: 'Admin email (login)',
+            },
+            tenantId: {
+              type: 'string',
+              example: '123e4567-e89b-12d3-a456-426614174000',
+              description: 'Associated tenant ID',
+            },
+          },
         },
         setup: {
           type: 'object',
           description: 'Setup completion details',
           properties: {
-            permissionsCreated: { type: 'number', example: 50, description: 'Number of tenant permissions created' },
-            role: { 
+            permissionsCreated: {
+              type: 'number',
+              example: 50,
+              description: 'Number of tenant permissions created',
+            },
+            role: {
               type: 'object',
               description: 'Admin role details',
               properties: {
-                id: { type: 'string', example: '789e0123-e89b-12d3-a456-426614174222' },
+                id: {
+                  type: 'string',
+                  example: '789e0123-e89b-12d3-a456-426614174222',
+                },
                 name: { type: 'string', example: 'Admin' },
-                description: { type: 'string', example: 'Administrator for ACME Corporation' },
-                tenantId: { type: 'string', example: '123e4567-e89b-12d3-a456-426614174000' }
-              }
+                description: {
+                  type: 'string',
+                  example: 'Administrator for ACME Corporation',
+                },
+                tenantId: {
+                  type: 'string',
+                  example: '123e4567-e89b-12d3-a456-426614174000',
+                },
+              },
             },
-            message: { type: 'string', example: 'Tenant created successfully with admin and full permission setup' }
-          }
-        }
-      }
-    }
+            message: {
+              type: 'string',
+              example:
+                'Tenant created successfully with admin and full permission setup',
+            },
+          },
+        },
+      },
+    },
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -327,10 +407,14 @@ export class TenantController {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 400 },
-        message: { type: 'array', items: { type: 'string' }, example: ['Tenant name is required', 'Email must be valid'] },
-        error: { type: 'string', example: 'Bad Request' }
-      }
-    }
+        message: {
+          type: 'array',
+          items: { type: 'string' },
+          example: ['Tenant name is required', 'Email must be valid'],
+        },
+        error: { type: 'string', example: 'Bad Request' },
+      },
+    },
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
@@ -339,10 +423,13 @@ export class TenantController {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 409 },
-        message: { type: 'string', example: 'A tenant with this name already exists' },
-        error: { type: 'string', example: 'Conflict' }
-      }
-    }
+        message: {
+          type: 'string',
+          example: 'A tenant with this name already exists',
+        },
+        error: { type: 'string', example: 'Conflict' },
+      },
+    },
   })
   @ApiBody({
     description: '🏢 Complete tenant and admin setup data',
@@ -353,56 +440,57 @@ export class TenantController {
           type: 'object',
           description: 'Organization/Tenant information',
           properties: {
-            name: { 
-              type: 'string', 
+            name: {
+              type: 'string',
               description: 'Unique organization name',
               example: 'ACME Corporation',
               minLength: 2,
-              maxLength: 100
+              maxLength: 100,
             },
-            description: { 
-              type: 'string', 
+            description: {
+              type: 'string',
               description: 'Organization description (optional)',
               example: 'Global widgets and gadgets company founded in 1949',
-              maxLength: 500
-            }
+              maxLength: 500,
+            },
           },
-          required: ['name']
+          required: ['name'],
         },
         adminData: {
           type: 'object',
           description: 'Admin user information',
           properties: {
-            name: { 
-              type: 'string', 
+            name: {
+              type: 'string',
               description: 'Admin full name',
               example: 'John Smith',
               minLength: 2,
-              maxLength: 100
+              maxLength: 100,
             },
-            email: { 
-              type: 'string', 
+            email: {
+              type: 'string',
               description: 'Admin email (must be unique globally)',
               example: 'admin@acme.com',
-              format: 'email'
+              format: 'email',
             },
-            password: { 
-              type: 'string', 
-              description: 'Strong password (min 8 chars, include uppercase, lowercase, number)',
+            password: {
+              type: 'string',
+              description:
+                'Strong password (min 8 chars, include uppercase, lowercase, number)',
               example: 'SecurePassword123!',
-              minLength: 8
+              minLength: 8,
             },
-            phoneNumber: { 
-              type: 'string', 
+            phoneNumber: {
+              type: 'string',
               description: 'Phone number with country code (optional)',
               example: '+1-555-0123',
-              pattern: '^\\+[1-9]\\d{1,14}$'
-            }
+              pattern: '^\\+[1-9]\\d{1,14}$',
+            },
           },
-          required: ['name', 'email', 'password']
-        }
+          required: ['name', 'email', 'password'],
+        },
       },
-      required: ['tenantData', 'adminData']
+      required: ['tenantData', 'adminData'],
     },
     examples: {
       acmeCorp: {
@@ -411,15 +499,16 @@ export class TenantController {
         value: {
           tenantData: {
             name: 'ACME Corporation',
-            description: 'Leading manufacturer of widgets and industrial gadgets since 1949'
+            description:
+              'Leading manufacturer of widgets and industrial gadgets since 1949',
           },
           adminData: {
             name: 'John Smith',
             email: 'john.smith@acme.com',
             password: 'SecurePassword123!',
-            phoneNumber: '+1-555-0123'
-          }
-        }
+            phoneNumber: '+1-555-0123',
+          },
+        },
       },
       techStartup: {
         summary: '🚀 Tech Startup Setup',
@@ -427,15 +516,15 @@ export class TenantController {
         value: {
           tenantData: {
             name: 'InnovateTech Solutions',
-            description: 'AI-powered software solutions for modern businesses'
+            description: 'AI-powered software solutions for modern businesses',
           },
           adminData: {
             name: 'Sarah Johnson',
             email: 'sarah@innovatetech.com',
             password: 'Innovation2024!',
-            phoneNumber: '+1-555-0456'
-          }
-        }
+            phoneNumber: '+1-555-0456',
+          },
+        },
       },
       retailChain: {
         summary: '🛍️ Retail Chain Setup',
@@ -443,20 +532,25 @@ export class TenantController {
         value: {
           tenantData: {
             name: 'SuperMart Retail Chain',
-            description: 'Multi-location retail chain with 50+ stores nationwide'
+            description:
+              'Multi-location retail chain with 50+ stores nationwide',
           },
           adminData: {
             name: 'Mike Davis',
             email: 'mike.davis@supermart.com',
             password: 'Retail2024Secure!',
-            phoneNumber: '+1-555-0789'
-          }
-        }
-      }
-    }
+            phoneNumber: '+1-555-0789',
+          },
+        },
+      },
+    },
   })
   async createTenantWithAdmin(@Body() data: any, @Request() req) {
     const adminId = req.user?.id || null;
-    return this.tenantService.createTenantWithAdmin(adminId, data.tenantData, data.adminData);
+    return this.tenantService.createTenantWithAdmin(
+      adminId,
+      data.tenantData,
+      data.adminData,
+    );
   }
 }

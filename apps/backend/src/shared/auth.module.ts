@@ -7,17 +7,13 @@ import { MfaService } from '../localauth/utils/mfa.service';
 import { SessionService } from '../localauth/services/session.service';
 
 @Module({
-  imports: [
-    ConfigModule,
-    
-  ],
+  imports: [ConfigModule],
   providers: [
     AuthHelper,
     JWTService,
-    MfaService,  // 🔑 Core shared service for AuthHelper
+    MfaService, // 🔑 Core shared service for AuthHelper
     SessionService, // 🔑 Database session service for AuthHelper
-    
   ],
-  exports: [AuthHelper, JWTService, MfaService, SessionService]
+  exports: [AuthHelper, JWTService, MfaService, SessionService],
 })
 export class SharedAuthModule {}

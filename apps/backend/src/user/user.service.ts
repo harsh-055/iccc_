@@ -1,5 +1,17 @@
-import { BadRequestException, Injectable, NotFoundException, ForbiddenException, Inject, forwardRef } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto, PaginatedResponseDto, SuspendUserDto } from './dto/index';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  PaginatedResponseDto,
+  SuspendUserDto,
+} from './dto/index';
 import { LoggerService } from '../logger/logger.service';
 import * as bcrypt from 'bcryptjs';
 import { DatabaseService } from '../../database/database.service';
@@ -7,8 +19,6 @@ import { RbacService } from '../rbac/rbac.service';
 import { LensMailService } from '../utils/mail/utils.lensMail.service';
 
 // Add this type declaration after the imports
-
-
 
 type UserWithSuspension = {
   isSuspended: boolean;
@@ -21,12 +31,12 @@ export class UserService {
     private logger: LoggerService,
     @Inject(forwardRef(() => RbacService))
     private rbacService: RbacService,
-    private mailService: LensMailService
+    private mailService: LensMailService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
     const client = await this.db.getClient();
-    
+
     try {
       await client.query('BEGIN');
 
@@ -34,43 +44,68 @@ export class UserService {
       const hashedPassword = await this.hashPassword(createUserDto.password);
 
       // Validate mutually exclusive role fields
-      const hasSystemRole = !!(createUserDto.userRole || createUserDto.userRoleId);
-      const hasCustomRole = !!(createUserDto.roleName || createUserDto.roleNameId || createUserDto.roleNames || createUserDto.roleNameIds);
-      
+      const hasSystemRole = !!(
+        createUserDto.userRole || createUserDto.userRoleId
+      );
+      const hasCustomRole = !!(
+        createUserDto.roleName ||
+        createUserDto.roleNameId ||
+        createUserDto.roleNames ||
+        createUserDto.roleNameIds
+      );
+
       if (hasSystemRole && hasCustomRole) {
-        throw new BadRequestException('Cannot specify both system role (userRole/userRoleId) and custom roles (roleName/roleNameId/roleNames/roleNameIds). Choose one approach.');
+        throw new BadRequestException(
+          'Cannot specify both system role (userRole/userRoleId) and custom roles (roleName/roleNameId/roleNames/roleNameIds). Choose one approach.',
+        );
       }
 
       // For multi-tenant architecture, require either system role or custom role assignment
       if (!hasSystemRole && !hasCustomRole) {
-        throw new BadRequestException('Must specify either a system role (userRole/userRoleId) or custom roles (roleName/roleNameId/roleNames/roleNameIds) for proper multi-tenant user management.');
+        throw new BadRequestException(
+          'Must specify either a system role (userRole/userRoleId) or custom roles (roleName/roleNameId/roleNames/roleNameIds) for proper multi-tenant user management.',
+        );
       }
-      
+
       // Validate that tenant is provided (required for multi-tenant)
       if (!createUserDto.tenantName && !createUserDto.tenantId) {
-        throw new BadRequestException('Tenant assignment is required for multi-tenant user management. Please specify either tenantName or tenantId.');
+        throw new BadRequestException(
+          'Tenant assignment is required for multi-tenant user management. Please specify either tenantName or tenantId.',
+        );
       }
 
       // Validate mutually exclusive approaches for each field
       if (createUserDto.userRole && createUserDto.userRoleId) {
-        throw new BadRequestException('Cannot specify both userRole and userRoleId. Choose one approach.');
+        throw new BadRequestException(
+          'Cannot specify both userRole and userRoleId. Choose one approach.',
+        );
       }
       if (createUserDto.roleName && createUserDto.roleNameId) {
-        throw new BadRequestException('Cannot specify both roleName and roleNameId. Choose one approach.');
+        throw new BadRequestException(
+          'Cannot specify both roleName and roleNameId. Choose one approach.',
+        );
       }
       if (createUserDto.roleNames && createUserDto.roleNameIds) {
-        throw new BadRequestException('Cannot specify both roleNames and roleNameIds. Choose one approach.');
+        throw new BadRequestException(
+          'Cannot specify both roleNames and roleNameIds. Choose one approach.',
+        );
       }
       if (createUserDto.parent && createUserDto.parentId) {
-        throw new BadRequestException('Cannot specify both parent (legacy) and parentId. Use parentId (primary method) only.');
+        throw new BadRequestException(
+          'Cannot specify both parent (legacy) and parentId. Use parentId (primary method) only.',
+        );
       }
-      
+
       // Warn about legacy parent name usage
       if (createUserDto.parent && !createUserDto.parentId) {
-        this.logger.warn(`Legacy parent name usage detected: ${createUserDto.parent}. Consider using parentId for better performance and reliability.`);
+        this.logger.warn(
+          `Legacy parent name usage detected: ${createUserDto.parent}. Consider using parentId for better performance and reliability.`,
+        );
       }
       if (createUserDto.tenantName && createUserDto.tenantId) {
-        throw new BadRequestException('Cannot specify both tenantName and tenantId. Choose one approach.');
+        throw new BadRequestException(
+          'Cannot specify both tenantName and tenantId. Choose one approach.',
+        );
       }
 
       // Validate and get tenant ID
@@ -81,12 +116,16 @@ export class UserService {
           FROM tenants 
           WHERE LOWER(name) = LOWER($1) AND is_active = true
         `;
-        const tenantResult = await client.query(tenantQuery, [createUserDto.tenantName]);
-        
+        const tenantResult = await client.query(tenantQuery, [
+          createUserDto.tenantName,
+        ]);
+
         if (tenantResult.rows.length === 0) {
-          throw new BadRequestException(`Tenant with name '${createUserDto.tenantName}' not found or inactive`);
+          throw new BadRequestException(
+            `Tenant with name '${createUserDto.tenantName}' not found or inactive`,
+          );
         }
-        
+
         tenantId = tenantResult.rows[0].id;
       } else if (createUserDto.tenantId) {
         const tenantQuery = `
@@ -94,23 +133,29 @@ export class UserService {
           FROM tenants 
           WHERE id = $1 AND is_active = true
         `;
-        const tenantResult = await client.query(tenantQuery, [createUserDto.tenantId]);
-        
+        const tenantResult = await client.query(tenantQuery, [
+          createUserDto.tenantId,
+        ]);
+
         if (tenantResult.rows.length === 0) {
-          throw new BadRequestException(`Tenant with ID '${createUserDto.tenantId}' not found or inactive`);
+          throw new BadRequestException(
+            `Tenant with ID '${createUserDto.tenantId}' not found or inactive`,
+          );
         }
-        
+
         tenantId = tenantResult.rows[0].id;
       }
-      
+
       // For multi-tenant architecture, require tenant assignment
       if (!tenantId) {
-        throw new BadRequestException('Tenant assignment is required for multi-tenant user management. Please specify either tenantName or tenantId.');
+        throw new BadRequestException(
+          'Tenant assignment is required for multi-tenant user management. Please specify either tenantName or tenantId.',
+        );
       }
 
       // Validate and get parent user ID - Prioritize Parent ID over Parent Name
       let parentId: string | null = null;
-      
+
       if (createUserDto.parentId) {
         // Primary method: Parent ID (recommended)
         const parentQuery = `
@@ -120,28 +165,38 @@ export class UserService {
           LEFT JOIN roles r ON ur.role_id = r.id
           WHERE u.id = $1 AND u.is_active = true
         `;
-        const parentResult = await client.query(parentQuery, [createUserDto.parentId]);
-        
+        const parentResult = await client.query(parentQuery, [
+          createUserDto.parentId,
+        ]);
+
         if (parentResult.rows.length === 0) {
-          throw new BadRequestException(`Parent user with ID '${createUserDto.parentId}' not found or inactive`);
+          throw new BadRequestException(
+            `Parent user with ID '${createUserDto.parentId}' not found or inactive`,
+          );
         }
-        
+
         // Check if parent has admin permissions
-        const hasAdminRole = parentResult.rows.some(row => 
-          row.role_name && row.role_name.toLowerCase().includes('admin')
+        const hasAdminRole = parentResult.rows.some(
+          (row) =>
+            row.role_name && row.role_name.toLowerCase().includes('admin'),
         );
-        
+
         if (!hasAdminRole) {
-          throw new ForbiddenException('Parent user must have administrative privileges to create new users');
+          throw new ForbiddenException(
+            'Parent user must have administrative privileges to create new users',
+          );
         }
-        
+
         parentId = parentResult.rows[0].id;
-        this.logger.log(`Parent assigned via ID: ${parentId} (${parentResult.rows[0].username})`);
-        
+        this.logger.log(
+          `Parent assigned via ID: ${parentId} (${parentResult.rows[0].username})`,
+        );
       } else if (createUserDto.parent) {
         // Legacy method: Parent Name (not recommended)
-        this.logger.log(`Looking for parent user with name: '${createUserDto.parent}'`);
-        
+        this.logger.log(
+          `Looking for parent user with name: '${createUserDto.parent}'`,
+        );
+
         const parentQuery = `
           SELECT u.id, CONCAT(u.first_name, ' ', u.last_name) as username, ur.role_id, r.name as role_name
           FROM users u
@@ -149,24 +204,33 @@ export class UserService {
           LEFT JOIN roles r ON ur.role_id = r.id
           WHERE LOWER(CONCAT(u.first_name, ' ', u.last_name)) = LOWER($1) AND u.is_active = true
         `;
-        const parentResult = await client.query(parentQuery, [createUserDto.parent]);
-        
+        const parentResult = await client.query(parentQuery, [
+          createUserDto.parent,
+        ]);
+
         if (parentResult.rows.length === 0) {
           // Make parent optional - don't fail if parent not found
-          this.logger.warn(`Parent user with name '${createUserDto.parent}' not found. Creating user without parent assignment.`);
+          this.logger.warn(
+            `Parent user with name '${createUserDto.parent}' not found. Creating user without parent assignment.`,
+          );
           parentId = null;
         } else {
           // Check if parent has admin permissions
-          const hasAdminRole = parentResult.rows.some(row => 
-            row.role_name && row.role_name.toLowerCase().includes('admin')
+          const hasAdminRole = parentResult.rows.some(
+            (row) =>
+              row.role_name && row.role_name.toLowerCase().includes('admin'),
           );
-          
+
           if (!hasAdminRole) {
-            this.logger.warn(`Parent user '${createUserDto.parent}' does not have admin privileges. Creating user without parent assignment.`);
+            this.logger.warn(
+              `Parent user '${createUserDto.parent}' does not have admin privileges. Creating user without parent assignment.`,
+            );
             parentId = null;
           } else {
             parentId = parentResult.rows[0].id;
-            this.logger.warn(`Parent assigned via legacy username method: ${createUserDto.parent} -> ${parentId}. Consider using parentId for better performance.`);
+            this.logger.warn(
+              `Parent assigned via legacy username method: ${createUserDto.parent} -> ${parentId}. Consider using parentId for better performance.`,
+            );
           }
         }
       }
@@ -178,11 +242,17 @@ export class UserService {
         FROM users 
         WHERE LOWER(email) = LOWER($1)
       `;
-      const existingUserResult = await client.query(existingUserQuery, [createUserDto.email]);
-      
-      const activeUser = existingUserResult.rows.find(user => user.is_active === true);
+      const existingUserResult = await client.query(existingUserQuery, [
+        createUserDto.email,
+      ]);
+
+      const activeUser = existingUserResult.rows.find(
+        (user) => user.is_active === true,
+      );
       if (activeUser) {
-        throw new BadRequestException(`A user with email '${createUserDto.email}' already exists`);
+        throw new BadRequestException(
+          `A user with email '${createUserDto.email}' already exists`,
+        );
       }
 
       // Create the user
@@ -207,7 +277,7 @@ export class UserService {
         false,
         tenantId || null,
         parentId,
-        null // system_role_id will be set after role assignment
+        null, // system_role_id will be set after role assignment
       ];
 
       const userResult = await client.query(insertUserQuery, userValues);
@@ -216,7 +286,7 @@ export class UserService {
       // Handle role assignment
       if (hasSystemRole) {
         let systemRoleId: string;
-        
+
         if (createUserDto.userRole) {
           // System role assignment by name
           const systemRoleQuery = `
@@ -224,12 +294,16 @@ export class UserService {
             FROM roles 
             WHERE LOWER(name) = LOWER($1) AND is_system = true AND is_active = true
           `;
-          const systemRoleResult = await client.query(systemRoleQuery, [createUserDto.userRole]);
-          
+          const systemRoleResult = await client.query(systemRoleQuery, [
+            createUserDto.userRole,
+          ]);
+
           if (systemRoleResult.rows.length === 0) {
-            throw new BadRequestException(`System role '${createUserDto.userRole}' not found or inactive`);
+            throw new BadRequestException(
+              `System role '${createUserDto.userRole}' not found or inactive`,
+            );
           }
-          
+
           systemRoleId = systemRoleResult.rows[0].id;
         } else if (createUserDto.userRoleId) {
           // System role assignment by ID
@@ -238,33 +312,39 @@ export class UserService {
             FROM roles 
             WHERE id = $1 AND is_system = true AND is_active = true
           `;
-          const systemRoleResult = await client.query(systemRoleQuery, [createUserDto.userRoleId]);
-          
+          const systemRoleResult = await client.query(systemRoleQuery, [
+            createUserDto.userRoleId,
+          ]);
+
           if (systemRoleResult.rows.length === 0) {
-            throw new BadRequestException(`System role with ID '${createUserDto.userRoleId}' not found or inactive`);
+            throw new BadRequestException(
+              `System role with ID '${createUserDto.userRoleId}' not found or inactive`,
+            );
           }
-          
+
           systemRoleId = systemRoleResult.rows[0].id;
         } else {
-          throw new BadRequestException('Must specify either userRole or userRoleId for system role assignment');
+          throw new BadRequestException(
+            'Must specify either userRole or userRoleId for system role assignment',
+          );
         }
-        
+
         // Update user with system_role_id
         await client.query(
           `UPDATE users SET system_role_id = $1 WHERE id = $2`,
-          [systemRoleId, newUser.id]
+          [systemRoleId, newUser.id],
         );
-        
+
         // Assign system role to user
         await client.query(
           `INSERT INTO user_roles (user_id, role_id, tenant_id, assigned_by, assigned_at)
            VALUES ($1, $2, $3, $4, NOW())`,
-          [newUser.id, systemRoleId, tenantId, parentId]
+          [newUser.id, systemRoleId, tenantId, parentId],
         );
       } else {
         // Custom role assignment
         let roleIds: string[] = [];
-        
+
         if (createUserDto.roleName) {
           // Single custom role by name
           const customRoleQuery = `
@@ -273,14 +353,21 @@ export class UserService {
             WHERE LOWER(name) = LOWER($1) AND is_system = false AND is_active = true
             ${tenantId ? 'AND (tenant_id = $2 OR tenant_id IS NULL)' : 'AND tenant_id IS NULL'}
           `;
-          
-          const customRoleParams = tenantId ? [createUserDto.roleName, tenantId] : [createUserDto.roleName];
-          const customRoleResult = await client.query(customRoleQuery, customRoleParams);
-          
+
+          const customRoleParams = tenantId
+            ? [createUserDto.roleName, tenantId]
+            : [createUserDto.roleName];
+          const customRoleResult = await client.query(
+            customRoleQuery,
+            customRoleParams,
+          );
+
           if (customRoleResult.rows.length === 0) {
-            throw new BadRequestException(`Custom role '${createUserDto.roleName}' not found or not accessible for this tenant`);
+            throw new BadRequestException(
+              `Custom role '${createUserDto.roleName}' not found or not accessible for this tenant`,
+            );
           }
-          
+
           roleIds = [customRoleResult.rows[0].id];
         } else if (createUserDto.roleNameId) {
           // Single custom role by ID
@@ -290,117 +377,152 @@ export class UserService {
             WHERE id = $1 AND is_system = false AND is_active = true
             ${tenantId ? 'AND (tenant_id = $2 OR tenant_id IS NULL)' : 'AND tenant_id IS NULL'}
           `;
-          
-          const customRoleParams = tenantId ? [createUserDto.roleNameId, tenantId] : [createUserDto.roleNameId];
-          const customRoleResult = await client.query(customRoleQuery, customRoleParams);
-          
+
+          const customRoleParams = tenantId
+            ? [createUserDto.roleNameId, tenantId]
+            : [createUserDto.roleNameId];
+          const customRoleResult = await client.query(
+            customRoleQuery,
+            customRoleParams,
+          );
+
           if (customRoleResult.rows.length === 0) {
-            throw new BadRequestException(`Custom role with ID '${createUserDto.roleNameId}' not found or not accessible for this tenant`);
+            throw new BadRequestException(
+              `Custom role with ID '${createUserDto.roleNameId}' not found or not accessible for this tenant`,
+            );
           }
-          
+
           roleIds = [customRoleResult.rows[0].id];
         } else if (createUserDto.roleNames) {
           // Multiple custom roles by names
           for (const roleName of createUserDto.roleNames) {
             if (!roleName) continue;
-            
+
             const customRoleQuery = `
               SELECT id, name, tenant_id
               FROM roles 
               WHERE LOWER(name) = LOWER($1) AND is_system = false AND is_active = true
               ${tenantId ? 'AND (tenant_id = $2 OR tenant_id IS NULL)' : 'AND tenant_id IS NULL'}
             `;
-            
-            const customRoleParams = tenantId ? [roleName, tenantId] : [roleName];
-            const customRoleResult = await client.query(customRoleQuery, customRoleParams);
-            
+
+            const customRoleParams = tenantId
+              ? [roleName, tenantId]
+              : [roleName];
+            const customRoleResult = await client.query(
+              customRoleQuery,
+              customRoleParams,
+            );
+
             if (customRoleResult.rows.length === 0) {
-              throw new BadRequestException(`Custom role '${roleName}' not found or not accessible for this tenant`);
+              throw new BadRequestException(
+                `Custom role '${roleName}' not found or not accessible for this tenant`,
+              );
             }
-            
+
             roleIds.push(customRoleResult.rows[0].id);
           }
         } else if (createUserDto.roleNameIds) {
           // Multiple custom roles by IDs
           for (const roleId of createUserDto.roleNameIds) {
             if (!roleId) continue;
-            
+
             const customRoleQuery = `
               SELECT id, name, tenant_id
               FROM roles 
               WHERE id = $1 AND is_system = false AND is_active = true
               ${tenantId ? 'AND (tenant_id = $2 OR tenant_id IS NULL)' : 'AND tenant_id IS NULL'}
             `;
-            
+
             const customRoleParams = tenantId ? [roleId, tenantId] : [roleId];
-            const customRoleResult = await client.query(customRoleQuery, customRoleParams);
-            
+            const customRoleResult = await client.query(
+              customRoleQuery,
+              customRoleParams,
+            );
+
             if (customRoleResult.rows.length === 0) {
-              throw new BadRequestException(`Custom role with ID '${roleId}' not found or not accessible for this tenant`);
+              throw new BadRequestException(
+                `Custom role with ID '${roleId}' not found or not accessible for this tenant`,
+              );
             }
-            
+
             roleIds.push(customRoleResult.rows[0].id);
           }
         } else {
-          throw new BadRequestException('Must specify custom roles using roleName, roleNameId, roleNames, or roleNameIds');
+          throw new BadRequestException(
+            'Must specify custom roles using roleName, roleNameId, roleNames, or roleNameIds',
+          );
         }
-        
+
         // Assign custom roles to user
         for (const roleId of roleIds) {
           await client.query(
             `INSERT INTO user_roles (user_id, role_id, tenant_id, assigned_by, assigned_at)
              VALUES ($1, $2, $3, $4, NOW())`,
-            [newUser.id, roleId, tenantId, parentId]
+            [newUser.id, roleId, tenantId, parentId],
           );
         }
       }
 
       // Handle direct permission assignment (if provided)
-      if (createUserDto.permissionNames && createUserDto.permissionNames.length > 0) {
+      if (
+        createUserDto.permissionNames &&
+        createUserDto.permissionNames.length > 0
+      ) {
         for (const permissionName of createUserDto.permissionNames) {
           const permissionQuery = `
             SELECT id, name 
             FROM permissions 
             WHERE LOWER(name) = LOWER($1) AND is_active = true
           `;
-          const permissionResult = await client.query(permissionQuery, [permissionName]);
-          
+          const permissionResult = await client.query(permissionQuery, [
+            permissionName,
+          ]);
+
           if (permissionResult.rows.length === 0) {
-            this.logger.warn(`Permission '${permissionName}' not found, skipping assignment`);
+            this.logger.warn(
+              `Permission '${permissionName}' not found, skipping assignment`,
+            );
             continue;
           }
-          
+
           // Assign permission directly to user
           await client.query(
             `INSERT INTO user_permissions (user_id, permission_id, assigned_by, assigned_at)
              VALUES ($1, $2, $3, NOW())
              ON CONFLICT (user_id, permission_id) DO NOTHING`,
-            [newUser.id, permissionResult.rows[0].id, parentId]
+            [newUser.id, permissionResult.rows[0].id, parentId],
           );
         }
       }
 
       // Handle direct permission assignment by IDs (if provided)
-      if (createUserDto.permissionIds && createUserDto.permissionIds.length > 0) {
+      if (
+        createUserDto.permissionIds &&
+        createUserDto.permissionIds.length > 0
+      ) {
         for (const permissionId of createUserDto.permissionIds) {
           const permissionQuery = `
             SELECT id, name 
             FROM permissions 
             WHERE id = $1 AND is_active = true
           `;
-          const permissionResult = await client.query(permissionQuery, [permissionId]);
-          
+          const permissionResult = await client.query(permissionQuery, [
+            permissionId,
+          ]);
+
           if (permissionResult.rows.length === 0) {
-            this.logger.warn(`Permission with ID '${permissionId}' not found, skipping assignment`);
+            this.logger.warn(
+              `Permission with ID '${permissionId}' not found, skipping assignment`,
+            );
             continue;
           }
-          
+
           // Assign permission directly to user
           await client.query(
             `INSERT INTO user_permissions (user_id, permission_id, assigned_by, assigned_at)
              VALUES ($1, $2, $3, NOW())
              ON CONFLICT (user_id, permission_id) DO NOTHING`,
-            [newUser.id, permissionResult.rows[0].id, parentId]
+            [newUser.id, permissionResult.rows[0].id, parentId],
           );
         }
       }
@@ -409,7 +531,7 @@ export class UserService {
       await client.query(
         `INSERT INTO user_login_details (user_id, whitelisted_ip, failed_attempts, last_login)
          VALUES ($1, $2::text[], $3, NOW())`,
-        [newUser.id, [], 0]
+        [newUser.id, [], 0],
       );
 
       await client.query('COMMIT');
@@ -430,12 +552,16 @@ export class UserService {
         LEFT JOIN users p ON u.parent_id = p.id
         WHERE u.id = $1
       `;
-      
-      const completeUserResult = await client.query(completeUserQuery, [newUser.id]);
+
+      const completeUserResult = await client.query(completeUserQuery, [
+        newUser.id,
+      ]);
       const completeUser = completeUserResult.rows[0];
 
-      this.logger.log(`User created successfully with ID: ${newUser.id} and email: ${newUser.email}`);
-      
+      this.logger.log(
+        `User created successfully with ID: ${newUser.id} and email: ${newUser.email}`,
+      );
+
       return {
         id: completeUser.id,
         firstName: completeUser.first_name,
@@ -449,22 +575,28 @@ export class UserService {
         isSuspended: completeUser.is_suspended,
         createdAt: completeUser.created_at,
         updatedAt: completeUser.updated_at,
-        tenant: completeUser.tenant_name ? {
-          id: completeUser.tenant_id,
-          name: completeUser.tenant_name
-        } : null,
-        parent: completeUser.parent_id ? {
-          id: completeUser.parent_id,
-          name: `${completeUser.parent_first_name} ${completeUser.parent_last_name}`,
-          username: completeUser.parent_username
-        } : null
+        tenant: completeUser.tenant_name
+          ? {
+              id: completeUser.tenant_id,
+              name: completeUser.tenant_name,
+            }
+          : null,
+        parent: completeUser.parent_id
+          ? {
+              id: completeUser.parent_id,
+              name: `${completeUser.parent_first_name} ${completeUser.parent_last_name}`,
+              username: completeUser.parent_username,
+            }
+          : null,
       };
-      
     } catch (error) {
       try {
         await client.query('ROLLBACK');
       } catch (rollbackError) {
-        this.logger.error(`Error during rollback: ${rollbackError.message}`, rollbackError.stack);
+        this.logger.error(
+          `Error during rollback: ${rollbackError.message}`,
+          rollbackError.stack,
+        );
       }
       this.logger.error(`Error creating user: ${error.message}`, error.stack);
       throw error;
@@ -472,7 +604,10 @@ export class UserService {
       try {
         client.release();
       } catch (releaseError) {
-        this.logger.error(`Error releasing client: ${releaseError.message}`, releaseError.stack);
+        this.logger.error(
+          `Error releasing client: ${releaseError.message}`,
+          releaseError.stack,
+        );
       }
     }
   }
@@ -482,8 +617,6 @@ export class UserService {
     return bcrypt.hash(password, saltRounds);
   }
 
-
-
   async findAll(options?: {
     skip?: number;
     take?: number;
@@ -491,12 +624,18 @@ export class UserService {
     orderBy?: any;
     includeInactive?: boolean;
   }) {
-    const { skip = 0, take = 10, where, orderBy, includeInactive = false } = options || {};
-    
+    const {
+      skip = 0,
+      take = 10,
+      where,
+      orderBy,
+      includeInactive = false,
+    } = options || {};
+
     try {
       // Build WHERE clause
-      let whereConditions: string[] = [];
-      let queryParams: any[] = [];
+      const whereConditions: string[] = [];
+      const queryParams: any[] = [];
       let paramIndex = 1;
 
       // Add isActive filter unless explicitly requested to include inactive users
@@ -512,7 +651,9 @@ export class UserService {
           paramIndex++;
         }
         if (where.name) {
-          whereConditions.push(`(u.first_name ILIKE $${paramIndex} OR u.last_name ILIKE $${paramIndex})`);
+          whereConditions.push(
+            `(u.first_name ILIKE $${paramIndex} OR u.last_name ILIKE $${paramIndex})`,
+          );
           queryParams.push(`%${where.name}%`);
           paramIndex++;
         }
@@ -525,9 +666,11 @@ export class UserService {
           queryParams.push(where.roleId);
           paramIndex++;
         }
-        
+
         if (where.roleIds && where.roleIds.length > 0) {
-          const roleIdPlaceholders = where.roleIds.map((_, index) => `$${paramIndex + index}`).join(',');
+          const roleIdPlaceholders = where.roleIds
+            .map((_, index) => `$${paramIndex + index}`)
+            .join(',');
           whereConditions.push(`EXISTS (
             SELECT 1 FROM user_roles ur 
             WHERE ur.user_id = u.id 
@@ -543,7 +686,10 @@ export class UserService {
         }
       }
 
-      const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+      const whereClause =
+        whereConditions.length > 0
+          ? `WHERE ${whereConditions.join(' AND ')}`
+          : '';
 
       // Get total count for pagination
       const countQuery = `
@@ -598,11 +744,11 @@ export class UserService {
         ${orderByClause}
         LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
       `;
-      
+
       queryParams.push(take, skip);
       const result = await this.db.query(query, queryParams);
 
-      const users = result.rows.map(user => ({
+      const users = result.rows.map((user) => ({
         id: user.id,
         firstName: user.first_name,
         lastName: user.last_name,
@@ -614,15 +760,19 @@ export class UserService {
         isSuspended: user.is_suspended,
         createdAt: user.created_at,
         updatedAt: user.updated_at,
-        tenant: user.tenant_name ? {
-          id: user.tenant_id,
-          name: user.tenant_name
-          } : null,
-        parent: user.parent_id ? {
-          id: user.parent_id,
-          name: `${user.parent_first_name} ${user.parent_last_name}`,
-          username: user.parent_username
-        } : null
+        tenant: user.tenant_name
+          ? {
+              id: user.tenant_id,
+              name: user.tenant_name,
+            }
+          : null,
+        parent: user.parent_id
+          ? {
+              id: user.parent_id,
+              name: `${user.parent_first_name} ${user.parent_last_name}`,
+              username: user.parent_username,
+            }
+          : null,
       }));
 
       return {
@@ -630,9 +780,8 @@ export class UserService {
         total,
         page: Math.floor(skip / take) + 1,
         limit: take,
-        totalPages: Math.ceil(total / take)
+        totalPages: Math.ceil(total / take),
       };
-
     } catch (error) {
       this.logger.error(`Error fetching users: ${error.message}`, error.stack);
       throw error;
@@ -674,17 +823,20 @@ export class UserService {
         isSuspended: user.is_suspended,
         createdAt: user.created_at,
         updatedAt: user.updated_at,
-        tenant: user.tenant_name ? {
-          id: user.tenant_id,
-          name: user.tenant_name
-        } : null,
-        parent: user.parent_id ? {
-          id: user.parent_id,
-          name: `${user.parent_first_name} ${user.parent_last_name}`,
-          username: user.parent_username
-        } : null
+        tenant: user.tenant_name
+          ? {
+              id: user.tenant_id,
+              name: user.tenant_name,
+            }
+          : null,
+        parent: user.parent_id
+          ? {
+              id: user.parent_id,
+              name: `${user.parent_first_name} ${user.parent_last_name}`,
+              username: user.parent_username,
+            }
+          : null,
       };
-      
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -696,7 +848,7 @@ export class UserService {
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     const client = await this.db.getClient();
-    
+
     try {
       await client.query('BEGIN');
 
@@ -726,12 +878,17 @@ export class UserService {
           SELECT id FROM users 
           WHERE LOWER(email) = LOWER($1) AND id != $2 AND is_active = true
         `;
-        const emailCheck = await client.query(emailCheckQuery, [updateUserDto.email, id]);
-        
+        const emailCheck = await client.query(emailCheckQuery, [
+          updateUserDto.email,
+          id,
+        ]);
+
         if (emailCheck.rows.length > 0) {
-          throw new BadRequestException(`Email ${updateUserDto.email} is already taken`);
+          throw new BadRequestException(
+            `Email ${updateUserDto.email} is already taken`,
+          );
         }
-        
+
         updates.push(`email = $${paramIndex}`);
         values.push(updateUserDto.email);
         paramIndex++;
@@ -750,10 +907,15 @@ export class UserService {
       }
 
       // Handle parent update
-      if (updateUserDto.parent !== undefined || updateUserDto.parentId !== undefined) {
+      if (
+        updateUserDto.parent !== undefined ||
+        updateUserDto.parentId !== undefined
+      ) {
         // Validate mutually exclusive approaches
         if (updateUserDto.parent && updateUserDto.parentId) {
-          throw new BadRequestException('Cannot specify both parent and parentId. Choose one approach.');
+          throw new BadRequestException(
+            'Cannot specify both parent and parentId. Choose one approach.',
+          );
         }
 
         let newParentId: string | null = null;
@@ -767,21 +929,28 @@ export class UserService {
             LEFT JOIN roles r ON ur.role_id = r.id
             WHERE LOWER(u.username) = LOWER($1) AND u.is_active = true
           `;
-          const parentResult = await client.query(parentQuery, [updateUserDto.parent]);
-          
+          const parentResult = await client.query(parentQuery, [
+            updateUserDto.parent,
+          ]);
+
           if (parentResult.rows.length === 0) {
-            throw new BadRequestException(`Parent user with username '${updateUserDto.parent}' not found or inactive`);
+            throw new BadRequestException(
+              `Parent user with username '${updateUserDto.parent}' not found or inactive`,
+            );
           }
-          
+
           // Check if parent has admin permissions
-          const hasAdminRole = parentResult.rows.some(row => 
-            row.role_name && row.role_name.toLowerCase().includes('admin')
+          const hasAdminRole = parentResult.rows.some(
+            (row) =>
+              row.role_name && row.role_name.toLowerCase().includes('admin'),
           );
-          
+
           if (!hasAdminRole) {
-            throw new ForbiddenException('Parent user must have administrative privileges');
+            throw new ForbiddenException(
+              'Parent user must have administrative privileges',
+            );
           }
-          
+
           newParentId = parentResult.rows[0].id;
         } else if (updateUserDto.parentId) {
           // Lookup parent by ID
@@ -792,21 +961,28 @@ export class UserService {
             LEFT JOIN roles r ON ur.role_id = r.id
             WHERE u.id = $1 AND u.is_active = true
           `;
-          const parentResult = await client.query(parentQuery, [updateUserDto.parentId]);
-          
+          const parentResult = await client.query(parentQuery, [
+            updateUserDto.parentId,
+          ]);
+
           if (parentResult.rows.length === 0) {
-            throw new BadRequestException(`Parent user with ID '${updateUserDto.parentId}' not found or inactive`);
+            throw new BadRequestException(
+              `Parent user with ID '${updateUserDto.parentId}' not found or inactive`,
+            );
           }
-          
+
           // Check if parent has admin permissions
-          const hasAdminRole = parentResult.rows.some(row => 
-            row.role_name && row.role_name.toLowerCase().includes('admin')
+          const hasAdminRole = parentResult.rows.some(
+            (row) =>
+              row.role_name && row.role_name.toLowerCase().includes('admin'),
           );
-          
+
           if (!hasAdminRole) {
-            throw new ForbiddenException('Parent user must have administrative privileges');
+            throw new ForbiddenException(
+              'Parent user must have administrative privileges',
+            );
           }
-          
+
           newParentId = parentResult.rows[0].id;
         }
 
@@ -815,42 +991,42 @@ export class UserService {
         paramIndex++;
       }
 
-
-
       if (updates.length === 0) {
         throw new BadRequestException('No valid fields to update');
       }
-      
+
       // Add updated timestamp
       updates.push(`updated_at = NOW()`);
       values.push(id);
-      
-        const updateQuery = `
+
+      const updateQuery = `
           UPDATE users 
         SET ${updates.join(', ')}
         WHERE id = $${paramIndex} AND is_active = true
         RETURNING id
       `;
-      
+
       const result = await client.query(updateQuery, values);
-      
+
       if (result.rows.length === 0) {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
-      
+
       await client.query('COMMIT');
-      
+
       // Clear RBAC cache
-        await this.rbacService.clearUserPermissionCache(id);
-      
+      await this.rbacService.clearUserPermissionCache(id);
+
       // Return updated user
       return await this.findOne(id);
-      
     } catch (error) {
       try {
         await client.query('ROLLBACK');
       } catch (rollbackError) {
-        this.logger.error(`Error during rollback: ${rollbackError.message}`, rollbackError.stack);
+        this.logger.error(
+          `Error during rollback: ${rollbackError.message}`,
+          rollbackError.stack,
+        );
       }
       this.logger.error(`Error updating user: ${error.message}`, error.stack);
       throw error;
@@ -858,7 +1034,10 @@ export class UserService {
       try {
         client.release();
       } catch (releaseError) {
-        this.logger.error(`Error releasing client: ${releaseError.message}`, releaseError.stack);
+        this.logger.error(
+          `Error releasing client: ${releaseError.message}`,
+          releaseError.stack,
+        );
       }
     }
   }
@@ -872,25 +1051,27 @@ export class UserService {
         WHERE id = $1 AND is_active = true
         RETURNING id, email
       `;
-      
+
       const result = await this.db.query(query, [id]);
-      
+
       if (result.rows.length === 0) {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
 
       // Clear RBAC cache
       await this.rbacService.clearUserPermissionCache(id);
-      
+
       this.logger.log(`User ${result.rows[0].email} deactivated successfully`);
-      
+
       return { message: 'User deactivated successfully' };
-      
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      this.logger.error(`Error deactivating user: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error deactivating user: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -903,30 +1084,30 @@ export class UserService {
         WHERE id = $1 AND is_active = false
         RETURNING id, email
       `;
-      
+
       const result = await this.db.query(query, [id]);
-      
+
       if (result.rows.length === 0) {
         throw new NotFoundException(`Inactive user with ID ${id} not found`);
       }
-      
+
       // Clear RBAC cache
       await this.rbacService.clearUserPermissionCache(id);
-      
+
       this.logger.log(`User ${result.rows[0].email} reactivated successfully`);
-      
+
       return await this.findOne(id);
-      
     } catch (error) {
       if (error instanceof NotFoundException) {
-      throw error;
-    }
-      this.logger.error(`Error reactivating user: ${error.message}`, error.stack);
+        throw error;
+      }
+      this.logger.error(
+        `Error reactivating user: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
-
-
 
   async suspendUser(id: string, suspendUserDto: SuspendUserDto) {
     try {
@@ -939,24 +1120,23 @@ export class UserService {
         WHERE id = $2 AND is_active = true
         RETURNING id, email
       `;
-      
+
       const result = await this.db.query(query, [suspendUserDto.reason, id]);
-      
+
       if (result.rows.length === 0) {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
 
       // Clear RBAC cache
       await this.rbacService.clearUserPermissionCache(id);
-      
+
       this.logger.log(`User ${result.rows[0].email} suspended successfully`);
-      
+
       return await this.findOne(id);
-      
     } catch (error) {
       if (error instanceof NotFoundException) {
-      throw error;
-    }
+        throw error;
+      }
       this.logger.error(`Error suspending user: ${error.message}`, error.stack);
       throw error;
     }
@@ -970,25 +1150,27 @@ export class UserService {
         WHERE id = $1 AND is_active = true
         RETURNING id, email
       `;
-      
+
       const result = await this.db.query(query, [id]);
-      
+
       if (result.rows.length === 0) {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
-      
+
       // Clear RBAC cache
       await this.rbacService.clearUserPermissionCache(id);
-      
+
       this.logger.log(`User ${result.rows[0].email} unsuspended successfully`);
-      
+
       return await this.findOne(id);
-      
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      this.logger.error(`Error unsuspending user: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error unsuspending user: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -1008,13 +1190,13 @@ export class UserService {
         LEFT JOIN users p ON u.parent_id = p.id
         WHERE LOWER(u.email) = LOWER($1) AND u.is_active = true
       `;
-      
+
       const result = await this.db.query(query, [email]);
-      
+
       if (result.rows.length === 0) {
         return null;
       }
-      
+
       const user = result.rows[0];
 
       return {
@@ -1029,19 +1211,25 @@ export class UserService {
         isSuspended: user.is_suspended,
         createdAt: user.created_at,
         updatedAt: user.updated_at,
-        tenant: user.tenant_name ? {
-          id: user.tenant_id,
-          name: user.tenant_name
-        } : null,
-        parent: user.parent_id ? {
-          id: user.parent_id,
-          name: `${user.parent_first_name} ${user.parent_last_name}`,
-          username: user.parent_username
-        } : null
+        tenant: user.tenant_name
+          ? {
+              id: user.tenant_id,
+              name: user.tenant_name,
+            }
+          : null,
+        parent: user.parent_id
+          ? {
+              id: user.parent_id,
+              name: `${user.parent_first_name} ${user.parent_last_name}`,
+              username: user.parent_username,
+            }
+          : null,
       };
-      
     } catch (error) {
-      this.logger.error(`Error finding user by email: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error finding user by email: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -1071,13 +1259,13 @@ export class UserService {
       LEFT JOIN roles r ON u.system_role_id = r.id
       WHERE LOWER(CONCAT(u.first_name, ' ', u.last_name)) = LOWER($1)
     `;
-    
+
     const result = await this.db.query(query, [username]);
-    
+
     if (result.rows.length === 0) {
       return null;
     }
-    
+
     const user = result.rows[0];
     return {
       id: user.id,
@@ -1094,11 +1282,13 @@ export class UserService {
       systemRoleId: user.system_role_id,
       createdAt: user.created_at,
       updatedAt: user.updated_at,
-      tenant: user.tenant_name ? {
-        id: user.tenant_id,
-        name: user.tenant_name
-      } : null,
-      systemRole: user.system_role_name
+      tenant: user.tenant_name
+        ? {
+            id: user.tenant_id,
+            name: user.tenant_name,
+          }
+        : null,
+      systemRole: user.system_role_name,
     };
   }
 
@@ -1117,7 +1307,7 @@ export class UserService {
       AND system_role_id IS NOT NULL
       ORDER BY first_name, last_name
     `;
-    
+
     const result = await this.db.query(query, [tenantId]);
     return result.rows;
   }

@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class ForgotPasswordInitDto {
   @IsEmail({}, { message: 'Invalid email format' })
@@ -37,4 +43,4 @@ export class ResetPasswordDto {
   @IsString()
   @IsNotEmpty({ message: 'Confirm password is required' })
   confirmPassword: string;
-} 
+}

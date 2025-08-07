@@ -10,13 +10,13 @@ import { SharedAuthModule } from '../shared/auth.module';
 
 @Module({
   imports: [
-    forwardRef(() => PermissionModule), 
+    forwardRef(() => PermissionModule),
     forwardRef(() => RbacModule),
-    UtilsModule, 
-    SharedAuthModule
+    UtilsModule,
+    SharedAuthModule,
   ],
   controllers: [RoleController],
   providers: [RoleService, DefaultRolesService],
-  exports: [RoleService, DefaultRolesService]
+  exports: [RoleService, DefaultRolesService],
 })
 export class RoleModule {}

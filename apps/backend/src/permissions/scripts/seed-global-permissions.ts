@@ -5,17 +5,17 @@ import { Logger } from '@nestjs/common';
 
 async function seedGlobalPermissions() {
   const logger = new Logger('SeedGlobalPermissions');
-  
+
   try {
     logger.log('Starting global permissions seeding...');
-    
+
     const app = await NestFactory.createApplicationContext(AppModule);
     const globalPermissionsService = app.get(GlobalPermissionsService);
-    
+
     await globalPermissionsService.seedGlobalPermissions();
-    
+
     logger.log('Global permissions seeded successfully!');
-    
+
     await app.close();
   } catch (error) {
     logger.error(`Error seeding global permissions: ${error.message}`);
@@ -28,4 +28,4 @@ if (require.main === module) {
   seedGlobalPermissions();
 }
 
-export { seedGlobalPermissions }; 
+export { seedGlobalPermissions };

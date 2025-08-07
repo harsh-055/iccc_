@@ -1,15 +1,15 @@
-import { transports, format, LoggerOptions } from "winston";
+import { transports, format, LoggerOptions } from 'winston';
 
 const winstonConfig: LoggerOptions = {
   format: format.combine(
     format.timestamp(),
     format.errors({ stack: true }),
-    format.json()
+    format.json(),
   ),
   transports: [
     new transports.File({
       filename: `logs/error.log`,
-      level: "error",
+      level: 'error',
       format: format.combine(format.timestamp(), format.json()),
     }),
     new transports.File({
@@ -23,7 +23,7 @@ const winstonConfig: LoggerOptions = {
         format.timestamp(),
         format.printf((info) => {
           return `${info.timestamp} ${info.level}: ${info.message}`;
-        })
+        }),
       ),
     }),
   ],

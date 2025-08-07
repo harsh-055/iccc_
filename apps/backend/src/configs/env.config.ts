@@ -1,16 +1,21 @@
-
 import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsNumber, IsString, Max, Min, validateSync } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsString,
+  Max,
+  Min,
+  validateSync,
+} from 'class-validator';
 
 enum Environment {
-  Development = "development",
-  Production = "production",
-  Test = "test",
-  Provision = "provision",
+  Development = 'development',
+  Production = 'production',
+  Test = 'test',
+  Provision = 'provision',
 }
 
 class EnvironmentVariables {
-
   @IsEnum(Environment)
   NODE_ENV: Environment;
 
@@ -52,6 +57,12 @@ class EnvironmentVariables {
   @IsString()
   LENS_VERIFY_WHATSAPP_URL: string;
 
+  @IsString()
+  JWT_SECRET: string;
+
+  // @IsString()
+  // CORS_ORIGIN?: string;
+
   // Redis Configuration (COMMENTED OUT)
   // @IsString()
   // REDIS_HOST: string;
@@ -66,16 +77,15 @@ class EnvironmentVariables {
 
   // @IsString()
   // REDIS_URL?: string;
-
 }
 
 export function validate(config: Record<string, unknown>) {
-  const validatedConfig = plainToInstance(
-    EnvironmentVariables,
-    config,
-    { enableImplicitConversion: true },
-  );
-  const errors = validateSync(validatedConfig, { skipMissingProperties: false });
+  const validatedConfig = plainToInstance(EnvironmentVariables, config, {
+    enableImplicitConversion: true,
+  });
+  const errors = validateSync(validatedConfig, {
+    skipMissingProperties: false,
+  });
 
   if (errors.length > 0) {
     throw new Error(errors.toString());

@@ -51,21 +51,25 @@ class RolePermissionSeeder {
          LEFT JOIN permissions p ON rp.permission_id = p.id
          WHERE r.name = $1 AND r.tenant_id IS NULL
          GROUP BY r.id`,
-        ['Admin']
+        ['Admin'],
       );
 
       const adminRole: RoleWithPermissions = adminRoleResult[0];
 
       if (!adminRole) {
-        this.logger.error('Admin role not found. Please create the Admin role first.');
+        this.logger.error(
+          'Admin role not found. Please create the Admin role first.',
+        );
         return;
       }
 
-      const currentPermissions = Array.isArray(adminRole.current_permissions) 
-        ? adminRole.current_permissions 
+      const currentPermissions = Array.isArray(adminRole.current_permissions)
+        ? adminRole.current_permissions
         : [];
 
-      this.logger.log(`Found Admin role with ${currentPermissions.length} existing permissions`);
+      this.logger.log(
+        `Found Admin role with ${currentPermissions.length} existing permissions`,
+      );
 
       // Get all ADMIN and BOTH type permissions (system-level only)
       const adminPermissionsResult = await this.database.query(
@@ -86,42 +90,52 @@ class RolePermissionSeeder {
            
          )
          ORDER BY name`,
-        []
+        [],
       );
-      
+
       const adminPermissions: Permission[] = adminPermissionsResult.rows;
 
-      this.logger.log(`Found ${adminPermissions.length} total admin-type permissions`);
+      this.logger.log(
+        `Found ${adminPermissions.length} total admin-type permissions`,
+      );
 
       // Get currently assigned permission IDs
       const currentPermissionIds = new Set(
-        currentPermissions.map(cp => cp.permission_id)
+        currentPermissions.map((cp) => cp.permission_id),
       );
 
       // Filter out permissions that are already assigned
-      const permissionsToAssign = adminPermissions.filter(permission => 
-        !currentPermissionIds.has(permission.id)
+      const permissionsToAssign = adminPermissions.filter(
+        (permission) => !currentPermissionIds.has(permission.id),
       );
 
       if (permissionsToAssign.length === 0) {
-        this.logger.log('Admin already has all available admin permissions assigned');
+        this.logger.log(
+          'Admin already has all available admin permissions assigned',
+        );
         return;
       }
 
-      this.logger.log(`Need to assign ${permissionsToAssign.length} new permissions to Admin`);
+      this.logger.log(
+        `Need to assign ${permissionsToAssign.length} new permissions to Admin`,
+      );
 
       // Create role-permission relationships for new permissions
       for (const permission of permissionsToAssign) {
         await this.database.query(
           `INSERT INTO role_permissions (role_id, permission_id, assigned_at) 
            VALUES ($1, $2, NOW())`,
-          [adminRole.id, permission.id]
+          [adminRole.id, permission.id],
         );
-        
-        this.logger.log(`Assigned permission: ${permission.name} (${permission.resource}:${permission.action})`);
+
+        this.logger.log(
+          `Assigned permission: ${permission.name} (${permission.resource}:${permission.action})`,
+        );
       }
 
-      this.logger.log(`Successfully assigned ${permissionsToAssign.length} new permissions to Admin role`);
+      this.logger.log(
+        `Successfully assigned ${permissionsToAssign.length} new permissions to Admin role`,
+      );
 
       // Display final summary
       const finalCount = await this.database.query(
@@ -129,11 +143,12 @@ class RolePermissionSeeder {
          FROM role_permissions rp
          JOIN permissions p ON rp.permission_id = p.id
          WHERE rp.role_id = $1 AND p.tenant_id IS NULL`,
-        [adminRole.id]
+        [adminRole.id],
       );
 
-      this.logger.log(`Admin now has ${finalCount[0].total_permissions} total system permissions`);
-
+      this.logger.log(
+        `Admin now has ${finalCount[0].total_permissions} total system permissions`,
+      );
     } catch (error) {
       this.logger.error('Error seeding permissions to Admin:', error);
       throw error;
@@ -149,11 +164,13 @@ class RolePermissionSeeder {
 
       const userRoleResult = await this.database.query(
         `SELECT id, name FROM roles WHERE name = $1 AND tenant_id IS NULL`,
-        ['User']
+        ['User'],
       );
 
       if (userRoleResult.rows.length === 0) {
-        this.logger.error('User role not found. Please create the User role first.');
+        this.logger.error(
+          'User role not found. Please create the User role first.',
+        );
         return;
       }
 
@@ -181,25 +198,28 @@ class RolePermissionSeeder {
            SELECT 1 FROM role_permissions rp 
            WHERE rp.role_id = $1 AND rp.permission_id = p.id
          )`,
-        [userRole.id]
+        [userRole.id],
       );
-      
+
       const endUserPermissions: Permission[] = endUserPermissionsResult.rows;
 
-      this.logger.log(`Found ${endUserPermissions.length} end-user permissions to assign`);
+      this.logger.log(
+        `Found ${endUserPermissions.length} end-user permissions to assign`,
+      );
 
       for (const permission of endUserPermissions) {
         await this.database.query(
           `INSERT INTO role_permissions (role_id, permission_id, assigned_at) 
            VALUES ($1, $2, NOW())`,
-          [userRole.id, permission.id]
+          [userRole.id, permission.id],
         );
-        
+
         this.logger.log(`Assigned end-user permission: ${permission.name}`);
       }
 
-      this.logger.log(`Successfully assigned ${endUserPermissions.length} permissions to User role`);
-
+      this.logger.log(
+        `Successfully assigned ${endUserPermissions.length} permissions to User role`,
+      );
     } catch (error) {
       this.logger.error('Error seeding end-user permissions:', error);
       throw error;
@@ -212,10 +232,10 @@ class RolePermissionSeeder {
   async seedAllRolePermissions(): Promise<void> {
     try {
       this.logger.log('🚀 Starting role permission seeding process...');
-      
+
       await this.seedAdminPermissions();
       await this.seedEndUserPermissions();
-      
+
       this.logger.log('✅ All role permissions seeded successfully!');
     } catch (error) {
       this.logger.error('❌ Error during role permission seeding:', error);
@@ -229,13 +249,12 @@ class RolePermissionSeeder {
  */
 async function seedRolePermissions(): Promise<void> {
   const app = await NestFactory.createApplicationContext(AppModule);
-  
+
   try {
     const database = app.get(DatabaseService);
     const seeder = new RolePermissionSeeder(database);
-    
+
     await seeder.seedAllRolePermissions();
-    
   } catch (error) {
     console.error('Failed to seed role permissions:', error);
     process.exit(1);

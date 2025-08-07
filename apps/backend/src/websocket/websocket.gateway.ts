@@ -7,19 +7,22 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { DatabaseService, RealtimePayload } from '../../database/database.service';
+import {
+  DatabaseService,
+  RealtimePayload,
+} from '../../database/database.service';
 import { JwtService } from '@nestjs/jwt';
 import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
     origin: [
-      "https://admin.socket.io",
-      "http://localhost:80",
-      "http://localhost:3000", // Add your frontend URL
-      "chrome-extension://ophmdkgfcjapomjdpfobjfbihojchbko"
+      'https://admin.socket.io',
+      'http://localhost:80',
+      'http://localhost:3000', // Add your frontend URL
+      'chrome-extension://ophmdkgfcjapomjdpfobjfbihojchbko',
     ],
-    credentials: true
+    credentials: true,
   },
 })
 export class RealtimeGateway
@@ -31,7 +34,7 @@ export class RealtimeGateway
 
   constructor(
     private databaseService: DatabaseService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
 
   afterInit(server: Server) {
@@ -39,10 +42,12 @@ export class RealtimeGateway
     this.unsubscribe = this.databaseService.onRealtimeChange((payload) => {
       // Broadcast to all clients in the table room
       this.server.to(`table:${payload.table}`).emit('dataChange', payload);
-      
+
       // Broadcast to specific record rooms if applicable
       if (payload.data?.id) {
-        this.server.to(`${payload.table}:${payload.data.id}`).emit('recordChange', payload);
+        this.server
+          .to(`${payload.table}:${payload.data.id}`)
+          .emit('recordChange', payload);
       }
     });
 
@@ -51,7 +56,7 @@ export class RealtimeGateway
 
   async handleConnection(client: Socket) {
     console.log(`🔌 Client connected: ${client.id}`);
-    
+
     // Send a test message immediately
     client.emit('test', { message: 'You are connected!' });
   }
@@ -70,11 +75,11 @@ export class RealtimeGateway
     for (const table of payload.tables) {
       client.join(`table:${table}`);
     }
-    
-    return { 
-      event: 'subscribed', 
+
+    return {
+      event: 'subscribed',
       tables: payload.tables,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -83,33 +88,33 @@ export class RealtimeGateway
     for (const table of payload.tables) {
       client.leave(`table:${table}`);
     }
-    
-    return { 
-      event: 'unsubscribed', 
+
+    return {
+      event: 'unsubscribed',
       tables: payload.tables,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
   @SubscribeMessage('subscribeToRecord')
   handleSubscribeToRecord(
     client: Socket,
-    payload: { table: string; id: string }
+    payload: { table: string; id: string },
   ) {
     const room = `${payload.table}:${payload.id}`;
     client.join(room);
-    
-    return { 
-      event: 'subscribedToRecord', 
+
+    return {
+      event: 'subscribedToRecord',
       room,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
   private requiresAuth(tables: string[]): boolean {
     // Define which tables require authentication
     const protectedTables = ['users', 'mfa', 'user_login_details'];
-    return tables.some(table => protectedTables.includes(table));
+    return tables.some((table) => protectedTables.includes(table));
   }
 
   async onModuleDestroy() {

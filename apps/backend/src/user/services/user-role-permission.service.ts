@@ -1,6 +1,9 @@
 import { Injectable, ForbiddenException, Logger } from '@nestjs/common';
 import { DatabaseService } from '../../../database/database.service';
-import { SYSTEM_ROLES, SystemRoleName } from '../../common/constants/system-roles';
+import {
+  SYSTEM_ROLES,
+  SystemRoleName,
+} from '../../common/constants/system-roles';
 
 @Injectable()
 export class EnhancedRolePermissionService {
@@ -12,7 +15,10 @@ export class EnhancedRolePermissionService {
    * Check if user can assign specific roles to new users
    * This uses role-specific assignment permissions, not generic CREATE_USER
    */
-  async canAssignRolesToUser(assignerUserId: string, targetRoleIds: string[]): Promise<{
+  async canAssignRolesToUser(
+    assignerUserId: string,
+    targetRoleIds: string[],
+  ): Promise<{
     canAssign: boolean;
     allowedRoles: string[];
     deniedRoles: string[];
@@ -20,20 +26,24 @@ export class EnhancedRolePermissionService {
   }> {
     try {
       // Get assigner's role assignment permissions
-      const assignerPermissions = await this.getUserRoleAssignmentPermissions(assignerUserId);
-      
+      const assignerPermissions =
+        await this.getUserRoleAssignmentPermissions(assignerUserId);
+
       const allowedRoles: string[] = [];
       const deniedRoles: string[] = [];
       const reasons: string[] = [];
 
       for (const roleId of targetRoleIds) {
-        const canAssign = assignerPermissions.assignableRoleIds.includes(roleId);
-        
+        const canAssign =
+          assignerPermissions.assignableRoleIds.includes(roleId);
+
         if (canAssign) {
           allowedRoles.push(roleId);
         } else {
           deniedRoles.push(roleId);
-          const roleName = assignerPermissions.availableRoles.find(r => r.id === roleId)?.name || 'Unknown';
+          const roleName =
+            assignerPermissions.availableRoles.find((r) => r.id === roleId)
+              ?.name || 'Unknown';
           reasons.push(`Cannot assign role: ${roleName}`);
         }
       }
@@ -42,15 +52,17 @@ export class EnhancedRolePermissionService {
         canAssign: deniedRoles.length === 0,
         allowedRoles,
         deniedRoles,
-        reasons
+        reasons,
       };
     } catch (error) {
-      this.logger.error(`Error checking role assignment permissions: ${error.message}`);
+      this.logger.error(
+        `Error checking role assignment permissions: ${error.message}`,
+      );
       return {
         canAssign: false,
         allowedRoles: [],
         deniedRoles: targetRoleIds,
-        reasons: ['Error checking permissions']
+        reasons: ['Error checking permissions'],
       };
     }
   }
@@ -93,8 +105,10 @@ export class EnhancedRolePermissionService {
       JOIN permissions p ON rp.permissionId = p.id
       WHERE u.id = $1
     `;
-    const permissionsResult = await this.db.query(userPermissionsQuery, [userId]);
-    const userPermissionNames = permissionsResult.rows.map(row => row.name);
+    const permissionsResult = await this.db.query(userPermissionsQuery, [
+      userId,
+    ]);
+    const userPermissionNames = permissionsResult.rows.map((row) => row.name);
 
     // Get all roles in the tenant
     const allRolesQuery = `
@@ -115,9 +129,11 @@ export class EnhancedRolePermissionService {
     }> = [];
 
     for (const role of rolesResult.rows) {
-      const assignmentPermission = this.generateRoleAssignmentPermission(role.name);
+      const assignmentPermission = this.generateRoleAssignmentPermission(
+        role.name,
+      );
       const canAssign = userPermissionNames.includes(assignmentPermission);
-      
+
       if (canAssign) {
         assignableRoleIds.push(role.id);
       }
@@ -130,13 +146,13 @@ export class EnhancedRolePermissionService {
         description: role.description || '',
         level,
         canAssign,
-        assignmentPermission
+        assignmentPermission,
       });
     }
 
     return {
       assignableRoleIds,
-      availableRoles
+      availableRoles,
     };
   }
 
@@ -152,26 +168,27 @@ export class EnhancedRolePermissionService {
    * Create role-specific assignment permissions when a role is created
    */
   async createRoleAssignmentPermissions(
-    roleId: string, 
-    roleName: string, 
+    roleId: string,
+    roleName: string,
     tenantId: string,
-    creatorUserId: string
+    creatorUserId: string,
   ): Promise<void> {
     // 1. Create the role-specific assignment permission
-    const assignmentPermissionName = this.generateRoleAssignmentPermission(roleName);
-    
+    const assignmentPermissionName =
+      this.generateRoleAssignmentPermission(roleName);
+
     const createPermissionQuery = `
       INSERT INTO permissions (id, name, resource, action, description, tenantId, createdAt, updatedAt)
       VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, NOW(), NOW())
       RETURNING id
     `;
-    
+
     const permissionResult = await this.db.query(createPermissionQuery, [
       assignmentPermissionName,
       'roles',
       `assign_${roleName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`,
       `Permission to assign ${roleName} role to users`,
-      tenantId
+      tenantId,
     ]);
 
     const assignmentPermissionId = permissionResult.rows[0].id;
@@ -183,7 +200,9 @@ export class EnhancedRolePermissionService {
       JOIN roles r ON ur.roleId = r.id
       WHERE ur.userId = $1
     `;
-    const creatorRoles = await this.db.query(creatorRolesQuery, [creatorUserId]);
+    const creatorRoles = await this.db.query(creatorRolesQuery, [
+      creatorUserId,
+    ]);
 
     for (const userRole of creatorRoles.rows) {
       // Check if permission already assigned
@@ -191,20 +210,30 @@ export class EnhancedRolePermissionService {
         SELECT 1 FROM role_permissions 
         WHERE roleId = $1 AND permissionId = $2
       `;
-      const existing = await this.db.query(checkExistingQuery, [userRole.roleid, assignmentPermissionId]);
+      const existing = await this.db.query(checkExistingQuery, [
+        userRole.roleid,
+        assignmentPermissionId,
+      ]);
 
       if (existing.rows.length === 0) {
         const assignPermissionQuery = `
           INSERT INTO role_permissions (id, roleId, permissionId, assignedAt)
           VALUES (gen_random_uuid(), $1, $2, NOW())
         `;
-        await this.db.query(assignPermissionQuery, [userRole.roleid, assignmentPermissionId]);
+        await this.db.query(assignPermissionQuery, [
+          userRole.roleid,
+          assignmentPermissionId,
+        ]);
       }
     }
 
     // 3. Also assign to higher-level roles
     const roleLevel = await this.calculateRoleLevelById(roleId);
-    await this.assignPermissionToHigherLevelRoles(assignmentPermissionId, roleLevel, tenantId);
+    await this.assignPermissionToHigherLevelRoles(
+      assignmentPermissionId,
+      roleLevel,
+      tenantId,
+    );
   }
 
   /**
@@ -219,9 +248,9 @@ export class EnhancedRolePermissionService {
       JOIN permissions p ON rp.permissionId = p.id
       WHERE u.id = $1 AND p.name LIKE 'ASSIGN_ROLE_%'
     `;
-    
+
     const result = await this.db.query(query, [userId]);
-    return result.rows.map(row => row.name);
+    return result.rows.map((row) => row.name);
   }
 
   /**
@@ -230,19 +259,19 @@ export class EnhancedRolePermissionService {
    */
   private async calculateRoleLevel(role: any): Promise<number> {
     const roleName = role.name.toUpperCase();
-    
+
     const ROLE_HIERARCHY = {
-      'ADMIN': 2,
-      'USER': 1
+      ADMIN: 2,
+      USER: 1,
     };
-    
+
     if (ROLE_HIERARCHY[roleName]) {
       return ROLE_HIERARCHY[roleName];
     }
 
     // Pattern matching for custom roles
     if (roleName.includes('ADMIN')) return 2;
-    
+
     return 1; // Default to user level
   }
 
@@ -255,7 +284,7 @@ export class EnhancedRolePermissionService {
     const result = await this.db.query(query, [roleId]);
 
     if (result.rows.length === 0) return 1;
-    
+
     return this.calculateRoleLevel(result.rows[0]);
   }
 
@@ -263,9 +292,9 @@ export class EnhancedRolePermissionService {
    * Assign permission to higher-level roles
    */
   private async assignPermissionToHigherLevelRoles(
-    permissionId: string, 
-    roleLevel: number, 
-    tenantId: string
+    permissionId: string,
+    roleLevel: number,
+    tenantId: string,
   ): Promise<void> {
     const higherLevelRolesQuery = `
       SELECT id, name 
@@ -276,14 +305,17 @@ export class EnhancedRolePermissionService {
 
     for (const role of rolesResult.rows) {
       const thisRoleLevel = await this.calculateRoleLevel(role);
-      
+
       // Higher level roles can assign lower level roles
       if (thisRoleLevel > roleLevel) {
         const checkExistingQuery = `
           SELECT 1 FROM role_permissions 
           WHERE roleId = $1 AND permissionId = $2
         `;
-        const existing = await this.db.query(checkExistingQuery, [role.id, permissionId]);
+        const existing = await this.db.query(checkExistingQuery, [
+          role.id,
+          permissionId,
+        ]);
 
         if (existing.rows.length === 0) {
           const assignQuery = `
@@ -302,7 +334,7 @@ export class EnhancedRolePermissionService {
   async updateRoleAssignmentPermissions(
     roleId: string,
     newRoleName: string,
-    tenantId: string
+    tenantId: string,
   ): Promise<void> {
     // Get the old role name
     const roleQuery = `SELECT name FROM roles WHERE id = $1`;
@@ -311,8 +343,10 @@ export class EnhancedRolePermissionService {
     if (roleResult.rows.length === 0) return;
 
     const oldRoleName = roleResult.rows[0].name;
-    const oldPermissionName = this.generateRoleAssignmentPermission(oldRoleName);
-    const newPermissionName = this.generateRoleAssignmentPermission(newRoleName);
+    const oldPermissionName =
+      this.generateRoleAssignmentPermission(oldRoleName);
+    const newPermissionName =
+      this.generateRoleAssignmentPermission(newRoleName);
 
     if (oldPermissionName !== newPermissionName) {
       // Update the permission name
@@ -323,12 +357,12 @@ export class EnhancedRolePermissionService {
             updatedAt = NOW()
         WHERE name = $3 AND tenantId = $4
       `;
-      
+
       await this.db.query(updateQuery, [
         newPermissionName,
         `Permission to assign ${newRoleName} role to users`,
         oldPermissionName,
-        tenantId
+        tenantId,
       ]);
     }
   }
@@ -336,15 +370,21 @@ export class EnhancedRolePermissionService {
   /**
    * Delete role assignment permissions when role is deleted
    */
-  async deleteRoleAssignmentPermissions(roleName: string, tenantId: string): Promise<void> {
+  async deleteRoleAssignmentPermissions(
+    roleName: string,
+    tenantId: string,
+  ): Promise<void> {
     const permissionName = this.generateRoleAssignmentPermission(roleName);
-    
+
     // First get the permission ID
     const getPermissionQuery = `
       SELECT id FROM permissions 
       WHERE name = $1 AND tenantId = $2
     `;
-    const permissionResult = await this.db.query(getPermissionQuery, [permissionName, tenantId]);
+    const permissionResult = await this.db.query(getPermissionQuery, [
+      permissionName,
+      tenantId,
+    ]);
 
     if (permissionResult.rows.length > 0) {
       const permissionId = permissionResult.rows[0].id;

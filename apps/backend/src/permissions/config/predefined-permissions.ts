@@ -7,10 +7,9 @@ export interface PermissionDefinition {
   userType: 'ADMIN' | 'END_USER' | 'BOTH';
 }
 
-
 export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
   // 🔑 ADMIN-ONLY PERMISSIONS (Full System Control)
-  
+
   // User Management - Admin Only
   {
     name: 'MANAGE_USERS',
@@ -18,7 +17,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'manage',
     description: 'Full user management - create, read, update, delete users',
     module: 'User Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'VIEW_ALL_USERS',
@@ -26,7 +25,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'view_all',
     description: 'View all users in the system',
     module: 'User Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'RESET_USER_PASSWORD',
@@ -34,7 +33,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'reset_password',
     description: 'Reset any user password',
     module: 'User Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'ACTIVATE_DEACTIVATE_USERS',
@@ -42,9 +41,8 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'activate_deactivate',
     description: 'Activate or deactivate user accounts',
     module: 'User Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
-
 
   // Role & Permission Management - Admin Only
   {
@@ -53,7 +51,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'manage',
     description: 'Full role management - create, read, update, delete roles',
     module: 'Role Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'CREATE_ROLES',
@@ -61,7 +59,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'create',
     description: 'Create new roles',
     module: 'Role Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'READ_ROLES',
@@ -69,7 +67,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'read',
     description: 'Read and view roles',
     module: 'Role Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'UPDATE_ROLES',
@@ -77,7 +75,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'update',
     description: 'Update existing roles',
     module: 'Role Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'DELETE_ROLES',
@@ -85,7 +83,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'delete',
     description: 'Delete roles',
     module: 'Role Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'ASSIGN_ROLES',
@@ -93,15 +91,16 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'assign',
     description: 'Assign roles to users',
     module: 'Role Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'MANAGE_PERMISSIONS',
     resource: 'permissions',
     action: 'manage',
-    description: 'Full permission management - create, read, update, delete permissions',
+    description:
+      'Full permission management - create, read, update, delete permissions',
     module: 'Permission Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'CREATE_PERMISSION',
@@ -109,7 +108,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'create',
     description: 'Create new permissions',
     module: 'Permission Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'READ_PERMISSION',
@@ -117,7 +116,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'read',
     description: 'Read and view permissions',
     module: 'Permission Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'UPDATE_PERMISSION',
@@ -125,7 +124,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'update',
     description: 'Update existing permissions',
     module: 'Permission Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'DELETE_PERMISSION',
@@ -133,7 +132,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'delete',
     description: 'Delete permissions',
     module: 'Permission Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'CREATE_PERMISSIONS',
@@ -141,7 +140,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'create',
     description: 'Create new permissions (plural form)',
     module: 'Permission Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'ASSIGN_ROLES_PERMISSIONS',
@@ -149,18 +148,18 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'assign_permissions',
     description: 'Assign permissions to roles and roles to users',
     module: 'Role Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
 
-
-    // Tenant Management - Admin Only
+  // Tenant Management - Admin Only
   {
     name: 'MANAGE_TENANTS',
     resource: 'tenants',
     action: 'manage',
-    description: 'Full tenant management - create, read, update, delete tenants',
+    description:
+      'Full tenant management - create, read, update, delete tenants',
     module: 'Tenant Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'MANAGE_TENANT_USERS',
@@ -168,9 +167,8 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'manage_users',
     description: 'Manage users within tenants - add/remove users from tenants',
     module: 'Tenant Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
-
 
   // API Management - Admin Only
   {
@@ -179,7 +177,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'manage',
     description: 'Manage API keys, limits, and access',
     module: 'API Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
   {
     name: 'MANAGE_SYSTEM_CONFIG',
@@ -187,13 +185,11 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'manage_config',
     description: 'Manage system configuration and settings',
     module: 'System Management',
-    userType: 'ADMIN'
+    userType: 'ADMIN',
   },
 
-
-
   //// 👤 END USER PERMISSIONS (Limited Self-Service)
-  
+
   // Self Profile Management
   {
     name: 'VIEW_OWN_PROFILE',
@@ -201,7 +197,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'view_own_profile',
     description: 'View own user profile and information',
     module: 'User Management',
-    userType: 'END_USER'
+    userType: 'END_USER',
   },
   {
     name: 'UPDATE_OWN_PROFILE',
@@ -209,7 +205,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'update_own_profile',
     description: 'Update own profile information (name, phone, etc.)',
     module: 'User Management',
-    userType: 'END_USER'
+    userType: 'END_USER',
   },
   {
     name: 'CHANGE_OWN_PASSWORD',
@@ -217,7 +213,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'change_own_password',
     description: 'Change own password',
     module: 'User Management',
-    userType: 'END_USER'
+    userType: 'END_USER',
   },
   {
     name: 'UPDATE_OWN_SETTINGS',
@@ -225,7 +221,7 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'update_own_settings',
     description: 'Update own user preferences and settings',
     module: 'User Management',
-    userType: 'END_USER'
+    userType: 'END_USER',
   },
   {
     name: 'VIEW_OWN_ACTIVITY',
@@ -233,12 +229,11 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'view_own_activity',
     description: 'View own activity and access history',
     module: 'User Management',
-    userType: 'END_USER'
+    userType: 'END_USER',
   },
 
-
   /// 🔄 SHARED PERMISSIONS (Both Admin and End User)
-  
+
   // Basic System Access
   {
     name: 'ACCESS_SYSTEM',
@@ -246,21 +241,27 @@ export const PREDEFINED_PERMISSIONS: PermissionDefinition[] = [
     action: 'access',
     description: 'Basic system access and login',
     module: 'System Access',
-    userType: 'BOTH'
-  }
-]
+    userType: 'BOTH',
+  },
+];
 
-  // Helper function to get permissions by module
+// Helper function to get permissions by module
 export function getPermissionsByModule(module: string): PermissionDefinition[] {
-  return PREDEFINED_PERMISSIONS.filter(permission => permission.module === module);
+  return PREDEFINED_PERMISSIONS.filter(
+    (permission) => permission.module === module,
+  );
 }
 
 // Helper function to get all modules
 export function getAllModules(): string[] {
-  return [...new Set(PREDEFINED_PERMISSIONS.map(permission => permission.module))];
+  return [
+    ...new Set(PREDEFINED_PERMISSIONS.map((permission) => permission.module)),
+  ];
 }
 
 // Helper function to get permission by name
-export function getPermissionByName(name: string): PermissionDefinition | undefined {
-  return PREDEFINED_PERMISSIONS.find(permission => permission.name === name);
+export function getPermissionByName(
+  name: string,
+): PermissionDefinition | undefined {
+  return PREDEFINED_PERMISSIONS.find((permission) => permission.name === name);
 }

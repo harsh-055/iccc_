@@ -2,45 +2,46 @@ import { IsNotEmpty, IsString, IsUUID, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePermissionDto {
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'The name of the permission',
-    example: 'READ_USERS' 
+    example: 'READ_USERS',
   })
   @IsNotEmpty({ message: 'Permission name is required' })
   @IsString({ message: 'Permission name must be a string' })
   name: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'The resource this permission applies to',
-    example: 'users' 
+    example: 'users',
   })
   @IsNotEmpty({ message: 'Resource is required' })
   @IsString({ message: 'Resource must be a string' })
   resource: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'The action this permission allows',
-    example: 'read' 
+    example: 'read',
   })
   @IsNotEmpty({ message: 'Action is required' })
   @IsString({ message: 'Action must be a string' })
   action: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Description of the permission',
     example: 'Allows reading user data',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString({ message: 'Description must be a string' })
   description?: string;
 
-  @ApiProperty({ 
-    description: 'ID of the tenant this permission belongs to (null for global permissions)',
+  @ApiProperty({
+    description:
+      'ID of the tenant this permission belongs to (null for global permissions)',
     example: 'uuid-string',
-    required: false 
+    required: false,
   })
   @IsOptional()
   @IsUUID('4', { message: 'Tenant ID must be a valid UUID' })
   tenantId?: string;
-} 
+}

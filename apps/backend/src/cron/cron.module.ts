@@ -2,9 +2,7 @@ import { Module } from '@nestjs/common';
 import { CronService } from './cron.service';
 
 @Module({
-    imports:[],
-    providers:[CronService]
+  imports: [],
+  providers: [CronService],
 })
-export class CronModule {
-    
-}
+export class CronModule {}

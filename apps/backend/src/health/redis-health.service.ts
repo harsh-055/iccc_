@@ -24,7 +24,7 @@
 //     // @InjectRedis() private readonly redis: Redis,
 //     private readonly configService: ConfigService
 //   ) {}
-// // 
+// //
 //   async checkHealth(): Promise<RedisHealthStatus> {
 //     // Redis functionality commented out
 //     return {
@@ -72,4 +72,4 @@
 //       message: 'Redis functionality has been disabled'
 //     };
 //   }
-// } 
+// }

@@ -1,4 +1,9 @@
-import { Injectable, ForbiddenException, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { DefaultRolesService } from '../role/service/default-role.service';
 // import { InjectRedis } from '@nestjs-modules/ioredis';
@@ -24,8 +29,8 @@ export class RbacService {
    * Simplified for Admin/User system
    */
   private readonly ROLE_HIERARCHY = {
-    'USER': 1,
-    'ADMIN': 2
+    USER: 1,
+    ADMIN: 2,
   };
 
   /**
@@ -34,15 +39,19 @@ export class RbacService {
    * Simplified for Admin/User system
    */
   async hasHierarchicalPermission(
-    userId: string, 
-    resource: string, 
-    action: string, 
+    userId: string,
+    resource: string,
+    action: string,
     targetUserId?: string,
-    targetLevel?: number
+    targetLevel?: number,
   ): Promise<boolean> {
     try {
       // 1. Check if user has the basic permission
-      const hasBasicPermission = await this.hasPermission(userId, resource, action);
+      const hasBasicPermission = await this.hasPermission(
+        userId,
+        resource,
+        action,
+      );
       if (!hasBasicPermission) {
         return false;
       }
@@ -54,31 +63,44 @@ export class RbacService {
       }
 
       // 3. For user management operations, enforce hierarchy
-      if (resource === 'users' && ['create', 'update', 'delete'].includes(action)) {
+      if (
+        resource === 'users' &&
+        ['create', 'update', 'delete'].includes(action)
+      ) {
         if (targetUserId) {
-          const targetUserLevel = await this.getUserHierarchyLevel(targetUserId);
-          
+          const targetUserLevel =
+            await this.getUserHierarchyLevel(targetUserId);
+
           // Can only manage users at lower levels (userLevel > targetUserLevel)
           if (userLevel <= targetUserLevel) {
-            this.logger.warn(`Hierarchy violation: User level ${userLevel} cannot manage user level ${targetUserLevel}`);
+            this.logger.warn(
+              `Hierarchy violation: User level ${userLevel} cannot manage user level ${targetUserLevel}`,
+            );
             return false;
           }
         }
-        
+
         if (targetLevel) {
           // Can only create users at lower levels
           if (userLevel <= targetLevel) {
-            this.logger.warn(`Hierarchy violation: User level ${userLevel} cannot create user at level ${targetLevel}`);
+            this.logger.warn(
+              `Hierarchy violation: User level ${userLevel} cannot create user at level ${targetLevel}`,
+            );
             return false;
           }
         }
       }
 
       // 4. For role management operations, enforce hierarchy
-      if (resource === 'roles' && ['create', 'update', 'delete'].includes(action)) {
+      if (
+        resource === 'roles' &&
+        ['create', 'update', 'delete'].includes(action)
+      ) {
         // Only ADMIN can manage roles
         if (userLevel < 2) {
-          this.logger.warn(`Hierarchy violation: User level ${userLevel} cannot manage roles`);
+          this.logger.warn(
+            `Hierarchy violation: User level ${userLevel} cannot manage roles`,
+          );
           return false;
         }
       }
@@ -87,14 +109,18 @@ export class RbacService {
       if (resource === 'tenants') {
         // Only ADMIN can manage tenants
         if (userLevel < 2) {
-          this.logger.warn(`Hierarchy violation: User level ${userLevel} cannot manage tenants`);
+          this.logger.warn(
+            `Hierarchy violation: User level ${userLevel} cannot manage tenants`,
+          );
           return false;
         }
       }
 
       return true;
     } catch (error) {
-      this.logger.error(`Error checking hierarchical permission: ${error.message}`);
+      this.logger.error(
+        `Error checking hierarchical permission: ${error.message}`,
+      );
       return false;
     }
   }
@@ -105,7 +131,8 @@ export class RbacService {
   private async getUserHierarchyLevel(userId: string): Promise<number> {
     try {
       // Get user with their roles
-      const userResult = await this.database.query(`
+      const userResult = await this.database.query(
+        `
         SELECT u.*,
                COALESCE(
                  json_agg(
@@ -121,7 +148,9 @@ export class RbacService {
         LEFT JOIN roles r ON ur.role_id = r.id
         WHERE u.id = $1
         GROUP BY u.id
-      `, [userId]);
+      `,
+        [userId],
+      );
 
       if (userResult.rows.length === 0) {
         return 0;
@@ -131,8 +160,8 @@ export class RbacService {
       const roles = user.roles || [];
 
       // Check for Admin role
-      const hasAdminRole = roles.some(role => 
-        role.name.toLowerCase().includes('admin')
+      const hasAdminRole = roles.some((role) =>
+        role.name.toLowerCase().includes('admin'),
       );
 
       if (hasAdminRole) {
@@ -151,20 +180,20 @@ export class RbacService {
    * ✅ Check hierarchical permission and throw exception if not authorized
    */
   async checkHierarchicalPermission(
-    userId: string, 
-    resource: string, 
-    action: string, 
+    userId: string,
+    resource: string,
+    action: string,
     targetUserId?: string,
-    targetLevel?: number
+    targetLevel?: number,
   ): Promise<void> {
     const hasPermission = await this.hasHierarchicalPermission(
-      userId, 
-      resource, 
-      action, 
-      targetUserId, 
-      targetLevel
+      userId,
+      resource,
+      action,
+      targetUserId,
+      targetLevel,
     );
-    
+
     if (!hasPermission) {
       const userLevel = await this.getUserHierarchyLevel(userId);
       throw new ForbiddenException({
@@ -173,8 +202,8 @@ export class RbacService {
           userLevel,
           action,
           resource,
-          reason: 'Insufficient hierarchy level or permission denied'
-        }
+          reason: 'Insufficient hierarchy level or permission denied',
+        },
       });
     }
   }
@@ -186,7 +215,7 @@ export class RbacService {
   async getManageableUsers(userId: string): Promise<string[]> {
     try {
       const userLevel = await this.getUserHierarchyLevel(userId);
-      
+
       if (userLevel === 0) {
         return [];
       }
@@ -199,10 +228,10 @@ export class RbacService {
       // Admins can manage all users
       const allUsersResult = await this.database.query(
         `SELECT id FROM users`,
-        []
+        [],
       );
 
-      return allUsersResult.rows.map(user => user.id);
+      return allUsersResult.rows.map((user) => user.id);
     } catch (error) {
       this.logger.error(`Error getting manageable users: ${error.message}`);
       return [];
@@ -215,7 +244,11 @@ export class RbacService {
    * OPTIMIZED: Check permission with simple Redis cache (90% less Redis ops)
    * Simplified for Admin/User system
    */
-  async hasPermission(userId: string, resource: string, action: string): Promise<boolean> {
+  async hasPermission(
+    userId: string,
+    resource: string,
+    action: string,
+  ): Promise<boolean> {
     // 🚀 CACHING DISABLED: Direct database lookup for security and reliability
     // This ensures permissions are always accurate and up-to-date
     return await this.checkPermissionFromDB(userId, resource, action);
@@ -225,10 +258,15 @@ export class RbacService {
    * Internal method to check permission from database
    * Updated for DatabaseService with raw SQL
    */
-  private async checkPermissionFromDB(userId: string, resource: string, action: string): Promise<boolean> {
+  private async checkPermissionFromDB(
+    userId: string,
+    resource: string,
+    action: string,
+  ): Promise<boolean> {
     try {
       // Get user with all their permissions from various sources
-      const userResult = await this.database.query(`
+      const userResult = await this.database.query(
+        `
         SELECT u.*,
                -- Direct permissions
                COALESCE(
@@ -262,7 +300,9 @@ export class RbacService {
                ) as role_permissions
         FROM users u
         WHERE u.id = $1
-      `, [userId]);
+      `,
+        [userId],
+      );
 
       if (userResult.rows.length === 0) {
         console.log(`[RBAC] User not found for userId=${userId}`);
@@ -280,7 +320,8 @@ export class RbacService {
       // Check direct permissions
       const directPermissions = user.direct_permissions || [];
       const hasDirectPermission = directPermissions.some(
-        permission => permission.resource === resource && permission.action === action
+        (permission) =>
+          permission.resource === resource && permission.action === action,
       );
 
       if (hasDirectPermission) {
@@ -290,7 +331,8 @@ export class RbacService {
       // Check role permissions
       const rolePermissions = user.role_permissions || [];
       const hasRolePermission = rolePermissions.some(
-        permission => permission.resource === resource && permission.action === action
+        (permission) =>
+          permission.resource === resource && permission.action === action,
       );
 
       return hasRolePermission;
@@ -320,12 +362,15 @@ export class RbacService {
   /**
    * Warm up cache for common permissions for a user
    */
-  async warmUpUserPermissionCache(userId: string, commonPermissions: Array<{resource: string, action: string}>): Promise<void> {
+  async warmUpUserPermissionCache(
+    userId: string,
+    commonPermissions: Array<{ resource: string; action: string }>,
+  ): Promise<void> {
     // Pre-load common permissions into cache
     await Promise.all(
-      commonPermissions.map(({ resource, action }) => 
-        this.hasPermission(userId, resource, action)
-      )
+      commonPermissions.map(({ resource, action }) =>
+        this.hasPermission(userId, resource, action),
+      ),
     );
   }
 
@@ -337,7 +382,6 @@ export class RbacService {
     try {
       // Get all tracked cache keys from the master tracking set
       // const allTrackedKeys = await this.redisService.smembers('rbac_all_keys');
-      
       // if (allTrackedKeys.length > 0) {
       //   // Delete all tracked keys in batches to avoid memory issues
       //   const batchSize = 100;
@@ -345,30 +389,25 @@ export class RbacService {
       //     const batch = allTrackedKeys.slice(i, i + batchSize);
       //     await this.redisService.del(...batch);
       //   }
-        
       //   // Clear the master tracking set
       //   await this.redisService.del('rbac_all_keys');
       // }
-      
       // Get user-specific tracking sets using SCAN instead of KEYS
       // let cursor = '0';
       // const userTrackingSets: string[] = [];
-      
       // do {
       //   const result = await this.redisService.scan(cursor, 'MATCH', 'rbac_keys:*', 'COUNT', 100);
       //   cursor = result[0];
       //   userTrackingSets.push(...result[1]);
       // } while (cursor !== '0');
-      
       // Clean up user tracking sets
       // if (userTrackingSets.length > 0) {
       //   await this.redisService.del(...userTrackingSets);
       // }
-      
       // this.logger.log(`Cleared ${allTrackedKeys.length} RBAC cache keys and ${userTrackingSets.length} tracking sets`);
     } catch (error) {
       this.logger.error('Error clearing RBAC cache:', error);
-      
+
       // Final fallback: clear specific patterns with SCAN (no KEYS)
       try {
         // const patterns = ['rbac:*', 'admin:*', 'rbac_keys:*']; // Changed from superadmin to admin
@@ -384,7 +423,10 @@ export class RbacService {
         // }
         this.logger.log('Fallback RBAC cache clear completed using SCAN');
       } catch (fallbackError) {
-        this.logger.error('Even fallback RBAC cache clear failed:', fallbackError);
+        this.logger.error(
+          'Even fallback RBAC cache clear failed:',
+          fallbackError,
+        );
       }
     }
   }
@@ -395,20 +437,16 @@ export class RbacService {
   async clearAllUserCaches(): Promise<void> {
     try {
       // 🚀 CACHING DISABLED: No memory cache to clear
-      
       // Clear Redis cache using pattern matching
       // const patterns = ['rbac:*', 'admin:*']; // Changed from superadmin to admin
-      
       // for (const pattern of patterns) {
       //   let cursor = '0';
       //   const keysToDelete: string[] = [];
-        
       //   do {
       //     const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
       //     cursor = result[0];
       //     keysToDelete.push(...result[1]);
       //   } while (cursor !== '0');
-        
       //   if (keysToDelete.length > 0) {
       //     // Delete keys in batches to avoid memory issues
       //     const batchSize = 100;
@@ -418,7 +456,6 @@ export class RbacService {
       //     }
       //   }
       // }
-      
       // this.logger.log('All RBAC caches cleared successfully');
     } catch (error) {
       this.logger.error('Error clearing all RBAC caches:', error);
@@ -428,11 +465,17 @@ export class RbacService {
   /**
    * Check permission and throw ForbiddenException if not authorized
    */
-  async checkPermission(userId: string, resource: string, action: string): Promise<void> {
+  async checkPermission(
+    userId: string,
+    resource: string,
+    action: string,
+  ): Promise<void> {
     const hasPermission = await this.hasPermission(userId, resource, action);
-    
+
     if (!hasPermission) {
-      throw new ForbiddenException(`User does not have permission to ${action} ${resource}`);
+      throw new ForbiddenException(
+        `User does not have permission to ${action} ${resource}`,
+      );
     }
   }
 
@@ -441,20 +484,20 @@ export class RbacService {
    * Simplified for Admin/User system
    */
   async createRole(
-    creatorId: string, 
-    name: string, 
-    description: string, 
+    creatorId: string,
+    name: string,
+    description: string,
     permissionIds: string[],
-    tenantId?: string
+    tenantId?: string,
   ) {
     // Check if user has permission to create roles
     await this.checkPermission(creatorId, 'roles', 'create');
-    
+
     // Create the role
     const roleResult = await this.database.query(
       `INSERT INTO roles (name, description, is_system, tenant_id, created_by, created_at, updated_at) 
        VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING *`,
-      [name, description, false, tenantId, creatorId]
+      [name, description, false, tenantId, creatorId],
     );
 
     const role = roleResult[0];
@@ -465,7 +508,7 @@ export class RbacService {
         await this.database.query(
           `INSERT INTO role_permissions (role_id, permission_id, assigned_at) 
            VALUES ($1, $2, NOW())`,
-          [role.id, permissionId]
+          [role.id, permissionId],
         );
       }
     }
@@ -479,12 +522,12 @@ export class RbacService {
   async assignRoleToUser(adminId: string, userId: string, roleId: string) {
     // Check if admin has permission to assign roles
     await this.checkPermission(adminId, 'user-roles', 'create');
-    
+
     // Assign role to user
     const result = await this.database.query(
       `INSERT INTO user_roles (user_id, role_id, assigned_at) 
        VALUES ($1, $2, NOW()) RETURNING *`,
-      [userId, roleId]
+      [userId, roleId],
     );
 
     return result[0];
@@ -497,17 +540,23 @@ export class RbacService {
     // Check if user has explicit self-edit permission
     const selfPermissionNames = [
       'UPDATE_OWN_PROFILE',
-      'CHANGE_OWN_PASSWORD', 
+      'CHANGE_OWN_PASSWORD',
       'VIEW_OWN_PROFILE',
       'UPDATE_OWN_SETTINGS',
       'VIEW_OWN_DATA',
-      'DELETE_OWN_SESSIONS'
+      'DELETE_OWN_SESSIONS',
     ];
 
     // For specific self-edit actions, check if user has corresponding permission
     for (const permissionName of selfPermissionNames) {
-      if (action.includes('own') || permissionName.includes(action.toUpperCase())) {
-        const hasPermission = await this.hasPermissionByName(userId, permissionName);
+      if (
+        action.includes('own') ||
+        permissionName.includes(action.toUpperCase())
+      ) {
+        const hasPermission = await this.hasPermissionByName(
+          userId,
+          permissionName,
+        );
         if (hasPermission) {
           return true;
         }
@@ -525,7 +574,10 @@ export class RbacService {
   /**
    * OPTIMIZED: Check permission by name with memory + simple Redis cache
    */
-  async hasPermissionByName(userId: string, permissionName: string): Promise<boolean> {
+  async hasPermissionByName(
+    userId: string,
+    permissionName: string,
+  ): Promise<boolean> {
     // 🚀 CACHING DISABLED: Direct database lookup for security and reliability
     // This ensures permissions are always accurate and up-to-date
     return await this.checkPermissionByNameFromDB(userId, permissionName);
@@ -535,10 +587,14 @@ export class RbacService {
    * Internal method to check permission by name from database
    * Updated for DatabaseService with raw SQL
    */
-  private async checkPermissionByNameFromDB(userId: string, permissionName: string): Promise<boolean> {
+  private async checkPermissionByNameFromDB(
+    userId: string,
+    permissionName: string,
+  ): Promise<boolean> {
     try {
       // Get user with all their permissions from various sources
-      const userResult = await this.database.query(`
+      const userResult = await this.database.query(
+        `
         SELECT u.*,
                -- Direct permissions by name
                COALESCE(
@@ -572,7 +628,9 @@ export class RbacService {
                ) as role_permissions
         FROM users u
         WHERE u.id = $1
-      `, [userId]);
+      `,
+        [userId],
+      );
 
       if (userResult.rows.length === 0) {
         return false;
@@ -589,7 +647,7 @@ export class RbacService {
       // Check direct permissions by name
       const directPermissions = user.direct_permissions || [];
       const hasDirectPermission = directPermissions.some(
-        permission => permission.name === permissionName
+        (permission) => permission.name === permissionName,
       );
 
       if (hasDirectPermission) {
@@ -599,12 +657,14 @@ export class RbacService {
       // Check role permissions by name
       const rolePermissions = user.role_permissions || [];
       const hasRolePermission = rolePermissions.some(
-        permission => permission.name === permissionName
+        (permission) => permission.name === permissionName,
       );
 
       return hasRolePermission;
     } catch (error) {
-      this.logger.error(`Error checking permission by name from DB: ${error.message}`);
+      this.logger.error(
+        `Error checking permission by name from DB: ${error.message}`,
+      );
       return false;
     }
   }
@@ -615,7 +675,8 @@ export class RbacService {
    */
   async getUserPermissions(userId: string) {
     try {
-      const userResult = await this.database.query(`
+      const userResult = await this.database.query(
+        `
         SELECT u.*,
                -- Direct permissions
                COALESCE(
@@ -663,7 +724,9 @@ export class RbacService {
                ) as roles
         FROM users u
         WHERE u.id = $1
-      `, [userId]);
+      `,
+        [userId],
+      );
 
       if (userResult.rows.length === 0) {
         return [];
@@ -675,13 +738,16 @@ export class RbacService {
 
       // Combine permissions, avoiding duplicates
       const allPermissions = [...directPermissions];
-      
+
       // Add role permissions (avoiding duplicates)
-      rolePermissions.forEach(rolePermission => {
-        if (!allPermissions.some(p => 
-          p.resource === rolePermission.resource && 
-          p.action === rolePermission.action
-        )) {
+      rolePermissions.forEach((rolePermission) => {
+        if (
+          !allPermissions.some(
+            (p) =>
+              p.resource === rolePermission.resource &&
+              p.action === rolePermission.action,
+          )
+        ) {
           allPermissions.push(rolePermission);
         }
       });
@@ -691,7 +757,7 @@ export class RbacService {
         directPermissions: directPermissions.length,
         rolePermissions: rolePermissions.length,
         totalPermissions: allPermissions.length,
-        roles: (user.roles || []).map(r => r.name)
+        roles: (user.roles || []).map((r) => r.name),
       });
 
       return allPermissions;
@@ -709,10 +775,10 @@ export class RbacService {
       return null;
     }
 
-    const lowerRoleNames = roleNames.map(name => name.toLowerCase());
+    const lowerRoleNames = roleNames.map((name) => name.toLowerCase());
 
     // Check for Admin
-    if (lowerRoleNames.some(name => name.includes('admin'))) {
+    if (lowerRoleNames.some((name) => name.includes('admin'))) {
       return 'ADMIN';
     }
 
@@ -726,25 +792,20 @@ export class RbacService {
   async invalidateUserCache(userId: string): Promise<void> {
     try {
       // 🚀 CACHING DISABLED: No memory cache to clear
-
       // Clear Redis cache with simple pattern scan (no complex tracking sets)
       // const patterns = [`rbac:${userId}:*`, `admin:${userId}`]; // Changed from superadmin to admin
-      
       // for (const pattern of patterns) {
       //   let cursor = '0';
       //   const keysToDeleteFromRedis: string[] = [];
-        
       //   do {
       //     const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 50);
       //     cursor = result[0];
       //     keysToDeleteFromRedis.push(...result[1]);
       //   } while (cursor !== '0');
-        
       //   if (keysToDeleteFromRedis.length > 0) {
       //     await this.redisService.del(...keysToDeleteFromRedis);
       //   }
       // }
-      
     } catch (error) {
       console.warn('[RBAC] Error invalidating user cache:', error.message);
     }

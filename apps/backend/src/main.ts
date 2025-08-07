@@ -69,17 +69,22 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  
+
   // Configure servers based on environment
   const isProduction = process.env.NODE_ENV === 'production';
-  const railwayUrl = process.env.RAILWAY_STATIC_URL || process.env.RAILWAY_PUBLIC_DOMAIN;
-  
+  const railwayUrl =
+    process.env.RAILWAY_STATIC_URL || process.env.RAILWAY_PUBLIC_DOMAIN;
+
   document.servers = [
     // Production server (Railway)
-    ...(isProduction && railwayUrl ? [{
-      url: `https://${railwayUrl}/api/v1`,
-      description: 'Production Server (Railway)',
-    }] : []),
+    ...(isProduction && railwayUrl
+      ? [
+          {
+            url: `https://${railwayUrl}/api/v1`,
+            description: 'Production Server (Railway)',
+          },
+        ]
+      : []),
     // Development server
     {
       url: `http://localhost:{port}/api/v1`,
@@ -103,10 +108,12 @@ async function bootstrap() {
   // Apply global exception filters and validation pipes
   // app.useGlobalFilters(new SupertokensExceptionFilter());
   // app.useGlobalPipes(new ZodValidationPipe());
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
   // app.useGlobalFilters(new HttpExceptionFilter());
 
   // Start the application
@@ -120,7 +127,7 @@ async function bootstrap() {
   //   const redisHealthService = app.get(RedisHealthService);
   //   console.log('🔍 Checking Redis health...');
   //   const healthStatus = await redisHealthService.checkHealthWithEnvironmentConfig();
-    
+
   //   if (healthStatus.status === 'healthy') {
   //     console.log('✅ Redis is healthy!');
   //     console.log(`   Host: ${healthStatus.redis.host}:${healthStatus.redis.port}`);

@@ -7,13 +7,12 @@ import { Cache } from 'cache-manager';
 export class LoggerMiddleware implements TRPCMiddleware {
   private readonly logger = new Logger(LoggerMiddleware.name);
 
-constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
-
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
   async use(opts: MiddlewareOptions<IAppContext>) {
     const start = Date.now();
     const { next, path, type } = opts;
-    const result:any = await next();
+    const result: any = await next();
     // const { req, res } = opts.ctx;
     // const key = `cacheReq:${req.ip}:${req.method}:${path}`;
 

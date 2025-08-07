@@ -58,4 +58,4 @@ export class PaginatedResponseDto<T> {
     example: true,
   })
   hasMore: boolean;
-} 
+}

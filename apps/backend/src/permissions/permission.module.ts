@@ -14,7 +14,6 @@ import { LocalauthModule } from '../localauth/localauth.module';
 
 @Module({
   imports: [
-
     LocalauthModule,
     UtilsModule,
     forwardRef(() => RoleModule),
@@ -23,11 +22,16 @@ import { LocalauthModule } from '../localauth/localauth.module';
   ],
   controllers: [PermissionController],
   providers: [
-    PermissionService, 
+    PermissionService,
     GlobalPermissionsService,
     PermissionGuard,
-    AuthPermissionGuard
+    AuthPermissionGuard,
   ],
-  exports: [PermissionService, GlobalPermissionsService, PermissionGuard, AuthPermissionGuard]
+  exports: [
+    PermissionService,
+    GlobalPermissionsService,
+    PermissionGuard,
+    AuthPermissionGuard,
+  ],
 })
 export class PermissionModule {}

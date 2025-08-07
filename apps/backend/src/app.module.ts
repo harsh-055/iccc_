@@ -25,6 +25,7 @@ import { PermissionModule } from './permissions/permission.module';
 import { RoleModule } from './role/role.module';
 import { RbacModule } from './rbac/rbac.module';
 import { UserModule } from './user/user.module';
+import { ManageModule } from './manage/manage.module';
 // Controllers & Services
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -39,15 +40,14 @@ import { TransportConsumer } from './consumers/transport.consumer';
 // WebSockets
 
 import { LocalauthModule } from './localauth/localauth.module';
-import {WebsocketModule} from './websocket/websocket.module';
-
+import { WebsocketModule } from './websocket/websocket.module';
 
 @Module({
   imports: [
     // Load Environment Variables and Validate
-    ConfigModule.forRoot({  
+    ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'production' ? undefined : 'dev.env',
+      envFilePath: process.env.NODE_ENV === 'production' ? undefined : '.env',
       validate,
     }),
 
@@ -56,14 +56,14 @@ import {WebsocketModule} from './websocket/websocket.module';
 
     // Authentication Module (Configuration moved to `auth.config.ts`)
     AuthModule.forRoot({
-      connectionURI: "http://localhost:3567",
+      connectionURI: 'http://localhost:3567',
       // apiKey: "<YOUR_API_KEY>", // If you're using an API key
       appInfo: {
-        appName: "lensAuth",
-        apiDomain: "http://localhost:80",  // Ensure this matches your backend API
-        websiteDomain: "http://localhost:3000",  // Set this to your frontend URL
-        apiBasePath: "/auth",
-        websiteBasePath: "/auth",
+        appName: 'lensAuth',
+        apiDomain: 'http://localhost:80', // Ensure this matches your backend API
+        websiteDomain: 'http://localhost:3000', // Set this to your frontend URL
+        apiBasePath: '/auth',
+        websiteBasePath: '/auth',
       },
     }),
 
@@ -119,13 +119,14 @@ import {WebsocketModule} from './websocket/websocket.module';
     RoleModule,
     RbacModule,
     UserModule,
+    ManageModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     TransportConsumer,
     // MailProcessor,
-    
+
     // Global Rate Limiting Guard
     {
       provide: APP_GUARD,
@@ -137,8 +138,6 @@ import {WebsocketModule} from './websocket/websocket.module';
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
     },
-
-   
   ],
 })
 export class AppModule {}

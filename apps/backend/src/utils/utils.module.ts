@@ -5,7 +5,12 @@ import { UtilsService } from './utils.service';
 import { LensSmsService } from './sms/lensSms.service';
 
 @Module({
-    providers: [UtilsService, LensMailService, LensWhatsAppService,LensSmsService], // Register all services
-    exports: [UtilsService, LensMailService, LensWhatsAppService,LensSmsService], // Export if needed outside UtilsModule
+  providers: [
+    UtilsService,
+    LensMailService,
+    LensWhatsAppService,
+    LensSmsService,
+  ], // Register all services
+  exports: [UtilsService, LensMailService, LensWhatsAppService, LensSmsService], // Export if needed outside UtilsModule
 })
 export class UtilsModule {}

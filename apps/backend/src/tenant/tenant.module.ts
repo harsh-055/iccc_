@@ -11,7 +11,7 @@ import { TenantGuard } from './guards/tenant.guard';
 
 @Module({
   imports: [
-    RbacModule, 
+    RbacModule,
     PermissionModule,
     forwardRef(() => RoleModule),
     JwtModule.registerAsync({
@@ -22,10 +22,10 @@ import { TenantGuard } from './guards/tenant.guard';
       }),
       inject: [ConfigService],
     }),
-    ConfigModule
+    ConfigModule,
   ],
   providers: [TenantService, TenantGuard],
   controllers: [TenantController],
   exports: [TenantService],
 })
-export class TenantModule {} 
+export class TenantModule {}

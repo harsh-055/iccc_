@@ -1,7 +1,15 @@
-import { Injectable, ForbiddenException, NotFoundException, ConflictException, InternalServerErrorException, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+  ConflictException,
+  InternalServerErrorException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { RbacService } from '../rbac/rbac.service';
 import { DatabaseService } from '../../database/database.service';
-import { CreateTenantDto } from './dto/create-tenant.dto' ;
+import { CreateTenantDto } from './dto/create-tenant.dto';
 import { RoleService } from '../role/role.service';
 
 @Injectable()
@@ -16,7 +24,10 @@ export class TenantService {
   /**
    * Create a new tenant
    */
-  async createTenant(adminId: string | null, data: { name: string; description?: string }) {
+  async createTenant(
+    adminId: string | null,
+    data: { name: string; description?: string },
+  ) {
     // Check if user has permission to create tenants if adminId is provided
     if (adminId) {
       await this.rbacService.checkPermission(adminId, 'tenants', 'create');
@@ -25,7 +36,7 @@ export class TenantService {
     const result = await this.database.query(
       `INSERT INTO tenants (name, description, is_active, created_at, updated_at) 
        VALUES ($1, $2, $3, NOW(), NOW()) RETURNING *`,
-      [data.name, data.description || null, true]
+      [data.name, data.description || null, true],
     );
 
     return result.rows[0];
@@ -39,7 +50,8 @@ export class TenantService {
     await this.rbacService.checkPermission(adminId, 'tenants', 'read');
 
     const [tenants, countResult] = await Promise.all([
-      this.database.query(`
+      this.database.query(
+        `
         SELECT t.*, 
                COUNT(DISTINCT u.id) as user_count
         FROM tenants t
@@ -47,16 +59,18 @@ export class TenantService {
         GROUP BY t.id
         ORDER BY t.name ASC
         LIMIT $1 OFFSET $2
-      `, [take, skip]),
-      this.database.query(`SELECT COUNT(*) as count FROM tenants`)
+      `,
+        [take, skip],
+      ),
+      this.database.query(`SELECT COUNT(*) as count FROM tenants`),
     ]);
 
     return {
-      tenants: tenants.rows.map(tenant => ({
+      tenants: tenants.rows.map((tenant) => ({
         ...tenant,
         _count: {
           users: parseInt(tenant.user_count) || 0,
-        }
+        },
       })),
       count: parseInt(countResult.rows[0].count),
       skip,
@@ -86,7 +100,7 @@ export class TenantService {
       ORDER BY t.name ASC
     `);
 
-    return tenants.rows.map(tenant => ({
+    return tenants.rows.map((tenant) => ({
       tenantId: tenant.tenant_id,
       tenantName: tenant.tenant_name,
       users: tenant.users || [],
@@ -100,7 +114,8 @@ export class TenantService {
     // Check if user has permission to read tenants
     await this.rbacService.checkPermission(adminId, 'tenants', 'read');
 
-    const result = await this.database.query(`
+    const result = await this.database.query(
+      `
       SELECT t.*, 
              COUNT(DISTINCT u.id) as user_count,
              COUNT(DISTINCT r.id) as role_count
@@ -109,7 +124,9 @@ export class TenantService {
       LEFT JOIN roles r ON t.id = r.tenant_id
       WHERE t.id = $1
       GROUP BY t.id
-    `, [tenantId]);
+    `,
+      [tenantId],
+    );
 
     if (result.rows.length === 0) {
       throw new NotFoundException(`Tenant with ID ${tenantId} not found`);
@@ -121,7 +138,7 @@ export class TenantService {
       _count: {
         users: parseInt(tenant.user_count) || 0,
         roles: parseInt(tenant.role_count) || 0,
-      }
+      },
     };
   }
 
@@ -132,7 +149,8 @@ export class TenantService {
     // Check if user has permission to read tenants
     await this.rbacService.checkPermission(adminId, 'tenants', 'read');
 
-    const result = await this.database.query(`
+    const result = await this.database.query(
+      `
       SELECT t.*,
              json_agg(
                json_build_object(
@@ -145,7 +163,9 @@ export class TenantService {
       LEFT JOIN users u ON t.id = u.tenant_id
       WHERE t.id = $1
       GROUP BY t.id
-    `, [tenantId]);
+    `,
+      [tenantId],
+    );
 
     if (result.rows.length === 0) {
       throw new NotFoundException(`Tenant with ID ${tenantId} not found`);
@@ -179,7 +199,7 @@ export class TenantService {
 
     const tenant = await this.database.query(
       `SELECT * FROM tenants WHERE id = $1`,
-      [tenantId]
+      [tenantId],
     );
 
     if (tenant.rows.length === 0) {
@@ -210,7 +230,7 @@ export class TenantService {
 
     const result = await this.database.query(
       `UPDATE tenants SET ${updateFields.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
-      updateValues
+      updateValues,
     );
 
     return result.rows[0];
@@ -238,7 +258,7 @@ export class TenantService {
 
     const result = await this.database.query(
       `UPDATE users SET tenant_id = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
-      [tenantId, userId]
+      [tenantId, userId],
     );
 
     return result.rows[0];
@@ -247,7 +267,11 @@ export class TenantService {
   /**
    * Remove a user from a tenant
    */
-  async removeUserFromTenant(adminId: string, userId: string, tenantId: string) {
+  async removeUserFromTenant(
+    adminId: string,
+    userId: string,
+    tenantId: string,
+  ) {
     // Check if user has permission to manage tenant users
     await this.rbacService.checkPermission(adminId, 'tenant-users', 'delete');
 
@@ -255,7 +279,7 @@ export class TenantService {
       `SELECT u.*, t.id as tenant_id FROM users u 
        LEFT JOIN tenants t ON u.tenant_id = t.id 
        WHERE u.id = $1`,
-      [userId]
+      [userId],
     );
 
     if (user.rows.length === 0) {
@@ -263,12 +287,14 @@ export class TenantService {
     }
 
     if (!user.rows[0].tenant_id || user.rows[0].tenant_id !== tenantId) {
-      throw new ForbiddenException(`User with ID ${userId} is not in tenant ${tenantId}`);
+      throw new ForbiddenException(
+        `User with ID ${userId} is not in tenant ${tenantId}`,
+      );
     }
 
     // Find the default tenant to move the user to
     const defaultTenant = await this.database.query(
-      `SELECT * FROM tenants WHERE name = 'Default' LIMIT 1`
+      `SELECT * FROM tenants WHERE name = 'Default' LIMIT 1`,
     );
 
     if (defaultTenant.rows.length === 0) {
@@ -277,7 +303,7 @@ export class TenantService {
 
     const result = await this.database.query(
       `UPDATE users SET tenant_id = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
-      [defaultTenant.rows[0].id, userId]
+      [defaultTenant.rows[0].id, userId],
     );
 
     return result.rows[0];
@@ -294,12 +320,12 @@ export class TenantService {
       email: string;
       password: string;
       phoneNumber?: string;
-    }
+    },
   ) {
     // Check if tenant name already exists
     const existingTenant = await this.database.query(
       `SELECT * FROM tenants WHERE name = $1`,
-      [tenantData.name]
+      [tenantData.name],
     );
 
     if (existingTenant.rows.length > 0) {
@@ -309,7 +335,7 @@ export class TenantService {
     // Check if user email already exists
     const existingUser = await this.database.query(
       `SELECT * FROM users WHERE email = $1`,
-      [AdminData.email]
+      [AdminData.email],
     );
 
     if (existingUser.rows.length > 0) {
@@ -321,7 +347,11 @@ export class TenantService {
       const tenantResult = await this.database.query(
         `INSERT INTO tenants (name, description, is_active, created_at, updated_at) 
          VALUES ($1, $2, $3, NOW(), NOW()) RETURNING *`,
-        [tenantData.name, tenantData.description || `${tenantData.name} organization`, true]
+        [
+          tenantData.name,
+          tenantData.description || `${tenantData.name} organization`,
+          true,
+        ],
       );
 
       const tenant = tenantResult.rows[0];
@@ -329,7 +359,7 @@ export class TenantService {
       // Create admin with all permissions and roles for this tenant
       const AdminResult = await this.roleService.createTenantAdmin(
         tenant.id,
-        AdminData
+        AdminData,
       );
 
       return {
@@ -339,14 +369,15 @@ export class TenantService {
           description: tenant.description,
           isActive: tenant.is_active,
           createdAt: tenant.created_at,
-          updatedAt: tenant.updated_at
+          updatedAt: tenant.updated_at,
         },
         Admin: AdminResult.user,
         setup: {
           permissionsCreated: AdminResult.permissions,
           role: AdminResult.role,
-          message: 'Tenant created successfully with admin and full permission setup'
-        }
+          message:
+            'Tenant created successfully with admin and full permission setup',
+        },
       };
     } catch (error) {
       // If there's an error and tenant was created, we might want to clean up
@@ -354,4 +385,4 @@ export class TenantService {
       throw error;
     }
   }
-} 
+}

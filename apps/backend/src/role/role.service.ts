@@ -1,4 +1,12 @@
-import { Injectable, NotFoundException, ConflictException, InternalServerErrorException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  InternalServerErrorException,
+  BadRequestException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { DatabaseService } from '../../database/database.service';
@@ -9,7 +17,7 @@ export class RoleService {
   constructor(
     private database: DatabaseService,
     @Inject(forwardRef(() => RbacService))
-    private rbacService: RbacService
+    private rbacService: RbacService,
   ) {}
 
   async create(createRoleDto: CreateRoleDto) {
@@ -18,22 +26,26 @@ export class RoleService {
     // Check if role name already exists in this tenant
     const existingRoleResult = await this.database.query(
       `SELECT id FROM roles WHERE name = $1 AND tenant_id = $2`,
-      [name, tenantId || null]
+      [name, tenantId || null],
     );
 
     if (existingRoleResult.rows.length > 0) {
-      throw new ConflictException(`Role with name "${name}" already exists in this tenant`);
+      throw new ConflictException(
+        `Role with name "${name}" already exists in this tenant`,
+      );
     }
 
     // Create the role
     const roleResult = await this.database.query(
       `INSERT INTO roles (name, description, tenant_id, is_system, created_at, updated_at) 
        VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING *`,
-      [name, description, tenantId, false] // is_system = false for custom roles
+      [name, description, tenantId, false], // is_system = false for custom roles
     );
 
     if (!roleResult || roleResult.rows.length === 0) {
-      throw new InternalServerErrorException('Failed to create role - no result returned from database');
+      throw new InternalServerErrorException(
+        'Failed to create role - no result returned from database',
+      );
     }
 
     const role = roleResult.rows[0];
@@ -45,12 +57,16 @@ export class RoleService {
           await this.database.query(
             `INSERT INTO role_permissions (role_id, permission_id, assigned_at) 
              VALUES ($1, $2, NOW())`,
-            [role.id, permissionId]
+            [role.id, permissionId],
           );
         } catch (error) {
           // If permission assignment fails, clean up the created role
-          await this.database.query(`DELETE FROM roles WHERE id = $1`, [role.id]);
-          throw new BadRequestException(`Failed to assign permission ${permissionId} to role: ${error.message}`);
+          await this.database.query(`DELETE FROM roles WHERE id = $1`, [
+            role.id,
+          ]);
+          throw new BadRequestException(
+            `Failed to assign permission ${permissionId} to role: ${error.message}`,
+          );
         }
       }
     }
@@ -68,27 +84,32 @@ export class RoleService {
       is_active: role.is_active,
       created_at: role.created_at,
       updated_at: role.updated_at,
-      permissions: permissionIds && permissionIds.length > 0 ? 
-        await this.getRolePermissions(role.id) : [],
+      permissions:
+        permissionIds && permissionIds.length > 0
+          ? await this.getRolePermissions(role.id)
+          : [],
       users: [], // No users assigned yet
-      user_count: 0
+      user_count: 0,
     };
   }
 
   private async getRolePermissions(roleId: string) {
-    const permissionsResult = await this.database.query(`
+    const permissionsResult = await this.database.query(
+      `
       SELECT p.id, p.name, p.resource, p.action, p.description
       FROM role_permissions rp
       JOIN permissions p ON rp.permission_id = p.id
       WHERE rp.role_id = $1
-    `, [roleId]);
+    `,
+      [roleId],
+    );
 
-    return permissionsResult.rows.map(p => ({
+    return permissionsResult.rows.map((p) => ({
       id: p.id,
       name: p.name,
       resource: p.resource,
       action: p.action,
-      description: p.description
+      description: p.description,
     }));
   }
 
@@ -131,11 +152,11 @@ export class RoleService {
     `);
 
     // Add status field for backward compatibility
-    return rolesResult.rows.map(role => ({
+    return rolesResult.rows.map((role) => ({
       ...role,
       status: role.is_active || true, // Default to true if is_active doesn't exist
       _count: { userRoles: role.user_count || 0 },
-      userRoles: (role.users || []).map(user => ({ user }))
+      userRoles: (role.users || []).map((user) => ({ user })),
     }));
   }
 
@@ -179,13 +200,13 @@ export class RoleService {
       ORDER BY r.created_at DESC
     `);
 
-    return customRolesResult.rows.map(role => ({
+    return customRolesResult.rows.map((role) => ({
       ...role,
       _count: {
         permissions: role.permission_count || 0,
-        userRoles: role.user_count || 0
+        userRoles: role.user_count || 0,
       },
-      userRoles: (role.users || []).map(user => ({ user }))
+      userRoles: (role.users || []).map((user) => ({ user })),
     }));
   }
 
@@ -201,14 +222,15 @@ export class RoleService {
     // Verify tenant exists
     const tenantResult = await this.database.query(
       `SELECT id FROM tenants WHERE id = $1`,
-      [tenantId]
+      [tenantId],
     );
 
     if (tenantResult.rows.length === 0) {
       throw new NotFoundException(`Tenant with ID "${tenantId}" not found`);
     }
 
-    const rolesResult = await this.database.query(`
+    const rolesResult = await this.database.query(
+      `
       SELECT r.*,
              COUNT(DISTINCT ur.user_id) as user_count,
              COALESCE(
@@ -245,17 +267,20 @@ export class RoleService {
       WHERE r.tenant_id = $1
       GROUP BY r.id
       ORDER BY r.name ASC
-    `, [tenantId]);
+    `,
+      [tenantId],
+    );
 
-    return rolesResult.rows.map(role => ({
+    return rolesResult.rows.map((role) => ({
       ...role,
       _count: { userRoles: role.user_count || 0 },
-      userRoles: (role.users || []).map(user => ({ user }))
+      userRoles: (role.users || []).map((user) => ({ user })),
     }));
   }
 
   async findOne(id: string) {
-    const roleResult = await this.database.query(`
+    const roleResult = await this.database.query(
+      `
       SELECT r.*,
              COUNT(DISTINCT ur.user_id) as user_count,
              COALESCE(
@@ -291,7 +316,9 @@ export class RoleService {
       LEFT JOIN users u ON ur.user_id = u.id
       WHERE r.id = $1
       GROUP BY r.id
-    `, [id]);
+    `,
+      [id],
+    );
 
     if (roleResult.rows.length === 0) {
       throw new NotFoundException(`Role with ID "${id}" not found`);
@@ -304,13 +331,21 @@ export class RoleService {
       ...role,
       status: role.is_active || true,
       _count: { userRoles: role.user_count || 0 },
-      userRoles: (role.users || []).map(user => ({ user }))
+      userRoles: (role.users || []).map((user) => ({ user })),
     };
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto) {
-    const { name, description, permissionIds, tenantId, userIds, isActive, status } = updateRoleDto;
-    
+    const {
+      name,
+      description,
+      permissionIds,
+      tenantId,
+      userIds,
+      isActive,
+      status,
+    } = updateRoleDto;
+
     // Handle both status and isActive fields (status takes precedence for backward compatibility)
     const activeStatus = status !== undefined ? status : isActive;
 
@@ -321,11 +356,13 @@ export class RoleService {
     if (name) {
       const existingRoleResult = await this.database.query(
         `SELECT id FROM roles WHERE name = $1 AND tenant_id = $2 AND id != $3`,
-        [name, tenantId || currentRole.tenant_id, id]
+        [name, tenantId || currentRole.tenant_id, id],
       );
 
       if (existingRoleResult.rows.length > 0) {
-        throw new ConflictException(`Role with name "${name}" already exists in this tenant`);
+        throw new ConflictException(
+          `Role with name "${name}" already exists in this tenant`,
+        );
       }
     }
 
@@ -333,21 +370,25 @@ export class RoleService {
     if (userIds && userIds.length > 0) {
       const existingUsersResult = await this.database.query(
         `SELECT id FROM users WHERE id = ANY($1::uuid[])`,
-        [userIds]
+        [userIds],
       );
 
-      const existingUserIds = existingUsersResult.rows.map(user => user.id);
-      const nonExistentUserIds = userIds.filter(id => !existingUserIds.includes(id));
-      
+      const existingUserIds = existingUsersResult.rows.map((user) => user.id);
+      const nonExistentUserIds = userIds.filter(
+        (id) => !existingUserIds.includes(id),
+      );
+
       if (nonExistentUserIds.length > 0) {
-        throw new NotFoundException(`Users not found: ${nonExistentUserIds.join(', ')}`);
+        throw new NotFoundException(
+          `Users not found: ${nonExistentUserIds.join(', ')}`,
+        );
       }
     }
 
     // Get all users with this role before making changes
     const previousUsersResult = await this.database.query(
       `SELECT user_id FROM user_roles WHERE role_id = $1`,
-      [id]
+      [id],
     );
 
     // Update the role
@@ -359,7 +400,7 @@ export class RoleService {
            is_active = COALESCE($4, is_active),
            updated_at = NOW()
        WHERE id = $5`,
-      [name, description, tenantId, activeStatus, id]
+      [name, description, tenantId, activeStatus, id],
     );
 
     // Update permissions if provided
@@ -367,7 +408,7 @@ export class RoleService {
       // Delete current role-permission relationships
       await this.database.query(
         `DELETE FROM role_permissions WHERE role_id = $1`,
-        [id]
+        [id],
       );
 
       // Create new role-permission relationships
@@ -376,19 +417,18 @@ export class RoleService {
           await this.database.query(
             `INSERT INTO role_permissions (role_id, permission_id, assigned_at) 
              VALUES ($1, $2, NOW())`,
-            [id, permissionId]
+            [id, permissionId],
           );
         }
       }
     }
 
-        // Update user assignments if provided
+    // Update user assignments if provided
     if (userIds !== undefined) {
       // Remove all existing user-role relationships for this role
-      await this.database.query(
-        `DELETE FROM user_roles WHERE role_id = $1`,
-        [id]
-      );
+      await this.database.query(`DELETE FROM user_roles WHERE role_id = $1`, [
+        id,
+      ]);
 
       // Create new user-role relationships
       if (userIds.length > 0) {
@@ -396,15 +436,15 @@ export class RoleService {
           await this.database.query(
             `INSERT INTO user_roles (user_id, role_id, assigned_at) 
              VALUES ($1, $2, NOW())`,
-            [userId, id]
+            [userId, id],
           );
         }
       }
 
       // Clear RBAC cache for all affected users (both previous and new)
       const allAffectedUserIds = [
-        ...previousUsersResult.rows.map(ur => ur.user_id),
-        ...userIds
+        ...previousUsersResult.rows.map((ur) => ur.user_id),
+        ...userIds,
       ];
       const uniqueAffectedUserIds = [...new Set(allAffectedUserIds)];
 
@@ -424,7 +464,7 @@ export class RoleService {
     // Add status field for backward compatibility
     return {
       ...updatedRole,
-      status: updatedRole.is_active
+      status: updatedRole.is_active,
     };
   }
 
@@ -435,19 +475,18 @@ export class RoleService {
     // Get all users with this role before deletion for cache clearing
     const usersWithRoleResult = await this.database.query(
       `SELECT user_id FROM user_roles WHERE role_id = $1`,
-      [id]
+      [id],
     );
 
     // Remove user-role relationships
-    await this.database.query(
-      `DELETE FROM user_roles WHERE role_id = $1`,
-      [id]
-    );
+    await this.database.query(`DELETE FROM user_roles WHERE role_id = $1`, [
+      id,
+    ]);
 
     // Remove role-permission relationships
     await this.database.query(
       `DELETE FROM role_permissions WHERE role_id = $1`,
-      [id]
+      [id],
     );
 
     // Clear RBAC cache for all users who had this role
@@ -458,10 +497,7 @@ export class RoleService {
     }
 
     // Remove the role
-    await this.database.query(
-      `DELETE FROM roles WHERE id = $1`,
-      [id]
-    );
+    await this.database.query(`DELETE FROM roles WHERE id = $1`, [id]);
 
     return { message: `Role with ID "${id}" deleted successfully` };
   }
@@ -473,7 +509,7 @@ export class RoleService {
     // Verify user exists
     const userResult = await this.database.query(
       `SELECT id FROM users WHERE id = $1`,
-      [userId]
+      [userId],
     );
 
     if (userResult.rows.length === 0) {
@@ -486,7 +522,7 @@ export class RoleService {
     // Check if assignment already exists
     const existingAssignmentResult = await this.database.query(
       `SELECT id FROM user_roles WHERE user_id = $1 AND role_id = $2`,
-      [userId, roleId]
+      [userId, roleId],
     );
 
     if (existingAssignmentResult.rows.length === 0) {
@@ -494,7 +530,7 @@ export class RoleService {
       await this.database.query(
         `INSERT INTO user_roles (user_id, role_id, assigned_at) 
          VALUES ($1, $2, NOW())`,
-        [userId, roleId]
+        [userId, roleId],
       );
     }
 
@@ -502,7 +538,8 @@ export class RoleService {
     await this.rbacService.clearUserPermissionCache(userId);
 
     // Return the user with roles
-    const userWithRolesResult = await this.database.query(`
+    const userWithRolesResult = await this.database.query(
+      `
       SELECT u.*,
              COALESCE(
                json_agg(
@@ -536,7 +573,9 @@ export class RoleService {
       LEFT JOIN roles r ON ur.role_id = r.id
       WHERE u.id = $1
       GROUP BY u.id
-    `, [userId]);
+    `,
+      [userId],
+    );
 
     return userWithRolesResult.rows[0];
   }
@@ -548,14 +587,16 @@ export class RoleService {
     // Verify all users exist
     const usersResult = await this.database.query(
       `SELECT id FROM users WHERE id = ANY($1::uuid[])`,
-      [userIds]
+      [userIds],
     );
 
-          const foundUserIds = usersResult.rows.map(user => user.id);
-    const notFoundUserIds = userIds.filter(id => !foundUserIds.includes(id));
+    const foundUserIds = usersResult.rows.map((user) => user.id);
+    const notFoundUserIds = userIds.filter((id) => !foundUserIds.includes(id));
 
     if (notFoundUserIds.length > 0) {
-      throw new NotFoundException(`Users not found: ${notFoundUserIds.join(', ')}`);
+      throw new NotFoundException(
+        `Users not found: ${notFoundUserIds.join(', ')}`,
+      );
     }
 
     // Verify role exists
@@ -564,11 +605,13 @@ export class RoleService {
     // Check for existing assignments to avoid duplicates
     const existingAssignmentsResult = await this.database.query(
       `SELECT user_id FROM user_roles WHERE user_id = ANY($1::uuid[]) AND role_id = $2`,
-      [userIds, roleId]
+      [userIds, roleId],
     );
 
-          const existingUserIds = existingAssignmentsResult.rows.map(assignment => assignment.user_id);
-    const newUserIds = userIds.filter(id => !existingUserIds.includes(id));
+    const existingUserIds = existingAssignmentsResult.rows.map(
+      (assignment) => assignment.user_id,
+    );
+    const newUserIds = userIds.filter((id) => !existingUserIds.includes(id));
 
     // Create user-role relationships for users who don't already have this role
     if (newUserIds.length > 0) {
@@ -576,7 +619,7 @@ export class RoleService {
         await this.database.query(
           `INSERT INTO user_roles (user_id, role_id, assigned_at) 
            VALUES ($1, $2, NOW())`,
-          [userId, roleId]
+          [userId, roleId],
         );
       }
 
@@ -589,7 +632,7 @@ export class RoleService {
     // Return summary of assignments
     const assignedUsersResult = await this.database.query(
       `SELECT id, name, email FROM users WHERE id = ANY($1::uuid[])`,
-      [userIds]
+      [userIds],
     );
 
     const role = await this.findOne(roleId);
@@ -599,7 +642,7 @@ export class RoleService {
       newAssignments: newUserIds.length,
       existingAssignments: existingUserIds.length,
       assignedUsers: assignedUsersResult,
-      role
+      role,
     };
   }
 
@@ -611,25 +654,31 @@ export class RoleService {
     const role = await this.findOne(roleId);
 
     // Get users with this role
-    const usersResult = await this.database.query(`
+    const usersResult = await this.database.query(
+      `
       SELECT u.id, u.email, u.name
       FROM user_roles ur
       JOIN users u ON ur.user_id = u.id
       WHERE ur.role_id = $1
-    `, [roleId]);
+    `,
+      [roleId],
+    );
 
     // Get permissions for this role
-    const permissionsResult = await this.database.query(`
+    const permissionsResult = await this.database.query(
+      `
       SELECT p.*
       FROM role_permissions rp
       JOIN permissions p ON rp.permission_id = p.id
       WHERE rp.role_id = $1
-    `, [roleId]);
+    `,
+      [roleId],
+    );
 
     return {
       role,
       users: usersResult,
-      permissions: permissionsResult
+      permissions: permissionsResult,
     };
   }
 
@@ -645,11 +694,11 @@ export class RoleService {
       // Generate a random 8-10 digit account ID
       const randomNum = Math.floor(Math.random() * 9999999999); // Up to 10 digits
       accountId = randomNum.toString().padStart(8, '0'); // Ensure minimum 8 digits
-      
+
       // Check if this account ID already exists
       const existingUserResult = await this.database.query(
         `SELECT id FROM users WHERE account_id = $1`,
-        [accountId]
+        [accountId],
       );
 
       if (existingUserResult.rows.length === 0) {
@@ -657,26 +706,30 @@ export class RoleService {
       }
 
       attempts++;
-      
     } while (attempts < maxAttempts);
 
     // If we've reached max attempts, throw an error
-    throw new Error('Unable to generate unique account ID after maximum attempts');
+    throw new Error(
+      'Unable to generate unique account ID after maximum attempts',
+    );
   }
 
   /**
    * Create a tenant admin with all tenant permissions (simplified from SuperAdmin)
    */
-  async createTenantAdmin(tenantId: string, userData: {
-    name: string;
-    email: string;
-    password: string;
-    phoneNumber?: string;
-  }) {
+  async createTenantAdmin(
+    tenantId: string,
+    userData: {
+      name: string;
+      email: string;
+      password: string;
+      phoneNumber?: string;
+    },
+  ) {
     // Verify tenant exists
     const tenantResult = await this.database.query(
       `SELECT * FROM tenants WHERE id = $1`,
-      [tenantId]
+      [tenantId],
     );
 
     if (tenantResult.rows.length === 0) {
@@ -688,7 +741,7 @@ export class RoleService {
     // Check if user already exists
     const existingUserResult = await this.database.query(
       `SELECT id FROM users WHERE email = $1`,
-      [userData.email]
+      [userData.email],
     );
 
     if (existingUserResult.rows.length > 0) {
@@ -706,14 +759,14 @@ export class RoleService {
       // Get or create tenant Admin role
       let tenantAdminRole = await this.database.query(
         `SELECT * FROM roles WHERE name = $1 AND tenant_id = $2`,
-        ['Admin', tenantId]
+        ['Admin', tenantId],
       );
 
       if (tenantAdminRole.rows.length === 0) {
         const createRoleResult = await this.database.query(
           `INSERT INTO roles (name, description, tenant_id, is_system, created_at, updated_at) 
            VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING *`,
-          ['Admin', `Administrator for ${tenant.name}`, tenantId, false]
+          ['Admin', `Administrator for ${tenant.name}`, tenantId, false],
         );
         tenantAdminRole = createRoleResult;
       }
@@ -727,7 +780,14 @@ export class RoleService {
       const userResult = await this.database.query(
         `INSERT INTO users (name, email, account_id, password, phone_number, tenant_id, created_at, updated_at) 
          VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW()) RETURNING *`,
-        [userData.name, userData.email, accountId, hashedPassword, userData.phoneNumber, tenantId]
+        [
+          userData.name,
+          userData.email,
+          accountId,
+          hashedPassword,
+          userData.phoneNumber,
+          tenantId,
+        ],
       );
 
       const user = userResult.rows[0];
@@ -736,13 +796,13 @@ export class RoleService {
       await this.database.query(
         `INSERT INTO user_roles (user_id, role_id, assigned_at) 
          VALUES ($1, $2, NOW())`,
-        [user.id, adminRole.id]
+        [user.id, adminRole.id],
       );
 
       // Get permissions count
       const permissionsCountResult = await this.database.query(
         `SELECT COUNT(*) as count FROM role_permissions WHERE role_id = $1`,
-        [adminRole.id]
+        [adminRole.id],
       );
 
       return {
@@ -750,18 +810,20 @@ export class RoleService {
           id: user.id,
           name: user.name,
           email: user.email,
-          tenantId: user.tenant_id
+          tenantId: user.tenant_id,
         },
         role: {
           id: adminRole.id,
           name: adminRole.name,
           description: adminRole.description,
-          tenantId: adminRole.tenant_id
+          tenantId: adminRole.tenant_id,
         },
-        permissions: permissionsCountResult.rows[0].count
+        permissions: permissionsCountResult.rows[0].count,
       };
     } catch (error) {
-      throw new InternalServerErrorException(`Failed to create tenant admin: ${error.message}`);
+      throw new InternalServerErrorException(
+        `Failed to create tenant admin: ${error.message}`,
+      );
     }
   }
 
@@ -772,7 +834,7 @@ export class RoleService {
     // Verify tenant exists
     const tenantResult = await this.database.query(
       `SELECT * FROM tenants WHERE id = $1`,
-      [tenantId]
+      [tenantId],
     );
 
     if (tenantResult.rows.length === 0) {
@@ -784,7 +846,7 @@ export class RoleService {
     try {
       // Get all permissions (no tenant_id filtering needed)
       const allPermissionsResult = await this.database.query(
-        `SELECT * FROM permissions`
+        `SELECT * FROM permissions`,
       );
 
       // Use all permissions for tenant roles
@@ -795,21 +857,22 @@ export class RoleService {
       const tenantRoles = [];
 
       for (const roleName of systemRoles) {
-        let tenantRoleResult = await this.database.query(
+        const tenantRoleResult = await this.database.query(
           `SELECT * FROM roles WHERE name = $1 AND tenant_id = $2`,
-          [roleName, tenantId]
+          [roleName, tenantId],
         );
 
         if (tenantRoleResult.rows.length === 0) {
           // Create tenant role
-          const description = roleName === 'Admin' 
-            ? `Administrator for ${tenant.name}` 
-            : `User for ${tenant.name}`;
+          const description =
+            roleName === 'Admin'
+              ? `Administrator for ${tenant.name}`
+              : `User for ${tenant.name}`;
 
           const createRoleResult = await this.database.query(
             `INSERT INTO roles (name, description, tenant_id, is_system, created_at, updated_at) 
              VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING *`,
-            [roleName, description, tenantId, false]
+            [roleName, description, tenantId, false],
           );
 
           const tenantRole = createRoleResult.rows[0];
@@ -820,40 +883,42 @@ export class RoleService {
             for (const permission of tenantPermissions) {
               const existingRolePermissionResult = await this.database.query(
                 `SELECT * FROM role_permissions WHERE role_id = $1 AND permission_id = $2`,
-                [tenantRole.id, permission.id]
+                [tenantRole.id, permission.id],
               );
 
               if (existingRolePermissionResult.rows.length === 0) {
                 await this.database.query(
                   `INSERT INTO role_permissions (role_id, permission_id, assigned_at) 
                    VALUES ($1, $2, NOW())`,
-                  [tenantRole.id, permission.id]
+                  [tenantRole.id, permission.id],
                 );
               }
             }
           } else if (roleName === 'User') {
             // User gets only self-service and view permissions
-            const userPermissions = tenantPermissions.filter(permission => {
+            const userPermissions = tenantPermissions.filter((permission) => {
               const action = permission.action.toLowerCase();
               const permissionName = permission.name.toLowerCase();
-              
-              return action.includes('read') || 
-                     action.includes('view') || 
-                     permissionName.includes('own') || 
-                     permissionName.includes('assigned');
+
+              return (
+                action.includes('read') ||
+                action.includes('view') ||
+                permissionName.includes('own') ||
+                permissionName.includes('assigned')
+              );
             });
 
             for (const permission of userPermissions) {
               const existingRolePermissionResult = await this.database.query(
                 `SELECT * FROM role_permissions WHERE role_id = $1 AND permission_id = $2`,
-                [tenantRole.id, permission.id]
+                [tenantRole.id, permission.id],
               );
 
               if (existingRolePermissionResult.rows.length === 0) {
                 await this.database.query(
                   `INSERT INTO role_permissions (role_id, permission_id, assigned_at) 
                    VALUES ($1, $2, NOW())`,
-                  [tenantRole.id, permission.id]
+                  [tenantRole.id, permission.id],
                 );
               }
             }
@@ -869,11 +934,13 @@ export class RoleService {
         tenantId,
         permissionsCreated: tenantPermissions.length,
         rolesCreated: tenantRoles.length,
-        adminRole: tenantRoles.find(r => r.name === 'Admin'),
-        tenant: tenant.name
+        adminRole: tenantRoles.find((r) => r.name === 'Admin'),
+        tenant: tenant.name,
       };
     } catch (error) {
-      throw new InternalServerErrorException(`Failed to seed tenant permissions: ${error.message}`);
+      throw new InternalServerErrorException(
+        `Failed to seed tenant permissions: ${error.message}`,
+      );
     }
   }
 
@@ -882,12 +949,14 @@ export class RoleService {
    */
   async getRolePermissionsByCategory(tenantId: string, roleId: string) {
     const startTime = Date.now();
-    console.log(`🔍 [${new Date().toISOString()}] Starting getRolePermissionsByCategory | RoleId: ${roleId} | TenantId: ${tenantId}`);
+    console.log(
+      `🔍 [${new Date().toISOString()}] Starting getRolePermissionsByCategory | RoleId: ${roleId} | TenantId: ${tenantId}`,
+    );
 
     // Verify tenant exists
     const tenantResult = await this.database.query(
       `SELECT * FROM tenants WHERE id = $1`,
-      [tenantId]
+      [tenantId],
     );
 
     if (tenantResult.rows.length === 0) {
@@ -897,73 +966,88 @@ export class RoleService {
     // Verify role exists and belongs to the tenant
     const roleResult = await this.database.query(
       `SELECT * FROM roles WHERE id = $1 AND tenant_id = $2`,
-      [roleId, tenantId]
+      [roleId, tenantId],
     );
 
     if (roleResult.rows.length === 0) {
-      throw new NotFoundException(`Role with ID "${roleId}" not found in this tenant`);
+      throw new NotFoundException(
+        `Role with ID "${roleId}" not found in this tenant`,
+      );
     }
 
     const role = roleResult.rows[0];
 
     // Get all permissions (no tenant filtering)
     const allTenantPermissionsResult = await this.database.query(
-      `SELECT * FROM permissions ORDER BY resource ASC, action ASC`
+      `SELECT * FROM permissions ORDER BY resource ASC, action ASC`,
     );
 
     // Filter permissions based on role type (Admin gets all, User gets limited)
-    const availablePermissions = role.name === 'Admin' 
-      ? allTenantPermissionsResult.rows 
-      : allTenantPermissionsResult.rows.filter(permission => {
-          const action = permission.action.toLowerCase();
-          const permissionName = permission.name.toLowerCase();
-          
-          return action.includes('read') || 
-                 action.includes('view') || 
-                 permissionName.includes('own') || 
-                 permissionName.includes('assigned');
-        });
+    const availablePermissions =
+      role.name === 'Admin'
+        ? allTenantPermissionsResult.rows
+        : allTenantPermissionsResult.rows.filter((permission) => {
+            const action = permission.action.toLowerCase();
+            const permissionName = permission.name.toLowerCase();
+
+            return (
+              action.includes('read') ||
+              action.includes('view') ||
+              permissionName.includes('own') ||
+              permissionName.includes('assigned')
+            );
+          });
 
     // Get permissions assigned to this role
-    const rolePermissionsResult = await this.database.query(`
+    const rolePermissionsResult = await this.database.query(
+      `
       SELECT p.*
       FROM role_permissions rp
       JOIN permissions p ON rp.permission_id = p.id
       WHERE rp.role_id = $1
-    `, [roleId]);
+    `,
+      [roleId],
+    );
 
     // Create a set of permission IDs that the role has
-    const rolePermissionIds = new Set(rolePermissionsResult.rows.map(p => p.id));
+    const rolePermissionIds = new Set(
+      rolePermissionsResult.rows.map((p) => p.id),
+    );
 
     // Group permissions by category (resource) and format the response
     const permissionsByCategory = {};
-    
-    availablePermissions.forEach(permission => {
+
+    availablePermissions.forEach((permission) => {
       const category = this.formatCategoryName(permission.resource);
-      const permissionName = this.formatPermissionName(permission.action, permission.resource);
-      
+      const permissionName = this.formatPermissionName(
+        permission.action,
+        permission.resource,
+      );
+
       if (!permissionsByCategory[category]) {
         permissionsByCategory[category] = [];
       }
-      
+
       permissionsByCategory[category].push({
         id: permission.id,
         category,
         name: permissionName,
         hasAccess: rolePermissionIds.has(permission.id),
         resource: permission.resource,
-        action: permission.action
+        action: permission.action,
       });
     });
 
     // Convert to array format
     const permissions = [];
-    Object.keys(permissionsByCategory).forEach(category => {
+    Object.keys(permissionsByCategory).forEach((category) => {
       permissions.push(...permissionsByCategory[category]);
     });
 
     const duration = Date.now() - startTime;
-    console.log(`✅ [${new Date().toISOString()}] getRolePermissionsByCategory completed | Duration: ${duration}ms | RoleId: ${roleId} | RoleType: ${role.name} | Filtered: ${availablePermissions.length}/${allTenantPermissionsResult.rows.length} permissions`);
+    console.log(
+      `✅ [${new Date().toISOString()}] getRolePermissionsByCategory completed | Duration: ${duration}ms | RoleId: ${roleId} | RoleType: ${role.name} | Filtered: ${availablePermissions.length}/${allTenantPermissionsResult.rows.length} permissions`,
+    );
 
     return {
       role: {
@@ -971,71 +1055,84 @@ export class RoleService {
         name: role.name,
         description: role.description,
         tenantId: role.tenant_id,
-        roleType: role.name // Admin or User
+        roleType: role.name, // Admin or User
       },
       permissions,
       roleType: role.name,
       totalAvailablePermissions: availablePermissions.length,
-      totalAllPermissions: allTenantPermissionsResult.rows.length
+      totalAllPermissions: allTenantPermissionsResult.rows.length,
     };
   }
 
   private formatCategoryName(resource: string): string {
     // Convert resource names to user-friendly categories
     const categoryMap = {
-      'dashboard': 'Dashboard',
+      dashboard: 'Dashboard',
 
-      'device': 'Device Management',
-      'user': 'User Management',
-      'role': 'Role Management',
-      'permission': 'Permission Management',
-      'tenant': 'Tenant Management',
-      'report': 'Reports',
-      'notification': 'Notifications',
-      'audit': 'Audit Logs',
-      'setting': 'Settings',
-      'profile': 'Profile Management',
-      'file': 'File Management',
-      'export': 'Data Export',
-      'import': 'Data Import'
+      device: 'Device Management',
+      user: 'User Management',
+      role: 'Role Management',
+      permission: 'Permission Management',
+      tenant: 'Tenant Management',
+      report: 'Reports',
+      notification: 'Notifications',
+      audit: 'Audit Logs',
+      setting: 'Settings',
+      profile: 'Profile Management',
+      file: 'File Management',
+      export: 'Data Export',
+      import: 'Data Import',
     };
 
-    return categoryMap[resource.toLowerCase()] || resource.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+    return (
+      categoryMap[resource.toLowerCase()] ||
+      resource
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, (str) => str.toUpperCase())
+    );
   }
 
   private formatPermissionName(action: string, resource: string): string {
     // Convert action + resource to user-friendly permission names
     const actionMap = {
-      'create': 'Create',
-      'read': 'View',
-      'update': 'Edit',
-      'delete': 'Delete',
-      'manage': 'Manage',
-      'assign': 'Assign',
-      'export': 'Export',
-      'import': 'Import',
-      'approve': 'Approve',
-      'reject': 'Reject'
+      create: 'Create',
+      read: 'View',
+      update: 'Edit',
+      delete: 'Delete',
+      manage: 'Manage',
+      assign: 'Assign',
+      export: 'Export',
+      import: 'Import',
+      approve: 'Approve',
+      reject: 'Reject',
     };
 
     const resourceMap = {
-      'dashboard': 'Dashboard',
+      dashboard: 'Dashboard',
 
-      'device': 'Devices',
-      'user': 'Users',
-      'role': 'Roles',
-      'permission': 'Permissions',
-      'tenant': 'Tenants',
-      'report': 'Reports',
-      'notification': 'Notifications',
-      'audit': 'Audit Logs',
-      'setting': 'Settings',
-      'profile': 'Profile',
-      'file': 'Files'
+      device: 'Devices',
+      user: 'Users',
+      role: 'Roles',
+      permission: 'Permissions',
+      tenant: 'Tenants',
+      report: 'Reports',
+      notification: 'Notifications',
+      audit: 'Audit Logs',
+      setting: 'Settings',
+      profile: 'Profile',
+      file: 'Files',
     };
 
-    const formattedAction = actionMap[action.toLowerCase()] || action.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-    const formattedResource = resourceMap[resource.toLowerCase()] || resource.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+    const formattedAction =
+      actionMap[action.toLowerCase()] ||
+      action
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, (str) => str.toUpperCase());
+    const formattedResource =
+      resourceMap[resource.toLowerCase()] ||
+      resource
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, (str) => str.toUpperCase());
 
     return `${formattedAction} ${formattedResource}`;
   }
@@ -1048,16 +1145,22 @@ export class RoleService {
   }
 
   /**
-   * Update role permissions 
+   * Update role permissions
    */
-  async updateRolePermissions(tenantId: string, roleId: string, permissionIds: string[]) {
+  async updateRolePermissions(
+    tenantId: string,
+    roleId: string,
+    permissionIds: string[],
+  ) {
     const startTime = Date.now();
-    console.log(`🔄 [${new Date().toISOString()}] Starting updateRolePermissions | RoleId: ${roleId} | TenantId: ${tenantId} | Permissions: ${permissionIds.length}`);
+    console.log(
+      `🔄 [${new Date().toISOString()}] Starting updateRolePermissions | RoleId: ${roleId} | TenantId: ${tenantId} | Permissions: ${permissionIds.length}`,
+    );
 
     // Validate tenant exists
     const tenantResult = await this.database.query(
       `SELECT * FROM tenants WHERE id = $1`,
-      [tenantId]
+      [tenantId],
     );
 
     if (tenantResult.rows.length === 0) {
@@ -1069,11 +1172,13 @@ export class RoleService {
     // Validate role exists and belongs to tenant
     const roleResult = await this.database.query(
       `SELECT * FROM roles WHERE id = $1 AND tenant_id = $2`,
-      [roleId, tenantId]
+      [roleId, tenantId],
     );
 
     if (roleResult.rows.length === 0) {
-      throw new NotFoundException(`Role with ID "${roleId}" not found in tenant "${tenant.name}"`);
+      throw new NotFoundException(
+        `Role with ID "${roleId}" not found in tenant "${tenant.name}"`,
+      );
     }
 
     const role = roleResult.rows[0];
@@ -1082,13 +1187,15 @@ export class RoleService {
     if (permissionIds.length > 0) {
       const validPermissionsResult = await this.database.query(
         `SELECT * FROM permissions WHERE id = ANY($1::uuid[])`,
-        [permissionIds]
+        [permissionIds],
       );
 
       if (validPermissionsResult.rows.length !== permissionIds.length) {
-        const foundIds = validPermissionsResult.rows.map(p => p.id);
-        const invalidIds = permissionIds.filter(id => !foundIds.includes(id));
-        throw new ConflictException(`Permission IDs not found in tenant "${tenant.name}": ${invalidIds.join(', ')}`);
+        const foundIds = validPermissionsResult.rows.map((p) => p.id);
+        const invalidIds = permissionIds.filter((id) => !foundIds.includes(id));
+        throw new ConflictException(
+          `Permission IDs not found in tenant "${tenant.name}": ${invalidIds.join(', ')}`,
+        );
       }
     }
 
@@ -1097,22 +1204,24 @@ export class RoleService {
       `SELECT p.* FROM role_permissions rp 
        JOIN permissions p ON rp.permission_id = p.id 
        WHERE rp.role_id = $1`,
-      [roleId]
+      [roleId],
     );
 
-    const currentPermissionIds = new Set(currentPermissionsResult.rows.map(p => p.id));
+    const currentPermissionIds = new Set(
+      currentPermissionsResult.rows.map((p) => p.id),
+    );
     const newPermissionIds = new Set(permissionIds);
 
     // Calculate what needs to be added and removed
-    const toAdd = permissionIds.filter(id => !currentPermissionIds.has(id));
+    const toAdd = permissionIds.filter((id) => !currentPermissionIds.has(id));
     const toRemove = currentPermissionsResult.rows
-      .filter(p => !newPermissionIds.has(p.id))
-      .map(p => p.id);
+      .filter((p) => !newPermissionIds.has(p.id))
+      .map((p) => p.id);
 
     // Get all users with this role for cache clearing
     const usersWithRoleResult = await this.database.query(
       `SELECT user_id FROM user_roles WHERE role_id = $1`,
-      [roleId]
+      [roleId],
     );
 
     // Update permissions in a transaction-like approach
@@ -1121,7 +1230,7 @@ export class RoleService {
       if (toRemove.length > 0) {
         await this.database.query(
           `DELETE FROM role_permissions WHERE role_id = $1 AND permission_id = ANY($2::uuid[])`,
-          [roleId, toRemove]
+          [roleId, toRemove],
         );
       }
 
@@ -1131,7 +1240,7 @@ export class RoleService {
           await this.database.query(
             `INSERT INTO role_permissions (role_id, permission_id, assigned_at) 
              VALUES ($1, $2, NOW())`,
-            [roleId, permissionId]
+            [roleId, permissionId],
           );
         }
       }
@@ -1142,7 +1251,8 @@ export class RoleService {
       }
 
       // Get updated role with permissions
-      const updatedRoleResult = await this.database.query(`
+      const updatedRoleResult = await this.database.query(
+        `
         SELECT r.*,
                COALESCE(
                  json_agg(
@@ -1160,12 +1270,16 @@ export class RoleService {
         LEFT JOIN permissions p ON rp.permission_id = p.id
         WHERE r.id = $1
         GROUP BY r.id
-      `, [roleId]);
+      `,
+        [roleId],
+      );
 
       const updatedRole = updatedRoleResult.rows[0];
 
       const duration = Date.now() - startTime;
-      console.log(`✅ [${new Date().toISOString()}] updateRolePermissions completed | Duration: ${duration}ms | RoleId: ${roleId} | Added: ${toAdd.length} | Removed: ${toRemove.length} | Total: ${permissionIds.length}`);
+      console.log(
+        `✅ [${new Date().toISOString()}] updateRolePermissions completed | Duration: ${duration}ms | RoleId: ${roleId} | Added: ${toAdd.length} | Removed: ${toRemove.length} | Total: ${permissionIds.length}`,
+      );
 
       return {
         role: {
@@ -1173,17 +1287,19 @@ export class RoleService {
           name: updatedRole.name,
           description: updatedRole.description,
           tenantId: updatedRole.tenant_id,
-          roleType: updatedRole.name
+          roleType: updatedRole.name,
         },
         permissionsUpdated: {
           added: toAdd.length,
           removed: toRemove.length,
-          total: permissionIds.length
+          total: permissionIds.length,
         },
-        permissions: updatedRole.permissions || []
+        permissions: updatedRole.permissions || [],
       };
     } catch (error) {
-      throw new InternalServerErrorException(`Failed to update role permissions: ${error.message}`);
+      throw new InternalServerErrorException(
+        `Failed to update role permissions: ${error.message}`,
+      );
     }
   }
 }

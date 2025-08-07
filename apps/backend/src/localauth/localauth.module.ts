@@ -11,12 +11,12 @@ import { MfaService } from './utils/mfa.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports:[    
+  imports: [
     // RedisModule.forRootAsync({
     //   imports: [ConfigModule],
     //   useFactory: async (configService: ConfigService) => ({
     //     type: 'single',
-    //     url: configService.get<string>('REDIS_URL') || 
+    //     url: configService.get<string>('REDIS_URL') ||
     //          `redis://${configService.get<string>('REDIS_HOST', 'localhost')}:${configService.get<number>('REDIS_PORT', 6379)}`,
     //     password: configService.get<string>('REDIS_PASSWORD'),
     //     retryDelayOnFailover: 100,
@@ -25,8 +25,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     //   inject: [ConfigService],
     // }),
   ],
-  providers: [LocalauthService,AuthHelper,JWTService,MfaService],
+  providers: [LocalauthService, AuthHelper, JWTService, MfaService],
   controllers: [LocalauthController],
-  exports: [AuthHelper, LocalauthService, JWTService, MfaService]
+  exports: [AuthHelper, LocalauthService, JWTService, MfaService],
 })
 export class LocalauthModule {}

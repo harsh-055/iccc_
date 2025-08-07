@@ -3,8 +3,8 @@ import { join } from 'path';
 import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
 
-// Load environment variables from dev.env
-dotenv.config({ path: join(__dirname, '../dev.env') });
+// Load environment variables from .env
+dotenv.config({ path: join(__dirname, '../.env') });
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

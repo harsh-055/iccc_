@@ -75,8 +75,6 @@ export class PermissionDto {
   // Removed tenantId as permissions are now global
 }
 
-
-
 // export class GroupDto {
 //   @ApiProperty({ description: 'Group ID' })
 //   id: string;
@@ -153,9 +151,9 @@ export class UserResponseDto {
   isMfaEnabled: boolean;
 
   @ApiProperty({ description: 'Whether the user account is locked' })
-
-
-  @ApiProperty({ description: 'Whether the user account is suspended (soft-deleted)' })
+  @ApiProperty({
+    description: 'Whether the user account is suspended (soft-deleted)',
+  })
   isSuspended: boolean;
 
   @ApiProperty({ description: 'Whether the user account is active' })
@@ -174,20 +172,19 @@ export class UserResponseDto {
   @ApiProperty({ description: 'When the user was last updated' })
   updatedAt: Date;
 
-  @ApiProperty({ description: 'ID of the user who created this user', required: false })
+  @ApiProperty({
+    description: 'ID of the user who created this user',
+    required: false,
+  })
   createdBy?: string;
 
   @ApiProperty({ description: 'Primary role (legacy)', required: false })
   @Type(() => RoleDto)
   role?: RoleDto;
 
-
-
   @ApiProperty({ description: 'Tenant information', required: false })
   @Type(() => TenantDto)
   tenant?: TenantDto;
-
-
 
   // @ApiProperty({ description: 'Groups the user belongs to', type: [GroupDto] })
   // @Type(() => GroupDto)
@@ -209,13 +206,20 @@ export class UserResponseDto {
   @Type(() => LoginDetailsDto)
   userLoginDetails?: LoginDetailsDto;
 
-  @ApiProperty({ description: 'Site IDs associated with the user', type: [String], required: false })
+  @ApiProperty({
+    description: 'Site IDs associated with the user',
+    type: [String],
+    required: false,
+  })
   siteIds?: string[];
 
   // @ApiProperty({ description: 'Group IDs associated with the user', type: [String], required: false })
   // groupIds?: string[];
 
-  @ApiProperty({ description: 'All permissions for the user (including from roles)', type: [PermissionDto] })
+  @ApiProperty({
+    description: 'All permissions for the user (including from roles)',
+    type: [PermissionDto],
+  })
   @Type(() => PermissionDto)
   permissions: PermissionDto[];
 
@@ -230,5 +234,4 @@ export class UserResponseDto {
 
   @ApiProperty({ description: 'Whether to send SMS notifications' })
   sendSmsNotification: boolean;
-
-} 
+}

@@ -1,4 +1,9 @@
-import { Injectable, ForbiddenException, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { DefaultRolesService } from '../role/service/default-role.service';
 // import { InjectRedis } from '@nestjs-modules/ioredis';
@@ -8,7 +13,7 @@ import { Logger } from '@nestjs/common';
 @Injectable()
 export class RbacOptimizedService {
   private readonly logger = new Logger(RbacOptimizedService.name);
-  
+
   // In-memory cache to reduce Redis operations (reset on server restart)
   // Changed to accept any type of value, not just boolean
   private memoryCache = new Map<string, { value: any; expires: number }>();
@@ -22,18 +27,25 @@ export class RbacOptimizedService {
     // @InjectRedis() private readonly redisService: Redis,
   ) {
     // Clean memory cache every 5 minutes
-    setInterval(() => {
-      this.cleanExpiredMemoryCache();
-    }, 5 * 60 * 1000);
+    setInterval(
+      () => {
+        this.cleanExpiredMemoryCache();
+      },
+      5 * 60 * 1000,
+    );
   }
 
   /**
    * OPTIMIZED: Check permission with memory + Redis cache (90% less Redis ops)
    * Updated for Admin/User system
    */
-  async hasPermission(userId: string, resource: string, action: string): Promise<boolean> {
+  async hasPermission(
+    userId: string,
+    resource: string,
+    action: string,
+  ): Promise<boolean> {
     const cacheKey = `rbac:${userId}:${resource}:${action}`;
-    
+
     try {
       // 1. Check in-memory cache first (no Redis operation)
       const memoryResult = this.getFromMemoryCache<boolean>(cacheKey);
@@ -52,7 +64,7 @@ export class RbacOptimizedService {
 
       // 3. Database lookup
       const result = await this.checkPermissionFromDB(userId, resource, action);
-      
+
       // 4. Cache in both memory and Redis (1 Redis operation instead of 4)
       this.setMemoryCache(cacheKey, result);
       // try {
@@ -60,10 +72,13 @@ export class RbacOptimizedService {
       // } catch (cacheError) {
       //   this.logger.warn('[RBAC] Failed to cache in Redis:', cacheError.message);
       // }
-      
+
       return result;
     } catch (redisError) {
-      this.logger.warn('[RBAC] Redis error, using memory + database fallback:', redisError.message);
+      this.logger.warn(
+        '[RBAC] Redis error, using memory + database fallback:',
+        redisError.message,
+      );
       return this.checkPermissionFromDB(userId, resource, action);
     }
   }
@@ -73,7 +88,7 @@ export class RbacOptimizedService {
    */
   private async isAdminCached(userId: string): Promise<boolean> {
     const cacheKey = `admin:${userId}`;
-    
+
     try {
       // Check memory cache first
       const memoryResult = this.getFromMemoryCache<boolean>(cacheKey);
@@ -91,7 +106,7 @@ export class RbacOptimizedService {
 
       // Database lookup
       const result = await this.defaultRolesService.isAdmin(userId);
-      
+
       // Cache in both memory and Redis
       this.setMemoryCache(cacheKey, result);
       // try {
@@ -99,10 +114,13 @@ export class RbacOptimizedService {
       // } catch (cacheError) {
       //   this.logger.warn('[RBAC] Failed to cache admin result:', cacheError.message);
       // }
-      
+
       return result;
     } catch (redisError) {
-      this.logger.warn('[RBAC] Redis error in isAdminCached:', redisError.message);
+      this.logger.warn(
+        '[RBAC] Redis error in isAdminCached:',
+        redisError.message,
+      );
       return this.defaultRolesService.isAdmin(userId);
     }
   }
@@ -114,33 +132,33 @@ export class RbacOptimizedService {
   private getFromMemoryCache<T = any>(key: string): T | null {
     const cached = this.memoryCache.get(key);
     if (!cached) return null;
-    
+
     if (Date.now() > cached.expires) {
       this.memoryCache.delete(key);
       return null;
     }
-    
+
     return cached.value as T;
   }
 
   private setMemoryCache(key: string, value: any): void {
     this.memoryCache.set(key, {
       value,
-      expires: Date.now() + this.MEMORY_CACHE_TTL
+      expires: Date.now() + this.MEMORY_CACHE_TTL,
     });
   }
 
   private cleanExpiredMemoryCache(): void {
     const now = Date.now();
     let cleanedCount = 0;
-    
+
     for (const [key, cached] of this.memoryCache.entries()) {
       if (now > cached.expires) {
         this.memoryCache.delete(key);
         cleanedCount++;
       }
     }
-    
+
     if (cleanedCount > 0) {
       this.logger.debug(`Cleaned ${cleanedCount} expired memory cache entries`);
     }
@@ -158,54 +176,53 @@ export class RbacOptimizedService {
           keysToDelete.push(key);
         }
       }
-      keysToDelete.forEach(key => this.memoryCache.delete(key));
+      keysToDelete.forEach((key) => this.memoryCache.delete(key));
 
       // Clear Redis cache with pattern (1 operation per key instead of complex tracking)
       // const patterns = [`rbac:${userId}:*`, `admin:${userId}`];
-      
+
       // for (const pattern of patterns) {
       //   let cursor = '0';
       //   const keysToDeleteFromRedis: string[] = [];
-        
+
       //   do {
       //     const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 50);
       //     cursor = result[0];
       //     keysToDeleteFromRedis.push(...result[1]);
       //   } while (cursor !== '0');
-        
+
       //   if (keysToDeleteFromRedis.length > 0) {
       //     await this.redisService.del(...keysToDeleteFromRedis);
       //   }
       // }
-      
     } catch (error) {
       this.logger.warn('[RBAC] Error invalidating user cache:', error.message);
     }
   }
 
   /**
-   * OPTIMIZED: Clear all cache - simplified approach  
+   * OPTIMIZED: Clear all cache - simplified approach
    */
   async clearAllRbacCache(): Promise<void> {
     try {
       // Clear memory cache
       this.memoryCache.clear();
-      
+
       // Clear Redis cache with pattern scan (updated for Admin/User system)
       // const patterns = ['rbac:*', 'admin:*'];
-      
+
       // for (const pattern of patterns) {
       //   let cursor = '0';
       //   do {
       //     const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
       //     cursor = result[0];
-          
+
       //     if (result[1].length > 0) {
       //       await this.redisService.del(...result[1]);
       //     }
       //   } while (cursor !== '0');
       // }
-      
+
       this.logger.log('RBAC cache cleared (memory + Redis)');
     } catch (error) {
       this.logger.error('Error clearing RBAC cache:', error);
@@ -216,10 +233,15 @@ export class RbacOptimizedService {
    * Internal method to check permission from database
    * Updated for DatabaseService with simplified Admin/User system
    */
-  private async checkPermissionFromDB(userId: string, resource: string, action: string): Promise<boolean> {
+  private async checkPermissionFromDB(
+    userId: string,
+    resource: string,
+    action: string,
+  ): Promise<boolean> {
     try {
       // Get user with all their permissions from various sources using raw SQL
-      const userResult = await this.database.query(`
+      const userResult = await this.database.query(
+        `
         SELECT u.*,
                -- Direct permissions
                COALESCE(
@@ -253,7 +275,9 @@ export class RbacOptimizedService {
                ) as role_permissions
         FROM users u
         WHERE u.id = $1
-      `, [userId]);
+      `,
+        [userId],
+      );
 
       if (userResult.rows.length === 0) {
         return false;
@@ -270,7 +294,8 @@ export class RbacOptimizedService {
       // Check direct permissions
       const directPermissions = user.direct_permissions || [];
       const hasDirectPermission = directPermissions.some(
-        permission => permission.resource === resource && permission.action === action
+        (permission) =>
+          permission.resource === resource && permission.action === action,
       );
 
       if (hasDirectPermission) {
@@ -280,7 +305,8 @@ export class RbacOptimizedService {
       // Check role-based permissions
       const rolePermissions = user.role_permissions || [];
       const hasRolePermission = rolePermissions.some(
-        permission => permission.resource === resource && permission.action === action
+        (permission) =>
+          permission.resource === resource && permission.action === action,
       );
 
       return hasRolePermission;
@@ -293,20 +319,29 @@ export class RbacOptimizedService {
   /**
    * Check permission and throw ForbiddenException if not authorized
    */
-  async checkPermission(userId: string, resource: string, action: string): Promise<void> {
+  async checkPermission(
+    userId: string,
+    resource: string,
+    action: string,
+  ): Promise<void> {
     const hasPermission = await this.hasPermission(userId, resource, action);
-    
+
     if (!hasPermission) {
-      throw new ForbiddenException(`User does not have permission to ${action} ${resource}`);
+      throw new ForbiddenException(
+        `User does not have permission to ${action} ${resource}`,
+      );
     }
   }
 
   /**
    * OPTIMIZED: Check permission by name with memory + Redis cache
    */
-  async hasPermissionByName(userId: string, permissionName: string): Promise<boolean> {
+  async hasPermissionByName(
+    userId: string,
+    permissionName: string,
+  ): Promise<boolean> {
     const cacheKey = `rbac:${userId}:name:${permissionName}`;
-    
+
     try {
       // 1. Check in-memory cache first
       const memoryResult = this.getFromMemoryCache<boolean>(cacheKey);
@@ -323,8 +358,11 @@ export class RbacOptimizedService {
       // }
 
       // 3. Database lookup
-      const result = await this.checkPermissionByNameFromDB(userId, permissionName);
-      
+      const result = await this.checkPermissionByNameFromDB(
+        userId,
+        permissionName,
+      );
+
       // 4. Cache the result
       this.setMemoryCache(cacheKey, result);
       // try {
@@ -332,10 +370,13 @@ export class RbacOptimizedService {
       // } catch (cacheError) {
       //   this.logger.warn('[RBAC] Failed to cache permission by name:', cacheError.message);
       // }
-      
+
       return result;
     } catch (redisError) {
-      this.logger.warn('[RBAC] Redis error in hasPermissionByName:', redisError.message);
+      this.logger.warn(
+        '[RBAC] Redis error in hasPermissionByName:',
+        redisError.message,
+      );
       return this.checkPermissionByNameFromDB(userId, permissionName);
     }
   }
@@ -343,9 +384,13 @@ export class RbacOptimizedService {
   /**
    * Internal method to check permission by name from database
    */
-  private async checkPermissionByNameFromDB(userId: string, permissionName: string): Promise<boolean> {
+  private async checkPermissionByNameFromDB(
+    userId: string,
+    permissionName: string,
+  ): Promise<boolean> {
     try {
-      const userResult = await this.database.query(`
+      const userResult = await this.database.query(
+        `
         SELECT u.*,
                -- Direct permissions by name
                COALESCE(
@@ -379,7 +424,9 @@ export class RbacOptimizedService {
                ) as role_permissions
         FROM users u
         WHERE u.id = $1
-      `, [userId]);
+      `,
+        [userId],
+      );
 
       if (userResult.rows.length === 0) {
         return false;
@@ -396,7 +443,7 @@ export class RbacOptimizedService {
       // Check direct permissions by name
       const directPermissions = user.direct_permissions || [];
       const hasDirectPermission = directPermissions.some(
-        permission => permission.name === permissionName
+        (permission) => permission.name === permissionName,
       );
 
       if (hasDirectPermission) {
@@ -406,12 +453,14 @@ export class RbacOptimizedService {
       // Check role permissions by name
       const rolePermissions = user.role_permissions || [];
       const hasRolePermission = rolePermissions.some(
-        permission => permission.name === permissionName
+        (permission) => permission.name === permissionName,
       );
 
       return hasRolePermission;
     } catch (error) {
-      this.logger.error(`Error checking permission by name from DB: ${error.message}`);
+      this.logger.error(
+        `Error checking permission by name from DB: ${error.message}`,
+      );
       return false;
     }
   }
@@ -421,7 +470,7 @@ export class RbacOptimizedService {
    */
   async getUserPermissions(userId: string) {
     const cacheKey = `rbac:${userId}:all_permissions`;
-    
+
     try {
       // Check memory cache first
       const memoryResult = this.getFromMemoryCache<any[]>(cacheKey);
@@ -439,19 +488,22 @@ export class RbacOptimizedService {
 
       // Database lookup
       const result = await this.getUserPermissionsFromDB(userId);
-      
+
       // Cache the result
       this.setMemoryCache(cacheKey, result);
-      
+
       // try {
       //   await this.redisService.setex(cacheKey, this.REDIS_CACHE_TTL, JSON.stringify(result));
       // } catch (cacheError) {
       //   this.logger.warn('[RBAC] Failed to cache user permissions:', cacheError.message);
       // }
-      
+
       return result;
     } catch (redisError) {
-      this.logger.warn('[RBAC] Redis error in getUserPermissions:', redisError.message);
+      this.logger.warn(
+        '[RBAC] Redis error in getUserPermissions:',
+        redisError.message,
+      );
       return this.getUserPermissionsFromDB(userId);
     }
   }
@@ -461,7 +513,8 @@ export class RbacOptimizedService {
    */
   private async getUserPermissionsFromDB(userId: string) {
     try {
-      const userResult = await this.database.query(`
+      const userResult = await this.database.query(
+        `
         SELECT u.*,
                -- Direct permissions
                COALESCE(
@@ -497,7 +550,9 @@ export class RbacOptimizedService {
                ) as role_permissions
         FROM users u
         WHERE u.id = $1
-      `, [userId]);
+      `,
+        [userId],
+      );
 
       if (userResult.rows.length === 0) {
         return [];
@@ -509,19 +564,24 @@ export class RbacOptimizedService {
 
       // Combine permissions, avoiding duplicates
       const allPermissions = [...directPermissions];
-      
-      rolePermissions.forEach(rolePermission => {
-        if (!allPermissions.some(p => 
-          p.resource === rolePermission.resource && 
-          p.action === rolePermission.action
-        )) {
+
+      rolePermissions.forEach((rolePermission) => {
+        if (
+          !allPermissions.some(
+            (p) =>
+              p.resource === rolePermission.resource &&
+              p.action === rolePermission.action,
+          )
+        ) {
           allPermissions.push(rolePermission);
         }
       });
 
       return allPermissions;
     } catch (error) {
-      this.logger.error(`Error getting user permissions from DB: ${error.message}`);
+      this.logger.error(
+        `Error getting user permissions from DB: ${error.message}`,
+      );
       return [];
     }
   }
@@ -533,20 +593,20 @@ export class RbacOptimizedService {
     try {
       // Clear memory cache
       this.memoryCache.clear();
-      
+
       // Clear Redis cache with pattern matching (updated for Admin/User system)
       // const patterns = ['rbac:*', 'admin:*'];
-      
+
       // for (const pattern of patterns) {
       //   let cursor = '0';
       //   const keysToDelete: string[] = [];
-        
+
       //   do {
       //     const result = await this.redisService.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
       //     cursor = result[0];
       //     keysToDelete.push(...result[1]);
       //   } while (cursor !== '0');
-        
+
       //   if (keysToDelete.length > 0) {
       //     // Delete keys in batches to avoid memory issues
       //     const batchSize = 100;
@@ -556,7 +616,7 @@ export class RbacOptimizedService {
       //     }
       //   }
       // }
-      
+
       this.logger.log('All RBAC caches cleared successfully (memory + Redis)');
     } catch (error) {
       this.logger.error('Error clearing all RBAC caches:', error);
@@ -566,21 +626,29 @@ export class RbacOptimizedService {
   /**
    * Warm up cache for a user with common permissions
    */
-  async warmUpUserCache(userId: string, commonPermissions: Array<{resource: string, action: string}>): Promise<void> {
+  async warmUpUserCache(
+    userId: string,
+    commonPermissions: Array<{ resource: string; action: string }>,
+  ): Promise<void> {
     try {
       // Pre-load common permissions into cache
       await Promise.all(
-        commonPermissions.map(({ resource, action }) => 
-          this.hasPermission(userId, resource, action)
-        )
+        commonPermissions.map(({ resource, action }) =>
+          this.hasPermission(userId, resource, action),
+        ),
       );
-      
+
       // Pre-load user permissions
       await this.getUserPermissions(userId);
-      
-      this.logger.debug(`Warmed up cache for user ${userId} with ${commonPermissions.length} permissions`);
+
+      this.logger.debug(
+        `Warmed up cache for user ${userId} with ${commonPermissions.length} permissions`,
+      );
     } catch (error) {
-      this.logger.warn(`Error warming up cache for user ${userId}:`, error.message);
+      this.logger.warn(
+        `Error warming up cache for user ${userId}:`,
+        error.message,
+      );
     }
   }
 
@@ -591,7 +659,7 @@ export class RbacOptimizedService {
     const memorySize = JSON.stringify([...this.memoryCache.entries()]).length;
     return {
       memory: this.memoryCache.size,
-      memorySize: `${Math.round(memorySize / 1024)}KB`
+      memorySize: `${Math.round(memorySize / 1024)}KB`,
     };
   }
 }

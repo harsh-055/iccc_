@@ -1,4 +1,3 @@
-
 // import { IsString, IsArray, IsNotEmpty, IsOptional } from 'class-validator';
 // export class WhatsAppMessageDto {
 //     @IsOptional()

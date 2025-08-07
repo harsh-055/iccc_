@@ -11,7 +11,6 @@ export class AppContext implements TRPCContext {
   }
 }
 
-
 export interface IAppContext {
   req: Request;
   res: Response;

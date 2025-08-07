@@ -7,7 +7,7 @@ export class PaginationDto {
     description: 'Number of items to skip',
     required: false,
     default: 0,
-    type: Number
+    type: Number,
   })
   @IsOptional()
   @Type(() => Number)
@@ -19,7 +19,7 @@ export class PaginationDto {
     description: 'Number of items to take',
     required: false,
     default: 10,
-    type: Number
+    type: Number,
   })
   @IsOptional()
   @Type(() => Number)
@@ -50,4 +50,4 @@ export class PaginatedResponseDto<T> {
 
   @ApiProperty({ description: 'Whether there is a next page' })
   hasNextPage: boolean;
-} 
+}

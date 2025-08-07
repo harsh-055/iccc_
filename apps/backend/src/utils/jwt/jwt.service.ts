@@ -12,15 +12,25 @@ export class JWTService {
   private readonly publicKey: string | null;
 
   constructor(private readonly configService: ConfigService) {
-    this.accessSecret = this.configService.get<string>('JWT_SECRET', 'default_secret');
-    this.refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET', 'default_refresh_secret');
+    this.accessSecret = this.configService.get<string>(
+      'JWT_SECRET',
+      'default_secret',
+    );
+    this.refreshSecret = this.configService.get<string>(
+      'JWT_REFRESH_SECRET',
+      'default_refresh_secret',
+    );
 
     // Load RSA keys if available
     const privateKeyPath = path.resolve(__dirname, '../../keys/private.key');
     const publicKeyPath = path.resolve(__dirname, '../../keys/public.key');
 
-    this.privateKey = fs.existsSync(privateKeyPath) ? fs.readFileSync(privateKeyPath, 'utf8') : null;
-    this.publicKey = fs.existsSync(publicKeyPath) ? fs.readFileSync(publicKeyPath, 'utf8') : null;
+    this.privateKey = fs.existsSync(privateKeyPath)
+      ? fs.readFileSync(privateKeyPath, 'utf8')
+      : null;
+    this.publicKey = fs.existsSync(publicKeyPath)
+      ? fs.readFileSync(publicKeyPath, 'utf8')
+      : null;
   }
 
   /**
@@ -30,7 +40,12 @@ export class JWTService {
    * @param bindDevice - Whether to bind token to IP/Device.
    * @param req - Request object for IP/Device binding.
    */
-  generateAccessToken(payload: Record<string, any>, expiresIn = '15m', bindDevice = false, req?: any): string {
+  generateAccessToken(
+    payload: Record<string, any>,
+    expiresIn = '15m',
+    bindDevice = false,
+    req?: any,
+  ): string {
     const data = { ...payload };
     if (bindDevice && req) {
       data.ip = req.ip;
@@ -78,7 +93,10 @@ export class JWTService {
    * @param payload - The payload data.
    * @param expiresIn - Expiry time for the token.
    */
-  generateTokenWithRSA(payload: Record<string, any>, expiresIn = '15m'): string {
+  generateTokenWithRSA(
+    payload: Record<string, any>,
+    expiresIn = '15m',
+  ): string {
     if (!this.privateKey) throw new Error('RSA Private Key not found');
     return jwt.sign(payload, this.privateKey, {
       algorithm: 'RS256',

@@ -5,7 +5,9 @@ import * as qrcode from 'qrcode';
 @Injectable()
 export class MfaService {
   async generateSecret(sec: string) {
-    const secret = speakeasy.generateSecret({ name: `MyApp-TWOFACTORAUTH (${sec})` });
+    const secret = speakeasy.generateSecret({
+      name: `MyApp-TWOFACTORAUTH (${sec})`,
+    });
     return {
       secret: secret.base32,
       qrCode: await qrcode.toDataURL(secret.otpauth_url),

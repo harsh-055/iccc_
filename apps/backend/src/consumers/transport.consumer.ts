@@ -12,7 +12,7 @@ export class TransportConsumer extends WorkerHost {
   constructor(
     private readonly mailService: LensMailService,
     private readonly whatsappService: LensWhatsAppService,
-    private readonly smsService: LensSmsService
+    private readonly smsService: LensSmsService,
   ) {
     super();
   }
@@ -27,7 +27,7 @@ export class TransportConsumer extends WorkerHost {
           const success = await this.mailService.sendMail(
             [job.data.to],
             job.data.subject,
-            job.data.text
+            job.data.text,
           );
 
           if (!success) {
@@ -47,30 +47,42 @@ export class TransportConsumer extends WorkerHost {
         }
 
         case 'send-verification-mail': {
-          const success = await this.mailService.sendVerificationCode(job.data.to);
+          const success = await this.mailService.sendVerificationCode(
+            job.data.to,
+          );
           if (!success) {
             throw new Error('Failed to send verification code');
           }
-          this.logger.log(`✅ Verification mail job ${job.id} completed successfully.`);
+          this.logger.log(
+            `✅ Verification mail job ${job.id} completed successfully.`,
+          );
           // Placeholder for another job type
           break;
         }
 
         case 'send-verification-sms': {
-          const success = await this.smsService.sendVerificationCode(job.data.to);
+          const success = await this.smsService.sendVerificationCode(
+            job.data.to,
+          );
           if (!success) {
             throw new Error('Failed to send verification code');
           }
-          this.logger.log(`✅ Verification sms job ${job.id} completed successfully.`);
+          this.logger.log(
+            `✅ Verification sms job ${job.id} completed successfully.`,
+          );
           break;
         }
 
         case 'send-verification-whatsapp-message': {
-          const success = await this.whatsappService.sendVerificationCode(job.data.to);
+          const success = await this.whatsappService.sendVerificationCode(
+            job.data.to,
+          );
           if (!success) {
             throw new Error('Failed to send verification code');
           }
-          this.logger.log(`✅ Verification whatsapp message job ${job.id} completed successfully.`);
+          this.logger.log(
+            `✅ Verification whatsapp message job ${job.id} completed successfully.`,
+          );
           break;
         }
 
@@ -80,7 +92,7 @@ export class TransportConsumer extends WorkerHost {
       }
     } catch (error) {
       this.logger.error(`❌ Error processing job ${job.id}: ${error.message}`);
-      console.log(error)
+      console.log(error);
       throw error;
     }
   }

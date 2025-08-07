@@ -1,13 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Logger, UseGuards, Req } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  Logger,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { UserService } from './user.service';
-import { 
-  CreateUserDto, 
-  UpdateUserDto, 
-  SuspendUserDto, 
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  SuspendUserDto,
   UserFilterDto,
   UserResponseDto,
-  PaginatedResponseDto 
+  PaginatedResponseDto,
 } from './dto';
 import { AuthPermissionGuard } from '../permissions/guards/auth-permission.guard';
 import { RequirePermissions } from '../permissions/decorators/require-permission.decorator';
@@ -23,22 +43,22 @@ export class UserController {
 
   constructor(
     private readonly userService: UserService,
-    private readonly enhancedRolePermissionService: EnhancedRolePermissionService
+    private readonly enhancedRolePermissionService: EnhancedRolePermissionService,
   ) {}
 
-
-
-  
   @Post()
   @RequirePermissions('users:create')
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'User created successfully',
-    type: UserResponseDto
+    type: UserResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Bad Request - Validation failed' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
   @ApiResponse({ status: 409, description: 'Conflict - Email already exists' })
   @ApiBody({
     type: CreateUserDto,
@@ -56,8 +76,7 @@ export class UserController {
           parent: 'parent_username',
           tenantName: 'example-tenant',
           isMfaEnabled: false,
-  
-        }
+        },
       },
       customRoleUser: {
         summary: 'Create user with custom roles',
@@ -70,8 +89,8 @@ export class UserController {
           roleName: 'custom-manager-role',
           parent: 'admin_username',
           tenantName: 'example-tenant',
-          permissionNames: ['users:read', 'reports:view']
-        }
+          permissionNames: ['users:read', 'reports:view'],
+        },
       },
       multipleCustomRoles: {
         summary: 'Create user with multiple custom roles',
@@ -83,27 +102,27 @@ export class UserController {
           password: 'SecurePass123!',
           roleNames: ['role-1', 'role-2'],
           parent: 'manager_username',
-          tenantName: 'example-tenant'
-        }
-      }
-    }
+          tenantName: 'example-tenant',
+        },
+      },
+    },
   })
   async create(@Body() createUserDto: CreateUserDto, @Req() req: any) {
     try {
       const result = await this.userService.create(createUserDto);
-      
+
       this.logger.log(
         `User created successfully: ${result.email}`,
         'UserController',
-        result.id
+        result.id,
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(
         `Failed to create user: ${error.message}`,
         error.stack,
-        'UserController'
+        'UserController',
       );
       throw error;
     }
@@ -117,30 +136,91 @@ export class UserController {
     return this.userService.getParentOptions(tenantId);
   }
 
-
   @Get()
   @RequirePermissions('users:read')
   @ApiOperation({ summary: 'Get all users with pagination and filtering' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Users retrieved successfully',
-    type: PaginatedResponseDto
+    type: PaginatedResponseDto,
   })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
-  @ApiQuery({ name: 'skip', required: false, type: Number, description: 'Number of records to skip' })
-  @ApiQuery({ name: 'take', required: false, type: Number, description: 'Number of records to take' })
-  @ApiQuery({ name: 'name', required: false, type: String, description: 'Filter by user name' })
-  @ApiQuery({ name: 'email', required: false, type: String, description: 'Filter by email' })
-  @ApiQuery({ name: 'roleId', required: false, type: String, description: 'Filter by role ID' })
-  @ApiQuery({ name: 'tenantId', required: false, type: String, description: 'Filter by tenant ID' })
-  @ApiQuery({ name: 'isActive', required: false, type: Boolean, description: 'Filter by active status' })
-  @ApiQuery({ name: 'isSuspended', required: false, type: Boolean, description: 'Filter by suspension status' })
-  @ApiQuery({ name: 'sortBy', required: false, type: String, description: 'Sort field' })
-  @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'], description: 'Sort order' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
+  @ApiQuery({
+    name: 'skip',
+    required: false,
+    type: Number,
+    description: 'Number of records to skip',
+  })
+  @ApiQuery({
+    name: 'take',
+    required: false,
+    type: Number,
+    description: 'Number of records to take',
+  })
+  @ApiQuery({
+    name: 'name',
+    required: false,
+    type: String,
+    description: 'Filter by user name',
+  })
+  @ApiQuery({
+    name: 'email',
+    required: false,
+    type: String,
+    description: 'Filter by email',
+  })
+  @ApiQuery({
+    name: 'roleId',
+    required: false,
+    type: String,
+    description: 'Filter by role ID',
+  })
+  @ApiQuery({
+    name: 'tenantId',
+    required: false,
+    type: String,
+    description: 'Filter by tenant ID',
+  })
+  @ApiQuery({
+    name: 'isActive',
+    required: false,
+    type: Boolean,
+    description: 'Filter by active status',
+  })
+  @ApiQuery({
+    name: 'isSuspended',
+    required: false,
+    type: Boolean,
+    description: 'Filter by suspension status',
+  })
+  @ApiQuery({
+    name: 'sortBy',
+    required: false,
+    type: String,
+    description: 'Sort field',
+  })
+  @ApiQuery({
+    name: 'sortOrder',
+    required: false,
+    enum: ['asc', 'desc'],
+    description: 'Sort order',
+  })
   async findAll(@Query() query: UserFilterDto) {
     try {
-      const { skip, take, name, email, roleId, tenantId, isActive, isSuspended } = query;
-      
+      const {
+        skip,
+        take,
+        name,
+        email,
+        roleId,
+        tenantId,
+        isActive,
+        isSuspended,
+      } = query;
+
       const options = {
         skip: skip || 0,
         take: take || 10,
@@ -150,24 +230,24 @@ export class UserController {
           ...(roleId && { roleId }),
           ...(tenantId && { tenantId }),
           ...(isActive !== undefined && { isActive }),
-          ...(isSuspended !== undefined && { isSuspended })
+          ...(isSuspended !== undefined && { isSuspended }),
         },
-        includeInactive: isActive === false
+        includeInactive: isActive === false,
       };
 
       const result = await this.userService.findAll(options);
-      
+
       this.logger.log(
         `Retrieved ${result.data.length} users (page ${result.page} of ${result.totalPages})`,
-        'UserController'
+        'UserController',
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(
         `Failed to retrieve users: ${error.message}`,
         error.stack,
-        'UserController'
+        'UserController',
       );
       throw error;
     }
@@ -176,31 +256,38 @@ export class UserController {
   @Get(':id')
   @RequirePermissions('users:read')
   @ApiOperation({ summary: 'Get a user by ID' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'User retrieved successfully',
-    type: UserResponseDto
+    type: UserResponseDto,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
   @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
-  @ApiQuery({ name: 'includeInactive', required: false, type: Boolean, description: 'Include inactive users' })
-  async findOne(@Param('id') id: string, @Query('includeInactive') includeInactive?: boolean) {
+  @ApiQuery({
+    name: 'includeInactive',
+    required: false,
+    type: Boolean,
+    description: 'Include inactive users',
+  })
+  async findOne(
+    @Param('id') id: string,
+    @Query('includeInactive') includeInactive?: boolean,
+  ) {
     try {
       const result = await this.userService.findOne(id);
-      
-      this.logger.log(
-        `Retrieved user: ${id}`,
-        'UserController',
-        id
-      );
-      
+
+      this.logger.log(`Retrieved user: ${id}`, 'UserController', id);
+
       return result;
     } catch (error) {
       this.logger.error(
         `Failed to retrieve user ${id}: ${error.message}`,
         error.stack,
-        'UserController'
+        'UserController',
       );
       throw error;
     }
@@ -209,14 +296,17 @@ export class UserController {
   @Patch(':id')
   @RequirePermissions('users:update')
   @ApiOperation({ summary: 'Update a user' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'User updated successfully',
-    type: UserResponseDto
+    type: UserResponseDto,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 400, description: 'Bad Request - Validation failed' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
   @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
   @ApiBody({
     type: UpdateUserDto,
@@ -227,34 +317,29 @@ export class UserController {
         value: {
           firstName: 'John',
           lastName: 'Updated',
-          contactNumber: '+1234567899'
-        }
+          contactNumber: '+1234567899',
+        },
       },
       updateRole: {
         summary: 'Update user role',
         value: {
-          roleId: '660e8400-e29b-41d4-a716-446655440000'
-        }
+          roleId: '660e8400-e29b-41d4-a716-446655440000',
+        },
       },
-
-    }
+    },
   })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     try {
       const result = await this.userService.update(id, updateUserDto);
-      
-      this.logger.log(
-        `User updated successfully: ${id}`,
-        'UserController',
-        id
-      );
-      
+
+      this.logger.log(`User updated successfully: ${id}`, 'UserController', id);
+
       return result;
     } catch (error) {
       this.logger.error(
         `Failed to update user ${id}: ${error.message}`,
         error.stack,
-        'UserController'
+        'UserController',
       );
       throw error;
     }
@@ -273,36 +358,36 @@ export class UserController {
       byUsername: {
         summary: 'Update parent by username',
         value: {
-          parent: 'admin_user'
-        }
+          parent: 'admin_user',
+        },
       },
       byId: {
         summary: 'Update parent by ID',
         value: {
-          parentId: '550e8400-e29b-41d4-a716-446655440001'
-        }
-      }
-    }
+          parentId: '550e8400-e29b-41d4-a716-446655440001',
+        },
+      },
+    },
   })
   async updateParent(
-    @Param('id') id: string, 
-    @Body() updateData: { parent?: string; parentId?: string }
+    @Param('id') id: string,
+    @Body() updateData: { parent?: string; parentId?: string },
   ) {
     try {
       const result = await this.userService.update(id, updateData);
-      
+
       this.logger.log(
         `User parent updated successfully: ${id}`,
         'UserController',
-        id
+        id,
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(
         `Failed to update user parent ${id}: ${error.message}`,
         error.stack,
-        'UserController'
+        'UserController',
       );
       throw error;
     }
@@ -311,37 +396,40 @@ export class UserController {
   @Delete(':id')
   @RequirePermissions('users:delete')
   @ApiOperation({ summary: 'Soft delete a user (deactivate)' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'User deactivated successfully',
     schema: {
       type: 'object',
       properties: {
         message: { type: 'string' },
-        user: { $ref: '#/components/schemas/UserResponseDto' }
-      }
-    }
+        user: { $ref: '#/components/schemas/UserResponseDto' },
+      },
+    },
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 400, description: 'User already deleted' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
   @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
   async remove(@Param('id') id: string) {
     try {
       const result = await this.userService.remove(id);
-      
+
       this.logger.log(
         `User deactivated successfully: ${id}`,
         'UserController',
-        id
+        id,
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(
         `Failed to deactivate user ${id}: ${error.message}`,
         error.stack,
-        'UserController'
+        'UserController',
       );
       throw error;
     }
@@ -350,37 +438,40 @@ export class UserController {
   @Post(':id/reactivate')
   @RequirePermissions('users:update')
   @ApiOperation({ summary: 'Reactivate a deactivated user' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'User reactivated successfully',
     schema: {
       type: 'object',
       properties: {
         message: { type: 'string' },
-        user: { $ref: '#/components/schemas/UserResponseDto' }
-      }
-    }
+        user: { $ref: '#/components/schemas/UserResponseDto' },
+      },
+    },
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 400, description: 'User already active' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
   @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
   async reactivate(@Param('id') id: string) {
     try {
       const result = await this.userService.reactivateUser(id);
-      
+
       this.logger.log(
         `User reactivated successfully: ${id}`,
         'UserController',
-        id
+        id,
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(
         `Failed to reactivate user ${id}: ${error.message}`,
         error.stack,
-        'UserController'
+        'UserController',
       );
       throw error;
     }
@@ -389,19 +480,22 @@ export class UserController {
   @Post(':id/suspend')
   @RequirePermissions('users:update')
   @ApiOperation({ summary: 'Suspend a user' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'User suspended successfully',
     schema: {
       type: 'object',
       properties: {
         message: { type: 'string' },
-        user: { $ref: '#/components/schemas/UserResponseDto' }
-      }
-    }
+        user: { $ref: '#/components/schemas/UserResponseDto' },
+      },
+    },
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
   @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
   @ApiBody({
     type: SuspendUserDto,
@@ -410,27 +504,30 @@ export class UserController {
       suspendUser: {
         summary: 'Suspend user with reason',
         value: {
-          reason: 'Policy violation - inappropriate behavior'
-        }
-      }
-    }
+          reason: 'Policy violation - inappropriate behavior',
+        },
+      },
+    },
   })
-  async suspend(@Param('id') id: string, @Body() suspendUserDto: SuspendUserDto) {
+  async suspend(
+    @Param('id') id: string,
+    @Body() suspendUserDto: SuspendUserDto,
+  ) {
     try {
       const result = await this.userService.suspendUser(id, suspendUserDto);
-      
+
       this.logger.log(
         `User suspended successfully: ${id}`,
         'UserController',
-        id
+        id,
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(
         `Failed to suspend user ${id}: ${error.message}`,
         error.stack,
-        'UserController'
+        'UserController',
       );
       throw error;
     }
@@ -439,37 +536,40 @@ export class UserController {
   @Post(':id/unsuspend')
   @RequirePermissions('users:update')
   @ApiOperation({ summary: 'Unsuspend a user' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'User unsuspended successfully',
     schema: {
       type: 'object',
       properties: {
         message: { type: 'string' },
-        user: { $ref: '#/components/schemas/UserResponseDto' }
-      }
-    }
+        user: { $ref: '#/components/schemas/UserResponseDto' },
+      },
+    },
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 400, description: 'User not currently suspended' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
   @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
   async unsuspend(@Param('id') id: string) {
     try {
       const result = await this.userService.unsuspendUser(id);
-      
+
       this.logger.log(
         `User unsuspended successfully: ${id}`,
         'UserController',
-        id
+        id,
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(
         `Failed to unsuspend user ${id}: ${error.message}`,
         error.stack,
-        'UserController'
+        'UserController',
       );
       throw error;
     }
@@ -479,32 +579,35 @@ export class UserController {
   @Get('tenant/:id')
   @RequirePermissions('users:read')
   @ApiOperation({ summary: 'Get a user by ID with tenant isolation check' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'User retrieved successfully',
-    type: UserResponseDto
+    type: UserResponseDto,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Access denied or insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Access denied or insufficient permissions',
+  })
   @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
   async findOneWithTenantCheck(@Param('id') id: string, @Req() req: any) {
     try {
       const requesterTenantId = req.user?.tenantId || null;
       const result = await this.userService.findOne(id);
-      
+
       this.logger.log(
         `Retrieved user with tenant check: ${id}`,
         'UserController',
         id,
-        { requesterTenantId }
+        { requesterTenantId },
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(
         `Failed to retrieve user with tenant check ${id}: ${error.message}`,
         error.stack,
-        'UserController'
+        'UserController',
       );
       throw error;
     }
@@ -513,33 +616,40 @@ export class UserController {
   @Patch('tenant/:id')
   @RequirePermissions('users:update')
   @ApiOperation({ summary: 'Update a user with tenant isolation check' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'User updated successfully',
-    type: UserResponseDto
+    type: UserResponseDto,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Access denied or insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Access denied or insufficient permissions',
+  })
   @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
   @ApiBody({ type: UpdateUserDto })
-  async updateWithTenantCheck(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Req() req: any) {
+  async updateWithTenantCheck(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() req: any,
+  ) {
     try {
       const requesterTenantId = req.user?.tenantId || null;
       const result = await this.userService.update(id, updateUserDto);
-      
+
       this.logger.log(
         `User updated with tenant check: ${id}`,
         'UserController',
         id,
-        { requesterTenantId }
+        { requesterTenantId },
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(
         `Failed to update user with tenant check ${id}: ${error.message}`,
         error.stack,
-        'UserController'
+        'UserController',
       );
       throw error;
     }
@@ -550,26 +660,29 @@ export class UserController {
   @ApiOperation({ summary: 'Delete a user with tenant isolation check' })
   @ApiResponse({ status: 200, description: 'User deleted successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Access denied or insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Access denied or insufficient permissions',
+  })
   @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
   async removeWithTenantCheck(@Param('id') id: string, @Req() req: any) {
     try {
       const requesterTenantId = req.user?.tenantId || null;
       const result = await this.userService.remove(id);
-      
+
       this.logger.log(
         `User deleted with tenant check: ${id}`,
         'UserController',
         id,
-        { requesterTenantId }
+        { requesterTenantId },
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(
         `Failed to delete user with tenant check ${id}: ${error.message}`,
         error.stack,
-        'UserController'
+        'UserController',
       );
       throw error;
     }

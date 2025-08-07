@@ -1,6 +1,9 @@
-
 import { Controller, Get } from '@nestjs/common';
-import { HealthCheckService, HttpHealthIndicator, HealthCheck } from '@nestjs/terminus';
+import {
+  HealthCheckService,
+  HttpHealthIndicator,
+  HealthCheck,
+} from '@nestjs/terminus';
 import { DatabaseService } from '../../database/database.service';
 // import { RedisHealthService } from './redis-health.service';
 
@@ -26,7 +29,7 @@ export class HealthController {
     try {
       const isHealthy = await this.databaseService.healthCheck();
       const poolStatus = await this.databaseService.getPoolStatus();
-      
+
       return {
         status: isHealthy ? 'healthy' : 'unhealthy',
         database: {

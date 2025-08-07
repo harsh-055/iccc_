@@ -11,19 +11,14 @@ import { SharedAuthModule } from '../shared/auth.module';
 
 @Module({
   imports: [
-
     LoggerModule,
     forwardRef(() => RbacModule),
     forwardRef(() => RoleModule),
     SharedAuthModule,
-    UtilsModule
+    UtilsModule,
   ],
   controllers: [UserController],
-  providers: [
-    UserService,
-    EnhancedRolePermissionService
-  ],
-  exports: [UserService, 
-    EnhancedRolePermissionService]
+  providers: [UserService, EnhancedRolePermissionService],
+  exports: [UserService, EnhancedRolePermissionService],
 })
 export class UserModule {}

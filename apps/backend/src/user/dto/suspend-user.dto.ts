@@ -5,10 +5,10 @@ export class SuspendUserDto {
   @ApiProperty({
     description: 'Reason for suspending the user (for internal records)',
     required: false,
-    example: 'User requested account suspension'
+    example: 'User requested account suspension',
   })
   @IsOptional()
   @IsString()
   @MaxLength(500)
   reason?: string;
-} 
+}

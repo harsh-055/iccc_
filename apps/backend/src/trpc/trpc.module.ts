@@ -7,19 +7,15 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ProductsRouter } from './app.router';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { LoggerMiddleware } from './ratelimitting.middleware';
- 
+
 @Module({
   imports: [
     TRPCModule.forRoot({
       autoSchemaFile: './src/trpc/@generated',
-      context:AppContext
+      context: AppContext,
     }),
   ],
-  controllers:[TrpcPanelController],
-  providers:[
-      ProductsRouter,
-      AppContext,
-      LoggerMiddleware
-  ]
+  controllers: [TrpcPanelController],
+  providers: [ProductsRouter, AppContext, LoggerMiddleware],
 })
 export class TrpcModule {}

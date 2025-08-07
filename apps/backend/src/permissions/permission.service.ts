@@ -1,5 +1,9 @@
-
-import { Injectable, NotFoundException, ConflictException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  Logger,
+} from '@nestjs/common';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { DatabaseService } from '../../database/database.service';
@@ -7,35 +11,38 @@ import { DatabaseService } from '../../database/database.service';
 @Injectable()
 export class PermissionService {
   private readonly logger = new Logger(PermissionService.name);
-  
+
   constructor(private database: DatabaseService) {}
 
   async create(createPermissionDto: CreatePermissionDto) {
-    const { name, resource, action, description, tenantId } = createPermissionDto;
+    const { name, resource, action, description, tenantId } =
+      createPermissionDto;
 
     try {
       // Check if permission already exists (global or tenant-specific)
       const existingPermission = await this.database.query(
         `SELECT id FROM permissions 
          WHERE resource = $1 AND action = $2 AND (tenant_id = $3 OR tenant_id IS NULL)`,
-        [resource, action, tenantId || null]
+        [resource, action, tenantId || null],
       );
 
       if (existingPermission.rows.length > 0) {
-        throw new ConflictException(`Permission for "${action}" on "${resource}" already exists`);
+        throw new ConflictException(
+          `Permission for "${action}" on "${resource}" already exists`,
+        );
       }
 
       // Create permission (can be global or tenant-specific)
       const result = await this.database.query(
         `INSERT INTO permissions (name, resource, action, description, tenant_id, created_at, updated_at) 
          VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING id`,
-        [name, resource, action, description, tenantId || null]
+        [name, resource, action, description, tenantId || null],
       );
 
       // Get the created permission
       const newPermission = await this.database.query(
         `SELECT * FROM permissions WHERE id = $1`,
-        [result.rows[0].id]
+        [result.rows[0].id],
       );
 
       return newPermission.rows[0];
@@ -86,7 +93,8 @@ export class PermissionService {
    * Get tenant-specific permissions
    */
   async findTenantPermissions(tenantId: string) {
-    return this.database.query(`
+    return this.database.query(
+      `
       SELECT p.*, 
              COUNT(rp.role_id) as role_count,
              COUNT(up.user_id) as user_count
@@ -96,14 +104,17 @@ export class PermissionService {
       WHERE p.tenant_id = $1
       GROUP BY p.id
       ORDER BY p.name ASC
-    `, [tenantId]);
+    `,
+      [tenantId],
+    );
   }
 
   /**
    * Get all permissions available for a tenant (global + tenant-specific)
    */
   async findPermissionsForTenant(tenantId: string) {
-    return this.database.query(`
+    return this.database.query(
+      `
       SELECT p.*, 
              COUNT(rp.role_id) as role_count,
              COUNT(up.user_id) as user_count,
@@ -117,7 +128,9 @@ export class PermissionService {
       WHERE p.tenant_id IS NULL OR p.tenant_id = $1
       GROUP BY p.id
       ORDER BY p.name ASC
-    `, [tenantId]);
+    `,
+      [tenantId],
+    );
   }
 
   async findBasic() {
@@ -133,7 +146,7 @@ export class PermissionService {
   async findOne(id: string) {
     const permission = await this.database.query(
       `SELECT * FROM permissions WHERE id = $1`,
-      [id]
+      [id],
     );
 
     if (permission.rows.length === 0) {
@@ -154,11 +167,13 @@ export class PermissionService {
       const duplicatePermission = await this.database.query(
         `SELECT id FROM permissions 
          WHERE resource = $1 AND action = $2 AND id != $3`,
-        [resource, action, id]
+        [resource, action, id],
       );
 
       if (duplicatePermission.rows.length > 0) {
-        throw new ConflictException(`Permission for "${action}" on "${resource}" already exists`);
+        throw new ConflictException(
+          `Permission for "${action}" on "${resource}" already exists`,
+        );
       }
     }
 
@@ -171,7 +186,7 @@ export class PermissionService {
            description = COALESCE($4, description),
            updated_at = NOW()
        WHERE id = $5`,
-      [name, resource, action, description, id]
+      [name, resource, action, description, id],
     );
 
     // Return updated permission
@@ -185,20 +200,17 @@ export class PermissionService {
     // Delete role permission relationships
     await this.database.query(
       `DELETE FROM role_permissions WHERE permission_id = $1`,
-      [id]
+      [id],
     );
 
     // Delete user permission relationships
     await this.database.query(
       `DELETE FROM user_permissions WHERE permission_id = $1`,
-      [id]
+      [id],
     );
 
     // Delete the permission
-    await this.database.query(
-      `DELETE FROM permissions WHERE id = $1`,
-      [id]
-    );
+    await this.database.query(`DELETE FROM permissions WHERE id = $1`, [id]);
 
     return { message: `Permission with ID "${id}" deleted successfully` };
   }

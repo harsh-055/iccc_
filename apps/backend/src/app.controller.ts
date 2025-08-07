@@ -1,12 +1,6 @@
-import { 
-  Body, 
-  Controller, 
-  Get, 
-  Post, 
-  UseGuards 
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 
-import { SessionContainer } from "supertokens-node/recipe/session";
+import { SessionContainer } from 'supertokens-node/recipe/session';
 import { AuthGuard } from './auth/auth.guard';
 import { Session } from './auth/session.decorator';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
@@ -38,7 +32,7 @@ export class AppController {
    * @returns A simple "Hello World" response.
    */
   // @Throttle({ default: { limit: 1, ttl: 6000 } })
-  // @UseGuards(ThrottlerGuard) 
+  // @UseGuards(ThrottlerGuard)
   @Get('/hello')
   getHello(): string {
     this.appService.getHello();
@@ -74,7 +68,9 @@ export class AppController {
    */
   @Get('/test')
   @UseGuards(new AuthGuard())
-  getSessionInfo(@Session() session: SessionContainer): Record<string, unknown> {
+  getSessionInfo(
+    @Session() session: SessionContainer,
+  ): Record<string, unknown> {
     return {
       sessionHandle: session.getHandle(),
       userId: session.getUserId(),

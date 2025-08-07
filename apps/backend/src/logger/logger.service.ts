@@ -7,27 +7,56 @@ export class LoggerService extends ConsoleLogger {
     super();
   }
 
-  async debug(message: string, context?: string, userId?: string, metadata?: any) {
+  async debug(
+    message: string,
+    context?: string,
+    userId?: string,
+    metadata?: any,
+  ) {
     super.debug(message, context);
     await this.saveLog('DEBUG', message, context, userId, metadata);
   }
 
-  async log(message: string, context?: string, userId?: string, metadata?: any) {
+  async log(
+    message: string,
+    context?: string,
+    userId?: string,
+    metadata?: any,
+  ) {
     super.log(message, context);
     await this.saveLog('INFO', message, context, userId, metadata);
   }
 
-  async warn(message: string, context?: string, userId?: string, metadata?: any) {
+  async warn(
+    message: string,
+    context?: string,
+    userId?: string,
+    metadata?: any,
+  ) {
     super.warn(message, context);
     await this.saveLog('WARNING', message, context, userId, metadata);
   }
 
-  async error(message: string, stack?: string, context?: string, userId?: string, metadata?: any) {
+  async error(
+    message: string,
+    stack?: string,
+    context?: string,
+    userId?: string,
+    metadata?: any,
+  ) {
     super.error(message, stack, context);
-    await this.saveLog('ERROR', message, context, userId, { ...metadata, stack });
+    await this.saveLog('ERROR', message, context, userId, {
+      ...metadata,
+      stack,
+    });
   }
 
-  async fatal(message: string, context?: string, userId?: string, metadata?: any) {
+  async fatal(
+    message: string,
+    context?: string,
+    userId?: string,
+    metadata?: any,
+  ) {
     super.error(message, undefined, context);
     await this.saveLog('FATAL', message, context, userId, metadata);
   }
@@ -37,7 +66,7 @@ export class LoggerService extends ConsoleLogger {
     message: string,
     context?: string,
     userId?: string,
-    metadata?: any
+    metadata?: any,
   ) {
     try {
       const query = `
@@ -55,7 +84,11 @@ export class LoggerService extends ConsoleLogger {
 
       await this.db.query(query, values);
     } catch (error) {
-      super.error(`Failed to save log to database: ${error.message}`, error.stack, 'LoggerService');
+      super.error(
+        `Failed to save log to database: ${error.message}`,
+        error.stack,
+        'LoggerService',
+      );
     }
   }
 }
