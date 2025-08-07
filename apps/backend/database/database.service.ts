@@ -29,6 +29,12 @@ export class DatabaseService implements OnModuleDestroy {
       connectionTimeoutMillis: 10000, // 10 second timeout
       idleTimeoutMillis: 30000, // 30 second idle timeout
       max: 20, // maximum number of clients in the pool
+      min: 2, // minimum number of clients in the pool
+      acquireTimeoutMillis: 30000, // 30 second acquire timeout
+      createTimeoutMillis: 30000, // 30 second create timeout
+      destroyTimeoutMillis: 5000, // 5 second destroy timeout
+      reapIntervalMillis: 1000, // 1 second reap interval
+      createRetryIntervalMillis: 200, // 200ms retry interval
     });
     
     this.realtimeEmitter = new EventEmitter();
@@ -174,6 +180,14 @@ export class DatabaseService implements OnModuleDestroy {
     }
   }
 
+  async getPoolStatus() {
+    return {
+      totalCount: this.pool.totalCount,
+      idleCount: this.pool.idleCount,
+      waitingCount: this.pool.waitingCount,
+    };
+  }
+
   // Realtime management methods
   async enableRealtimeForTable(tableName: string): Promise<void> {
     await this.query('SELECT add_realtime_trigger($1)', [tableName]);
@@ -226,15 +240,30 @@ export class DatabaseService implements OnModuleDestroy {
   }
 
   async getClient() {
-    const client = await this.pool.connect();
-    return {
-      client,
-      release: () => client.release(),
-      query: <T = any>(text: string, params?: DatabaseParam[]): Promise<QueryResult<T>> =>
-        client.query<T>(text, params),
-      begin: () => client.query('BEGIN'),
-      commit: () => client.query('COMMIT'),
-      rollback: () => client.query('ROLLBACK'),
-    };
+    try {
+      const client = await this.pool.connect();
+      
+      // Test the connection
+      await client.query('SELECT 1');
+      
+      return {
+        client,
+        release: () => {
+          try {
+            client.release();
+          } catch (error) {
+            console.error('Error releasing client:', error);
+          }
+        },
+        query: <T = any>(text: string, params?: DatabaseParam[]): Promise<QueryResult<T>> =>
+          client.query<T>(text, params),
+        begin: () => client.query('BEGIN'),
+        commit: () => client.query('COMMIT'),
+        rollback: () => client.query('ROLLBACK'),
+      };
+    } catch (error) {
+      console.error('Error getting database client:', error);
+      throw new Error('Database connection failed');
+    }
   }
 }

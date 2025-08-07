@@ -337,7 +337,11 @@ export class LocalauthService {
             return await this.login(req, loginData);
             
         } catch (error) {
-            await client.query('ROLLBACK');
+            try {
+                await client.query('ROLLBACK');
+            } catch (rollbackError) {
+                console.error('Error during rollback:', rollbackError);
+            }
             
             if (error.code === '23505') { // PostgreSQL unique violation
                 // Check if it's specifically an email constraint violation
@@ -353,9 +357,16 @@ export class LocalauthService {
                 // Generic constraint violation
                 throw new BadRequestException('A duplicate entry was detected. Please check your input and try again.');
             }
+            
+            // Log the error for debugging
+            console.error('Error during signup:', error);
             throw error;
         } finally {
-            client.release();
+            try {
+                client.release();
+            } catch (releaseError) {
+                console.error('Error releasing client:', releaseError);
+            }
         }
     }
 

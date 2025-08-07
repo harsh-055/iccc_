@@ -461,11 +461,19 @@ export class UserService {
       };
       
     } catch (error) {
-      await client.query('ROLLBACK');
+      try {
+        await client.query('ROLLBACK');
+      } catch (rollbackError) {
+        this.logger.error(`Error during rollback: ${rollbackError.message}`, rollbackError.stack);
+      }
       this.logger.error(`Error creating user: ${error.message}`, error.stack);
       throw error;
     } finally {
-      client.release();
+      try {
+        client.release();
+      } catch (releaseError) {
+        this.logger.error(`Error releasing client: ${releaseError.message}`, releaseError.stack);
+      }
     }
   }
 
@@ -839,11 +847,19 @@ export class UserService {
       return await this.findOne(id);
       
     } catch (error) {
-      await client.query('ROLLBACK');
+      try {
+        await client.query('ROLLBACK');
+      } catch (rollbackError) {
+        this.logger.error(`Error during rollback: ${rollbackError.message}`, rollbackError.stack);
+      }
       this.logger.error(`Error updating user: ${error.message}`, error.stack);
       throw error;
     } finally {
-      client.release();
+      try {
+        client.release();
+      } catch (releaseError) {
+        this.logger.error(`Error releasing client: ${releaseError.message}`, releaseError.stack);
+      }
     }
   }
 
