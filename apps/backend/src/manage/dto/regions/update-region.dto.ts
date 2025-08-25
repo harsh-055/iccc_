@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsBoolean, MaxLength } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, MaxLength, IsUUID } from 'class-validator';
 
 export class UpdateRegionDto {
   @ApiProperty({
@@ -12,6 +12,15 @@ export class UpdateRegionDto {
   @IsString()
   @MaxLength(255)
   name?: string;
+
+  @ApiProperty({
+    description: 'Supervisor user ID',
+    example: 'uuid-string',
+    required: false,
+  })
+  @IsOptional()
+  @IsUUID()
+  supervisorId?: string;
 
   @ApiProperty({
     description: 'Region description',

@@ -16,15 +16,22 @@ ADD COLUMN IF NOT EXISTS created_by UUID;
 
 -- Migrate existing name data to first_name and last_name
 -- This assumes names are stored as "FirstName LastName"
-UPDATE users 
-SET 
-    first_name = SPLIT_PART(name, ' ', 1),
-    last_name = CASE 
-        WHEN POSITION(' ' IN name) > 0 
-        THEN SUBSTRING(name FROM POSITION(' ' IN name) + 1)
-        ELSE ''
-    END
-WHERE first_name IS NULL OR last_name IS NULL;
+-- Only run if name column exists
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns 
+               WHERE table_name = 'users' AND column_name = 'name') THEN
+        UPDATE users 
+        SET 
+            first_name = SPLIT_PART(name, ' ', 1),
+            last_name = CASE 
+                WHEN POSITION(' ' IN name) > 0 
+                THEN SUBSTRING(name FROM POSITION(' ' IN name) + 1)
+                ELSE ''
+            END
+        WHERE first_name IS NULL OR last_name IS NULL;
+    END IF;
+END $$;
 
 -- Make first_name and last_name NOT NULL after migration
 ALTER TABLE users 

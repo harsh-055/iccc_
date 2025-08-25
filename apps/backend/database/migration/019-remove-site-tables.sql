@@ -17,8 +17,8 @@ DROP TABLE IF EXISTS user_sites;
 -- Remove site_id column from users table
 ALTER TABLE users DROP COLUMN IF EXISTS site_id;
 
--- Drop the sites table
-DROP TABLE IF EXISTS sites;
+-- Drop the sites table with CASCADE to handle dependencies
+DROP TABLE IF EXISTS sites CASCADE;
 
 -- Note: This removes all site-related functionality from the database
 -- The following tables and columns have been removed:

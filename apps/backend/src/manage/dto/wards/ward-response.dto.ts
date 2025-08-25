@@ -14,6 +14,12 @@ export class WardResponseDto {
   name: string;
 
   @ApiProperty({
+    description: 'Ward number for ordering and display',
+    example: 1,
+  })
+  wardNo?: number;
+
+  @ApiProperty({
     description: 'Ward description',
     example: 'Primary waste collection ward',
   })

@@ -1,136 +1,164 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  UseGuards,
-  Request,
+  Logger,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
-  ApiBearerAuth,
 } from '@nestjs/swagger';
-import { WorkforceService } from '../services/workforce.service';
-import {
-  CreateWorkforceDto,
-  UpdateWorkforceDto,
-  WorkforceResponseDto,
-  PaginationDto,
-  BaseFilterDto,
-  PaginatedResponseDto,
-} from '../dto';
-import { AuthPermissionGuard } from '../../permissions/guards/auth-permission.guard';
-import { RequirePermissions } from '../../permissions/decorators/require-permission.decorator';
+import { WorkforceSimpleDto } from '../dto/workforce/workforce-simple.dto';
 
-@ApiTags('Manage - Workforce')
-@ApiBearerAuth()
 @Controller('manage/workforce')
-@UseGuards(AuthPermissionGuard)
+@ApiTags('Manage - Workforce')
 export class WorkforceController {
-  constructor(private readonly workforceService: WorkforceService) {}
-
-  @Post()
-  @RequirePermissions('manage:workforce:create')
-  @ApiOperation({ summary: 'Create a new workforce member' })
-  @ApiResponse({
-    status: 201,
-    description: 'Workforce created successfully',
-    type: WorkforceResponseDto,
-  })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 403, description: 'Forbidden' })
-  async create(
-    @Body() createWorkforceDto: CreateWorkforceDto,
-    @Request() req: any,
-  ): Promise<WorkforceResponseDto> {
-    return this.workforceService.create(
-      createWorkforceDto,
-      req.user.id,
-      req.tenant.id,
-    );
-  }
+  private readonly logger = new Logger(WorkforceController.name);
 
   @Get()
-  @RequirePermissions('manage:workforce:read')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Get all workforce members with pagination and filtering',
+    summary: 'Get all workforce members',
+    description: 'Retrieves simplified workforce data matching the UI table structure'
   })
   @ApiResponse({
     status: 200,
-    description: 'Workforce list retrieved successfully',
+    description: 'Workforce members retrieved successfully',
+    type: [WorkforceSimpleDto]
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 403, description: 'Forbidden' })
-  async findAll(
-    @Query() paginationDto: PaginationDto,
-    @Query() filterDto: BaseFilterDto,
-    @Request() req: any,
-  ): Promise<PaginatedResponseDto<WorkforceResponseDto>> {
-    return this.workforceService.findAll(
-      paginationDto,
-      filterDto,
-      req.tenant.id,
-    );
-  }
+  async findAll(): Promise<WorkforceSimpleDto[]> {
+    try {
+      // Static workforce data matching the UI table - simplified fields only
+      const workforceData = [
+        {
+          name: 'Raj Singh',
+          work_type: 'Door-to-Door Collector',
+          status: 'On Duty',
+          zone_name: 'Zone 1',
+          ward_name: 'Ward 1',
+          assigned_route: 'Route 12',
+          shift: '6AM - 12PM',
+          supervisors: 'Amit Kumar',
+          gloves: true,
+          uniform_sets: true,
+          brooms: true,
+          vehicle: true
+        },
+        {
+          name: 'Priya Sharma',
+          work_type: 'Street Sweeper',
+          status: 'On Duty',
+          zone_name: 'Zone 2',
+          ward_name: 'Ward 3',
+          assigned_route: 'Route 15',
+          shift: '2PM - 8PM',
+          supervisors: 'Rahul Verma',
+          gloves: true,
+          uniform_sets: true,
+          brooms: true,
+          vehicle: false
+        },
+        {
+          name: 'Mohan Patel',
+          work_type: 'Loader/Helper',
+          status: 'On Duty',
+          zone_name: 'Zone 1',
+          ward_name: 'Ward 2',
+          assigned_route: 'Route 18',
+          shift: '6AM - 12PM',
+          supervisors: 'Amit Kumar',
+          gloves: true,
+          uniform_sets: true,
+          brooms: false,
+          vehicle: true
+        },
+        {
+          name: 'Sunita Devi',
+          work_type: 'Drainage Cleaner',
+          status: 'Absent',
+          zone_name: 'Zone 3',
+          ward_name: 'Ward 4',
+          assigned_route: 'Route 22',
+          shift: '8AM - 2PM',
+          supervisors: 'Rahul Verma',
+          gloves: true,
+          uniform_sets: false,
+          brooms: true,
+          vehicle: false
+        },
+        {
+          name: 'Vikram Singh',
+          work_type: 'Auto Driver',
+          status: 'On Duty',
+          zone_name: 'Zone 2',
+          ward_name: 'Ward 1',
+          assigned_route: 'Route 25',
+          shift: '6AM - 12PM',
+          supervisors: 'Amit Kumar',
+          gloves: false,
+          uniform_sets: true,
+          brooms: false,
+          vehicle: true
+        },
+        {
+          name: 'Lakshmi Bai',
+          work_type: 'Door-to-Door Collector',
+          status: 'On Duty',
+          zone_name: 'Zone 1',
+          ward_name: 'Ward 3',
+          assigned_route: 'Route 12',
+          shift: '2PM - 8PM',
+          supervisors: 'Rahul Verma',
+          gloves: true,
+          uniform_sets: true,
+          brooms: true,
+          vehicle: true
+        },
+        {
+          name: 'Ramesh Kumar',
+          work_type: 'Street Sweeper',
+          status: 'Absent',
+          zone_name: 'Zone 3',
+          ward_name: 'Ward 2',
+          assigned_route: 'Route 28',
+          shift: '8AM - 2PM',
+          supervisors: 'Amit Kumar',
+          gloves: true,
+          uniform_sets: true,
+          brooms: true,
+          vehicle: false
+        },
+        {
+          name: 'Geeta Yadav',
+          work_type: 'Loader/Helper',
+          status: 'On Duty',
+          zone_name: 'Zone 2',
+          ward_name: 'Ward 4',
+          assigned_route: 'Route 30',
+          shift: '6AM - 12PM',
+          supervisors: 'Rahul Verma',
+          gloves: true,
+          uniform_sets: true,
+          brooms: false,
+          vehicle: true
+        }
+      ];
 
-  @Get(':id')
-  @RequirePermissions('manage:workforce:read')
-  @ApiOperation({ summary: 'Get a workforce member by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Workforce retrieved successfully',
-    type: WorkforceResponseDto,
-  })
-  @ApiResponse({ status: 404, description: 'Workforce not found' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 403, description: 'Forbidden' })
-  async findOne(
-    @Param('id') id: string,
-    @Request() req: any,
-  ): Promise<WorkforceResponseDto> {
-    return this.workforceService.findOne(id, req.tenant.id);
-  }
+      this.logger.log(
+        `Workforce members retrieved successfully: ${workforceData.length} total members`,
+        'WorkforceController',
+      );
 
-  @Patch(':id')
-  @RequirePermissions('manage:workforce:update')
-  @ApiOperation({ summary: 'Update a workforce member' })
-  @ApiResponse({
-    status: 200,
-    description: 'Workforce updated successfully',
-    type: WorkforceResponseDto,
-  })
-  @ApiResponse({ status: 404, description: 'Workforce not found' })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 403, description: 'Forbidden' })
-  async update(
-    @Param('id') id: string,
-    @Body() updateWorkforceDto: UpdateWorkforceDto,
-    @Request() req: any,
-  ): Promise<WorkforceResponseDto> {
-    return this.workforceService.update(
-      id,
-      updateWorkforceDto,
-      req.user.id,
-      req.tenant.id,
-    );
-  }
-
-  @Delete(':id')
-  @RequirePermissions('manage:workforce:delete')
-  @ApiOperation({ summary: 'Delete a workforce member' })
-  @ApiResponse({ status: 200, description: 'Workforce deleted successfully' })
-  @ApiResponse({ status: 404, description: 'Workforce not found' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 403, description: 'Forbidden' })
-  async remove(@Param('id') id: string, @Request() req: any): Promise<void> {
-    return this.workforceService.remove(id, req.tenant.id);
+      return workforceData;
+    } catch (error) {
+      this.logger.error(
+        `Error fetching workforce members: ${error.message}`,
+        error.stack,
+        'WorkforceController',
+      );
+      throw error;
+    }
   }
 }

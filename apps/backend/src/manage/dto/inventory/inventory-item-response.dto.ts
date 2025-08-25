@@ -144,4 +144,22 @@ export class InventoryItemResponseDto {
     example: 30,
   })
   daysUntilStockout?: number;
+
+  @ApiProperty({
+    description: 'Number of assigned units',
+    example: 2560,
+  })
+  assigned?: number;
+
+  @ApiProperty({
+    description: 'Number of unassigned units',
+    example: 30,
+  })
+  unassigned?: number;
+
+  @ApiProperty({
+    description: 'Low stock alert zones',
+    example: 'Zone 4, Zone 7',
+  })
+  lowStockAlert?: string;
 }

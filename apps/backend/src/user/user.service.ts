@@ -191,10 +191,10 @@ export class UserService {
         this.logger.log(
           `Parent assigned via ID: ${parentId} (${parentResult.rows[0].username})`,
         );
-      } else if (createUserDto.parent) {
-        // Legacy method: Parent Name (not recommended)
+      } else if (createUserDto.parent && createUserDto.parent !== 'parent_username') {
+        // Lookup parent by ID (since parent field is being used for UUID)
         this.logger.log(
-          `Looking for parent user with name: '${createUserDto.parent}'`,
+          `Looking for parent user with ID: '${createUserDto.parent}'`,
         );
 
         const parentQuery = `
@@ -202,16 +202,15 @@ export class UserService {
           FROM users u
           LEFT JOIN user_roles ur ON u.id = ur.user_id
           LEFT JOIN roles r ON ur.role_id = r.id
-          WHERE LOWER(CONCAT(u.first_name, ' ', u.last_name)) = LOWER($1) AND u.is_active = true
+          WHERE u.id = $1 AND u.is_active = true
         `;
-        const parentResult = await client.query(parentQuery, [
-          createUserDto.parent,
-        ]);
+        
+        const parentResult = await client.query(parentQuery, [createUserDto.parent]);
 
         if (parentResult.rows.length === 0) {
           // Make parent optional - don't fail if parent not found
           this.logger.warn(
-            `Parent user with name '${createUserDto.parent}' not found. Creating user without parent assignment.`,
+            `Parent user with ID '${createUserDto.parent}' not found. Creating user without parent assignment.`,
           );
           parentId = null;
         } else {
@@ -229,10 +228,14 @@ export class UserService {
           } else {
             parentId = parentResult.rows[0].id;
             this.logger.warn(
-              `Parent assigned via legacy username method: ${createUserDto.parent} -> ${parentId}. Consider using parentId for better performance.`,
+              `Parent assigned via ID method: ${createUserDto.parent} -> ${parentId}.`,
             );
           }
         }
+      } else if (createUserDto.parent === 'parent_username') {
+        // Ignore default placeholder value
+        this.logger.log('Ignoring default parent_username placeholder value');
+        parentId = null;
       }
       // If no parent is specified, parentId will remain null (optional)
 
@@ -273,8 +276,9 @@ export class UserService {
         createUserDto.email,
         createUserDto.phoneNumber,
         hashedPassword,
-        createUserDto.isMfaEnabled || false,
+        // createUserDto.isMfaEnabled || false,
         false,
+        false, // is_suspended
         tenantId || null,
         parentId,
         null, // system_role_id will be set after role assignment
@@ -734,12 +738,14 @@ export class UserService {
         SELECT 
           u.id, u.first_name, u.last_name, u.email, CONCAT(u.first_name, ' ', u.last_name) as username, u.phone_number,
           u.is_active, u.is_mfa_enabled, u.is_suspended,
-          u.created_at, u.updated_at, u.tenant_id, u.parent_id,
+          u.created_at, u.updated_at, u.tenant_id, u.parent_id, u.system_role_id,
           t.name as tenant_name,
-          p.first_name as parent_first_name, p.last_name as parent_last_name, CONCAT(p.first_name, ' ', p.last_name) as parent_username
+          p.first_name as parent_first_name, p.last_name as parent_last_name, CONCAT(p.first_name, ' ', p.last_name) as parent_username,
+          sr.name as system_role_name
         FROM users u
         LEFT JOIN tenants t ON u.tenant_id = t.id
         LEFT JOIN users p ON u.parent_id = p.id
+        LEFT JOIN roles sr ON u.system_role_id = sr.id
         ${whereClause}
         ${orderByClause}
         LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
@@ -752,12 +758,13 @@ export class UserService {
         id: user.id,
         firstName: user.first_name,
         lastName: user.last_name,
+        name: user.username, // Full name
         email: user.email,
-        username: user.username,
         phoneNumber: user.phone_number,
         isActive: user.is_active,
         isMfaEnabled: user.is_mfa_enabled,
         isSuspended: user.is_suspended,
+        systemRoleId: user.system_role_id,
         createdAt: user.created_at,
         updatedAt: user.updated_at,
         tenant: user.tenant_name
@@ -770,9 +777,15 @@ export class UserService {
           ? {
               id: user.parent_id,
               name: `${user.parent_first_name} ${user.parent_last_name}`,
-              username: user.parent_username,
             }
           : null,
+        systemRole: user.system_role_name ? {
+          id: user.system_role_id,
+          name: user.system_role_name,
+          description: '',
+          level: 0,
+          isActive: true
+        } : null,
       }));
 
       return {
@@ -794,12 +807,14 @@ export class UserService {
         SELECT 
           u.id, u.first_name, u.last_name, u.email, CONCAT(u.first_name, ' ', u.last_name) as username, u.phone_number,
           u.is_active, u.is_mfa_enabled, u.is_suspended,
-          u.created_at, u.updated_at, u.tenant_id, u.parent_id,
+          u.created_at, u.updated_at, u.tenant_id, u.parent_id, u.system_role_id,
           t.name as tenant_name,
-          p.first_name as parent_first_name, p.last_name as parent_last_name, CONCAT(p.first_name, ' ', p.last_name) as parent_username
+          p.first_name as parent_first_name, p.last_name as parent_last_name, CONCAT(p.first_name, ' ', p.last_name) as parent_username,
+          sr.name as system_role_name
         FROM users u
         LEFT JOIN tenants t ON u.tenant_id = t.id
         LEFT JOIN users p ON u.parent_id = p.id
+        LEFT JOIN roles sr ON u.system_role_id = sr.id
         WHERE u.id = $1 AND u.is_active = true
       `;
 
@@ -815,12 +830,13 @@ export class UserService {
         id: user.id,
         firstName: user.first_name,
         lastName: user.last_name,
+        name: user.username, // Full name
         email: user.email,
-        username: user.username,
         phoneNumber: user.phone_number,
         isActive: user.is_active,
         isMfaEnabled: user.is_mfa_enabled,
         isSuspended: user.is_suspended,
+        systemRoleId: user.system_role_id,
         createdAt: user.created_at,
         updatedAt: user.updated_at,
         tenant: user.tenant_name
@@ -833,9 +849,15 @@ export class UserService {
           ? {
               id: user.parent_id,
               name: `${user.parent_first_name} ${user.parent_last_name}`,
-              username: user.parent_username,
             }
           : null,
+        systemRole: user.system_role_name ? {
+          id: user.system_role_id,
+          name: user.system_role_name,
+          description: '',
+          level: 0,
+          isActive: true
+        } : null,
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -900,11 +922,12 @@ export class UserService {
         paramIndex++;
       }
 
-      if (updateUserDto.isMfaEnabled !== undefined) {
-        updates.push(`is_mfa_enabled = $${paramIndex}`);
-        values.push(updateUserDto.isMfaEnabled);
-        paramIndex++;
-      }
+      // MFA functionality commented out for now
+      // if (updateUserDto.isMfaEnabled !== undefined) {
+      //   updates.push(`is_mfa_enabled = $${paramIndex}`);
+      //   values.push(updateUserDto.isMfaEnabled);
+      //   paramIndex++;
+      // }
 
       // Handle parent update
       if (
@@ -921,13 +944,13 @@ export class UserService {
         let newParentId: string | null = null;
 
         if (updateUserDto.parent) {
-          // Lookup parent by username
+          // Lookup parent by ID (since parent field is being used for UUID)
           const parentQuery = `
-            SELECT u.id, u.username, ur.role_id, r.name as role_name
+            SELECT u.id, u.first_name, u.last_name, ur.role_id, r.name as role_name
             FROM users u
             LEFT JOIN user_roles ur ON u.id = ur.user_id
             LEFT JOIN roles r ON ur.role_id = r.id
-            WHERE LOWER(u.username) = LOWER($1) AND u.is_active = true
+            WHERE u.id = $1 AND u.is_active = true
           `;
           const parentResult = await client.query(parentQuery, [
             updateUserDto.parent,
@@ -935,7 +958,7 @@ export class UserService {
 
           if (parentResult.rows.length === 0) {
             throw new BadRequestException(
-              `Parent user with username '${updateUserDto.parent}' not found or inactive`,
+              `Parent user with ID '${updateUserDto.parent}' not found or inactive`,
             );
           }
 
@@ -955,7 +978,7 @@ export class UserService {
         } else if (updateUserDto.parentId) {
           // Lookup parent by ID
           const parentQuery = `
-            SELECT u.id, u.username, ur.role_id, r.name as role_name
+            SELECT u.id, u.first_name, u.last_name, ur.role_id, r.name as role_name
             FROM users u
             LEFT JOIN user_roles ur ON u.id = ur.user_id
             LEFT JOIN roles r ON ur.role_id = r.id
@@ -1221,7 +1244,6 @@ export class UserService {
           ? {
               id: user.parent_id,
               name: `${user.parent_first_name} ${user.parent_last_name}`,
-              username: user.parent_username,
             }
           : null,
       };
@@ -1276,7 +1298,8 @@ export class UserService {
       username: user.username,
       isActive: user.is_active,
       isSuspended: user.is_suspended,
-      isMfaEnabled: user.is_mfa_enabled,
+      // 
+      // : user.is_mfa_enabled,
       tenantId: user.tenant_id,
       parentId: user.parent_id,
       systemRoleId: user.system_role_id,

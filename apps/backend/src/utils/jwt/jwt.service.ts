@@ -36,13 +36,13 @@ export class JWTService {
   /**
    * Generates an access token with optional device binding.
    * @param payload - The data to encode in the JWT.
-   * @param expiresIn - Expiry time for the token (default: 15m).
+   * @param expiresIn - Expiry time for the token (default: 10h).
    * @param bindDevice - Whether to bind token to IP/Device.
    * @param req - Request object for IP/Device binding.
    */
   generateAccessToken(
     payload: Record<string, any>,
-    expiresIn = '15m',
+    expiresIn = '10h',
     bindDevice = false,
     req?: any,
   ): string {
@@ -95,7 +95,7 @@ export class JWTService {
    */
   generateTokenWithRSA(
     payload: Record<string, any>,
-    expiresIn = '15m',
+    expiresIn = '10h',
   ): string {
     if (!this.privateKey) throw new Error('RSA Private Key not found');
     return jwt.sign(payload, this.privateKey, {

@@ -100,18 +100,6 @@ export class SiteResponseDto {
   address: string | null;
 
   @ApiProperty({
-    description: 'Latitude coordinate',
-    example: 12.9716,
-  })
-  latitude: number | null;
-
-  @ApiProperty({
-    description: 'Longitude coordinate',
-    example: 77.5946,
-  })
-  longitude: number | null;
-
-  @ApiProperty({
     description: 'Site image URL',
     example: 'https://example.com/site-image.jpg',
   })

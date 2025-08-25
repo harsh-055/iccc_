@@ -5,6 +5,7 @@ import {
   IsBoolean,
   MaxLength,
   IsUUID,
+  IsNumber,
 } from 'class-validator';
 
 export class CreateWardDto {
@@ -16,6 +17,15 @@ export class CreateWardDto {
   @IsString()
   @MaxLength(255)
   name: string;
+
+  @ApiProperty({
+    description: 'Ward number for ordering and display',
+    example: 1,
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  wardNo?: number;
 
   @ApiProperty({
     description: 'Ward description',

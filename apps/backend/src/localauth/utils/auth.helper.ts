@@ -1,7 +1,7 @@
-// import { InjectRedis } from '@nestjs-modules/ioredis';
+import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Injectable, Logger } from '@nestjs/common';
 import { JWTService } from 'src/utils/jwt/jwt.service';
-// import Redis from 'ioredis';
+import Redis from 'ioredis';
 import { randomUUID } from 'crypto';
 import { MfaService } from './mfa.service';
 
@@ -22,35 +22,39 @@ class StubRedisService {
 @Injectable()
 export class AuthHelper {
   private logger = new Logger(AuthHelper.name);
-  private redisService = new StubRedisService(); // Stub for when Redis is disabled
+  // private redisService = new StubRedisService(); // Stub for when Redis is disabled
 
   constructor(
     private readonly jwtUtil: JWTService,
-    // @InjectRedis() private readonly redisService: Redis,
+    @InjectRedis() private readonly redisService: Redis,
     private mfaService: MfaService,
   ) {}
 
   /**
    * Generates Access & Refresh Tokens while tracking session info in Redis.
    */
-  async generateTokens(user: any, req: any) {
+  async generateTokens(user: any, req: any, forceNewToken: boolean = false) {
     const userId = user.id;
     const sessionId = randomUUID();
-    // let sessions = await this.getAllActiveSessions(userId)
-    // // console.log(sessions)
-    // for(let session of sessions){
-    //    if(session.device === req.headers['user-agent'] && session.ip === req.ip)
-    //         this.logger.log('Reusing existing session')
-    //         const refreshToken:any = await this.redisService.get(`refresh:${userId}:${session.sessionId}`);
-    //         let refreshTokenDecoded = JSON.parse(refreshToken)
-    //       return {
-    //         accessToken: session.token,
-    //         refreshToken: refreshTokenDecoded?.token,
-    //     }
-    // }
+    
+    // If not forcing new token, check for existing sessions
+    if (!forceNewToken) {
+      let sessions = await this.getAllActiveSessions(userId)
+      // console.log(sessions)
+      for(let session of sessions){
+         if(session.device === req.headers['user-agent'] && session.ip === req.ip)
+              this.logger.log('Reusing existing session')
+              const refreshToken:any = await this.redisService.get(`refresh:${userId}:${session.sessionId}`);
+              let refreshTokenDecoded = JSON.parse(refreshToken)
+            return {
+              accessToken: session.token,
+              refreshToken: refreshTokenDecoded?.token,
+          }
+      }
+    }
     // Check if there is an existing session with the same IP and device
-    // const currentSession = await this.redisService.get(`session:${userId}:${sessionId}`);
-    // const currentRefreshToken = await this.redisService.get(`refresh:${userId}:${sessionId}`);
+    const currentSession = await this.redisService.get(`session:${userId}:${sessionId}`);
+    const currentRefreshToken = await this.redisService.get(`refresh:${userId}:${sessionId}`);
     const sessionInfo = {
       ip: req.ip,
       device: req.headers['user-agent'],
@@ -59,30 +63,30 @@ export class AuthHelper {
     };
 
     // If an active session exists and matches, return the existing token
-    // if (currentSession && currentRefreshToken) {
-    //     const storedSession = JSON.parse(currentSession);
-    //     const storedRefreshToken = JSON.parse(currentRefreshToken);
-    //     if (storedSession.ip === sessionInfo.ip && storedSession.device === sessionInfo.device) {
-    //         this.logger.log('Reusing existing session')
-    //         return {
-    //             accessToken: storedSession.token,
-    //             refreshToken: storedRefreshToken.token, // Get stored refresh token
-    //         };
-    //     }
-    // }
+    if (currentSession && currentRefreshToken) {
+        const storedSession = JSON.parse(currentSession);
+        const storedRefreshToken = JSON.parse(currentRefreshToken);
+        if (storedSession.ip === sessionInfo.ip && storedSession.device === sessionInfo.device) {
+            this.logger.log('Reusing existing session')
+            return {
+                accessToken: storedSession.token,
+                refreshToken: storedRefreshToken.token, // Get stored refresh token
+            };
+        }
+    }
     user['sessionId'] = sessionId;
     // If session does not exist or device/IP mismatch, generate new tokens
     const accessToken = this.jwtUtil.generateAccessToken(
       user,
-      '15m',
+      '10h',
       true,
       req,
     );
     const refreshToken = this.jwtUtil.generateRefreshToken(user);
 
-    // Store new session in Redis (override old one) - DISABLED
+    // Store new session in Redis (override old one)
     sessionInfo['token'] = accessToken; // Attach the new token
-    // await this.redisService.set(`session:${userId}:${sessionId}`, JSON.stringify(sessionInfo), 'EX', 900); // 15 mins expiry
+    await this.redisService.set(`session:${userId}:${sessionId}`, JSON.stringify(sessionInfo), 'EX', 36000); // 10 hours expiry
     const refreshTokenInfo = {
       token: refreshToken,
       ip: req.ip,
@@ -91,7 +95,7 @@ export class AuthHelper {
       refreshedAt: new Date().toISOString(),
       sessionId,
     };
-    // await this.redisService.set(`refresh:${userId}:${sessionId}`, JSON.stringify(refreshTokenInfo), 'EX', 604800); // 7 days expiry
+    await this.redisService.set(`refresh:${userId}:${sessionId}`, JSON.stringify(refreshTokenInfo), 'EX', 604800); // 7 days expiry
 
     return { accessToken, refreshToken: refreshToken };
   }
@@ -103,7 +107,7 @@ export class AuthHelper {
     try {
       const decoded = this.jwtUtil.verifyAccessToken(token);
       console.log(decoded);
-      // const session = await this.redisService.get(`session:${decoded.id}:${decoded.sessionId}`);
+      const session = await this.redisService.get(`session:${decoded.id}:${decoded.sessionId}`);
 
       // if (!session) {
       //     throw new Error('Session expired or invalid');
@@ -168,7 +172,7 @@ export class AuthHelper {
       if (user.exp) delete user.exp;
       const newAccessToken = this.jwtUtil.generateAccessToken(
         user,
-        '15m',
+        '10h',
         true,
         req,
       );
@@ -178,8 +182,8 @@ export class AuthHelper {
         `session:${user.id}:${decoded.sessionId}`,
         JSON.stringify(session),
         'EX',
-        900,
-      ); // 15 mins expiry
+        36000,
+      ); // 10 hours expiry
 
       return { accessToken: newAccessToken };
     } catch (err) {
@@ -199,9 +203,9 @@ export class AuthHelper {
     await this.redisService.del(`refresh:${userId}:${req.sessionId}`);
 
     // Remove the specific device from the session list
-    // let devices = await this.getActiveDevices(userId);
-    // devices = devices.filter(device => device.token !== accessToken);
-    // await this.redisService.set(`devices:${userId}`, JSON.stringify(devices), 'EX', 604800);
+    let devices = await this.getActiveDevices(userId);
+    devices = devices.filter(device => device.token !== req.accessToken);
+    await this.redisService.set(`devices:${userId}`, JSON.stringify(devices), 'EX', 604800);
 
     return { message: 'Logged out successfully' };
   }

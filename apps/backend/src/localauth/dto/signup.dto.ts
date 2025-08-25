@@ -6,7 +6,6 @@ import {
   Matches,
   IsOptional,
   IsBoolean,
-  IsUUID,
   IsString,
 } from 'class-validator';
 
@@ -26,53 +25,61 @@ export class SignupDto {
   @IsString()
   @IsNotEmpty()
   lastName: string;
-  @ApiProperty()
+
+  @ApiProperty({
+    example: 'john.doe@example.com',
+    description: 'Email address',
+  })
   @IsEmail({}, { message: 'Invalid email format' })
   @IsNotEmpty({ message: 'Email is required' })
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Password123@',
+    description: 'User password',
+  })
   @IsNotEmpty({ message: 'Password is required' })
   @MinLength(6, { message: 'Password must be at least 6 characters' })
-  @Matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]+$/, {
-    message: 'Password must contain at least one letter and one number',
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {
+    message: 
+    'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
   })
   password: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Password123@',
+    description: 'Confirm password',
+  })
   @IsNotEmpty({ message: 'Confirm Password is required' })
   @MinLength(6, { message: 'Confirm Password must be at least 6 characters' })
-  @ApiProperty()
-  @IsOptional()
   confirmPassword: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: '+11234567890',
+    description: 'Phone number',
+    required: false,
+  })
   @IsOptional()
-  @IsNotEmpty({ message: 'Username is required' })
-  username?: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsNotEmpty({ message: 'Phone number is required' })
+  @IsString()
   phoneNumber?: string;
 
   @ApiProperty({
-    example: 'true',
+    example: true,
     description: 'Whether the user is creating a new organization/tenant',
-    required: false,
     default: false,
+    required: false,
   })
   @IsOptional()
   @IsBoolean()
-  isOrganizationCreator: boolean = false;
+  isOrganizationCreator?: boolean;
 
   @ApiProperty({
     example: 'ACME Corporation',
-    description:
-      'Organization/tenant name (required when creating new organization)',
+    description: 'Organization/tenant name (required when creating new organization)',
     required: false,
   })
   @IsOptional()
+  @IsString()
   organizationName?: string;
 
   @ApiProperty({
@@ -81,35 +88,6 @@ export class SignupDto {
     required: false,
   })
   @IsOptional()
-  organizationDescription?: string;
-
-  @ApiProperty({
-    example: '550e8400-e29b-41d4-a716-446655440000',
-    description:
-      'Existing tenant ID (if joining an existing organization instead of creating one)',
-    required: false,
-  })
-  @IsOptional()
-  @IsUUID('4', { message: 'Invalid tenant ID format' })
-  tenantId?: string;
-
-  @ApiProperty({
-    example: '550e8400-e29b-41d4-a716-446655440001',
-    description:
-      'Parent user ID (user who will be the manager/lead for this user) - Primary method',
-    required: false,
-  })
-  @IsOptional()
-  @IsUUID('4', { message: 'Invalid parent user ID format' })
-  parentId?: string;
-
-  @ApiProperty({
-    example: 'John Doe',
-    description:
-      'Parent user name (Legacy method - not recommended. Use parentId for better reliability)',
-    required: false,
-  })
-  @IsOptional()
   @IsString()
-  parentName?: string;
+  organizationDescription?: string;
 }

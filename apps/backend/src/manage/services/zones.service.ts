@@ -11,7 +11,7 @@ import {
   ZoneResponseDto,
   PaginationDto,
   PaginatedResponseDto,
-  BaseFilterDto,
+  ZoneFilterDto,
 } from '../dto';
 
 @Injectable()
@@ -49,13 +49,14 @@ export class ZonesService {
       }
 
       const result = await this.databaseService.query(
-        `INSERT INTO zones (name, description, region_id, is_active, tenant_id, created_by)
-         VALUES ($1, $2, $3, $4, $5, $6)
+        `INSERT INTO zones (name, description, region_id, zone_no, is_active, tenant_id, created_by)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
          RETURNING *`,
         [
           createZoneDto.name,
           createZoneDto.description,
           createZoneDto.regionId,
+          createZoneDto.zoneNo,
           createZoneDto.isActive ?? true,
           tenantId,
           userId,
@@ -74,7 +75,7 @@ export class ZonesService {
 
   async findAll(
     paginationDto: PaginationDto,
-    filterDto: BaseFilterDto,
+    filterDto: ZoneFilterDto,
     tenantId: string,
   ): Promise<PaginatedResponseDto<ZoneResponseDto>> {
     try {
@@ -129,6 +130,9 @@ export class ZonesService {
       );
       const total = parseInt(countResult.rows[0].total);
 
+      const limitParamIndex = paramIndex;
+      const offsetParamIndex = paramIndex + 1;
+      
       // Get paginated data with counts
       const dataQuery = `
         SELECT 
@@ -159,7 +163,7 @@ export class ZonesService {
         ) vehicles_count ON z.id = vehicles_count.assigned_zone_id
         ${whereClause}
         ORDER BY z.${sortBy} ${sortOrder.toUpperCase()}
-        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+        LIMIT $${limitParamIndex} OFFSET $${offsetParamIndex}
       `;
 
       const dataResult = await this.databaseService.query(dataQuery, [
@@ -374,6 +378,7 @@ export class ZonesService {
     return {
       id: zone.id,
       name: zone.name,
+      zoneNo: zone.zone_no,
       description: zone.description,
       regionId: zone.region_id,
       regionName: zone.region_name,

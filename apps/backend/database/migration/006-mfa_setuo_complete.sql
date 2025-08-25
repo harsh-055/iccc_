@@ -1,2 +1,2 @@
 ALTER TABLE mfa
-ADD COLUMN is_setup_complete BOOLEAN NOT NULL DEFAULT false;
+ADD COLUMN IF NOT EXISTS is_setup_complete BOOLEAN NOT NULL DEFAULT false;

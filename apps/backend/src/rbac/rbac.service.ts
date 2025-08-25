@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { DefaultRolesService } from '../role/service/default-role.service';
-// import { InjectRedis } from '@nestjs-modules/ioredis';
-// import Redis from 'ioredis';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
 import { Logger } from '@nestjs/common';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class RbacService {
     private readonly database: DatabaseService,
     @Inject(forwardRef(() => DefaultRolesService))
     private defaultRolesService: DefaultRolesService,
-    // @InjectRedis() private readonly redisService: Redis,
+    @InjectRedis() private readonly redisService: Redis,
   ) {
     // 🚀 CACHING DISABLED: Removed memory cache cleanup interval
   }

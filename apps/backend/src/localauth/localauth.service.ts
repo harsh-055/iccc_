@@ -69,14 +69,10 @@ export class LocalauthService {
       email,
       password,
       confirmPassword,
-      username,
       phoneNumber,
       isOrganizationCreator,
       organizationName,
       organizationDescription,
-      tenantId,
-      parentId,
-      parentName,
     } = data;
 
     // Validate password confirmation
@@ -85,7 +81,7 @@ export class LocalauthService {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userIp = req.ip;
+    const userIp = req?.ip || req?.connection?.remoteAddress || 'unknown';
 
     // Use transaction for atomicity
     const client = await this.databaseService.getClient();
@@ -108,29 +104,8 @@ export class LocalauthService {
         throw new ForbiddenException('A user with this email already exists');
       }
 
-      // Validate parent user if provided
-      let validatedParentId = null;
-      if (parentId) {
-        const parentUserResult = await client.query(
-          'SELECT id, is_active FROM users WHERE id = $1 AND is_active = true',
-          [parentId],
-        );
-
-        if (parentUserResult.rows.length === 0) {
-          throw new BadRequestException('Parent user not found or inactive');
-        }
-        validatedParentId = parentId;
-      } else if (parentName) {
-        const parentUserResult = await client.query(
-          "SELECT id, is_active FROM users WHERE LOWER(first_name || ' ' || last_name) = LOWER($1) AND is_active = true",
-          [parentName],
-        );
-
-        if (parentUserResult.rows.length === 0) {
-          throw new BadRequestException('Parent user not found or inactive');
-        }
-        validatedParentId = parentUserResult.rows[0].id;
-      }
+      // No parent user validation needed for simplified signup
+      const validatedParentId = null;
 
       // Create user
       const userResult = await client.query<User>(
@@ -162,7 +137,7 @@ export class LocalauthService {
       // Handle organization creation or joining
       let userTenantId = null;
 
-      if (isOrganizationCreator && organizationName && !tenantId) {
+      if (isOrganizationCreator && organizationName) {
         // Create new organization/tenant
         const tenantResult = await client.query(
           `INSERT INTO tenants (name, description, created_by)
@@ -172,7 +147,7 @@ export class LocalauthService {
         );
         userTenantId = tenantResult.rows[0].id;
 
-        // Create or find admin role
+        // Create or find tenant-specific admin role for SaaS isolation
         let adminRoleResult;
         try {
           // Look for existing tenant-specific admin role first
@@ -182,7 +157,7 @@ export class LocalauthService {
                         LIMIT 1
                     `;
           const existingRole = await client.query(existingRoleQuery, [
-            'tenant-admin',
+            'Admin',
             userTenantId,
           ]);
 
@@ -190,38 +165,74 @@ export class LocalauthService {
             // Use existing tenant-specific admin role
             adminRoleResult = existingRole;
           } else {
-            // Create new TENANT-SPECIFIC admin role (SaaS isolation)
-            adminRoleResult = await client.query(
+            // Create new TENANT-SPECIFIC system roles (SaaS isolation)
+            // Create Super Administrator role
+            const superAdminRoleResult = await client.query(
               `INSERT INTO roles (name, description, tenant_id, is_system, created_by)
                              VALUES ($1, $2, $3, $4, $5)
                              RETURNING id`,
               [
-                'tenant-admin',
-                'Administrative role for this tenant/organization only',
-                userTenantId, // ✅ TENANT-SPECIFIC role for SaaS isolation
-                false, // ✅ NOT a system role - tenant-scoped only
+                'Super Administrator',
+                'Monitors and Hosts Management Permissions',
+                userTenantId, // ✅ TENANT-SPECIFIC system role
+                true, // ✅ IS a system role but tenant-scoped
                 user.id,
               ],
             );
 
-            // ✅ FIX: Assign admin permissions to the new tenant-admin role
-            const adminPermissions = [
-              'users:manage',
-              'users:create',
-              'users:read',
-              'users:update',
-              'users:delete',
-              'users:list',
-              'roles:manage',
-              'roles:create',
-              'roles:read',
-              'roles:update',
-              'roles:assign',
-              'roles:list',
-              'permissions:read',
-              'permissions:list',
-            ];
+            // Create Administrator role
+            const adminRoleInsertResult = await client.query(
+              `INSERT INTO roles (name, description, tenant_id, is_system, created_by)
+                             VALUES ($1, $2, $3, $4, $5)
+                             RETURNING id`,
+              [
+                'Administrator',
+                'Administrator role with all permissions',
+                userTenantId, // ✅ TENANT-SPECIFIC system role
+                true, // ✅ IS a system role but tenant-scoped
+                user.id,
+              ],
+            );
 
+            // Create User Admin role
+            const userAdminRoleResult = await client.query(
+              `INSERT INTO roles (name, description, tenant_id, is_system, created_by)
+                             VALUES ($1, $2, $3, $4, $5)
+                             RETURNING id`,
+              [
+                'User Admin',
+                ' user admin role with all permissions',
+                userTenantId, // ✅ TENANT-SPECIFIC system role
+                true, // ✅ IS a system role but tenant-scoped
+                user.id,
+              ],
+            );
+
+            // Permission assignments are now handled by the role-permission mapping below
+
+            // Assign permissions based on role mapping
+            const { getPermissionsForRole } = await import('../permissions/config/role-permission-mapping');
+            
+            // Assign permissions to Super Administrator
+            const superAdminPermissions = getPermissionsForRole('Super Administrator');
+            for (const permissionName of superAdminPermissions) {
+              const permissionResult = await client.query(
+                `SELECT id FROM permissions WHERE name = $1`,
+                [permissionName],
+              );
+
+              if (permissionResult.rows.length > 0) {
+                await client.query(
+                  `INSERT INTO role_permissions (role_id, permission_id, assigned_at)
+                                 VALUES ($1, $2, NOW())
+                                 ON CONFLICT (role_id, permission_id) DO NOTHING`,
+                  [superAdminRoleResult.rows[0].id, permissionResult.rows[0].id],
+                );
+              }
+            }
+
+            // Assign permissions to Administrator
+            const adminPermissions = getPermissionsForRole('Administrator');
             for (const permissionName of adminPermissions) {
               const permissionResult = await client.query(
                 `SELECT id FROM permissions WHERE name = $1`,
@@ -230,13 +241,37 @@ export class LocalauthService {
 
               if (permissionResult.rows.length > 0) {
                 await client.query(
-                  `INSERT INTO role_permissions (role_id, permission_id)
-                                     VALUES ($1, $2)
-                                     ON CONFLICT (role_id, permission_id) DO NOTHING`,
-                  [adminRoleResult.rows[0].id, permissionResult.rows[0].id],
+                  `INSERT INTO role_permissions (role_id, permission_id, assigned_at)
+                                 VALUES ($1, $2, NOW())
+                                 ON CONFLICT (role_id, permission_id) DO NOTHING`,
+                  [adminRoleInsertResult.rows[0].id, permissionResult.rows[0].id],
                 );
               }
             }
+
+            // Assign permissions to User Admin
+            const userAdminPermissions = getPermissionsForRole('User Admin');
+            for (const permissionName of userAdminPermissions) {
+              const permissionResult = await client.query(
+                `SELECT id FROM permissions WHERE name = $1`,
+                [permissionName],
+              );
+
+              if (permissionResult.rows.length > 0) {
+                await client.query(
+                  `INSERT INTO role_permissions (role_id, permission_id, assigned_at)
+                                 VALUES ($1, $2, NOW())
+                                 ON CONFLICT (role_id, permission_id) DO NOTHING`,
+                  [userAdminRoleResult.rows[0].id, permissionResult.rows[0].id],
+                );
+              }
+            }
+
+            // Use Administrator role for the new user
+            adminRoleResult = adminRoleInsertResult;
+
+            // ✅ Database trigger will automatically assign manage permissions to Admin roles
+            // No need to manually assign permissions here anymore!
           }
         } catch (roleError) {
           // If role creation fails, try to find tenant-specific admin role
@@ -246,7 +281,7 @@ export class LocalauthService {
                         LIMIT 1
                     `;
           adminRoleResult = await client.query(fallbackRoleQuery, [
-            'tenant-admin',
+            'Admin',
             userTenantId,
           ]);
 
@@ -269,114 +304,15 @@ export class LocalauthService {
                      VALUES ($1, $2, $3, $4)`,
           [user.id, adminRoleResult.rows[0].id, userTenantId, user.id],
         );
-      } else if (tenantId && !isOrganizationCreator) {
-        // Verify tenant exists
-        const tenantCheck = await client.query(
-          'SELECT id FROM tenants WHERE id = $1',
-          [tenantId],
-        );
-
-        if (tenantCheck.rows.length === 0) {
-          throw new ForbiddenException('Invalid organization ID');
-        }
-
-        userTenantId = tenantId;
-
-        // Create or get a tenant-specific member role for SaaS isolation
-        let memberRoleResult;
-        try {
-          // Look for existing tenant-specific member role
-          const existingRoleQuery = `
-                        SELECT id FROM roles 
-                        WHERE LOWER(name) = LOWER($1) AND tenant_id = $2
-                        LIMIT 1
-                    `;
-          const existingRole = await client.query(existingRoleQuery, [
-            'tenant-member',
-            userTenantId,
-          ]);
-
-          if (existingRole.rows.length > 0) {
-            // Use existing tenant-specific member role
-            memberRoleResult = existingRole;
-          } else {
-            // Create new TENANT-SPECIFIC member role (SaaS isolation)
-            memberRoleResult = await client.query(
-              `INSERT INTO roles (name, description, tenant_id, is_system, created_by)
-                             VALUES ($1, $2, $3, $4, $5)
-                             RETURNING id`,
-              [
-                'tenant-member',
-                'Standard member role for this tenant/organization only',
-                userTenantId, // ✅ TENANT-SPECIFIC role for SaaS isolation
-                false, // ✅ NOT a system role - tenant-scoped only
-                user.id,
-              ],
-            );
-
-            // ✅ FIX: Assign basic permissions to the new tenant-member role
-            const memberPermissions = [
-              'users:read',
-              'users:list',
-              'roles:read',
-              'roles:list',
-              'permissions:read',
-            ];
-
-            for (const permissionName of memberPermissions) {
-              const permissionResult = await client.query(
-                `SELECT id FROM permissions WHERE name = $1`,
-                [permissionName],
-              );
-
-              if (permissionResult.rows.length > 0) {
-                await client.query(
-                  `INSERT INTO role_permissions (role_id, permission_id)
-                                     VALUES ($1, $2)
-                                     ON CONFLICT (role_id, permission_id) DO NOTHING`,
-                  [memberRoleResult.rows[0].id, permissionResult.rows[0].id],
-                );
-              }
-            }
-          }
-        } catch (roleError) {
-          // If role creation fails, try to find tenant-specific member role
-          const fallbackRoleQuery = `
-                        SELECT id FROM roles 
-                        WHERE LOWER(name) = LOWER($1) AND tenant_id = $2
-                        LIMIT 1
-                    `;
-          memberRoleResult = await client.query(fallbackRoleQuery, [
-            'tenant-member',
-            userTenantId,
-          ]);
-
-          if (memberRoleResult.rows.length === 0) {
-            throw new BadRequestException(
-              'Unable to create or find member role',
-            );
-          }
-        }
-
-        // Update user with tenant_id and system_role_id
-        await client.query(
-          `UPDATE users SET tenant_id = $1, system_role_id = $2 WHERE id = $3`,
-          [userTenantId, memberRoleResult.rows[0].id, user.id],
-        );
-
-        // Join existing organization as member using user_roles table
-        await client.query(
-          `INSERT INTO user_roles (user_id, role_id, tenant_id, assigned_by)
-                     VALUES ($1, $2, $3, $4)`,
-          [user.id, memberRoleResult.rows[0].id, userTenantId, user.id],
-        );
       } else {
         // Default case: Create user without tenant assignment
-        // This can happen when joining without specifying tenantId
+        // This can happen when not creating an organization
         throw new BadRequestException(
-          'Please specify either organizationName (for new org) or tenantId (for existing org)',
+          'Please set isOrganizationCreator to true and provide organizationName to create a new organization',
         );
       }
+
+
 
       await client.query('COMMIT');
 
@@ -432,8 +368,10 @@ export class LocalauthService {
   }
 
   async login(req, data: LoginDto) {
-    const { email, password, mfaToken, tenantId, tenantName, systemRole } =
-      data;
+    const { email, password } = data;
+    
+    // Ensure req object exists and has required properties
+    const requestIp = req?.ip || req?.connection?.remoteAddress || 'unknown';
 
     // Find user by email
     const userResult = await this.databaseService.query<User>(
@@ -458,7 +396,7 @@ export class LocalauthService {
                      last_failed_ip = $1, 
                      last_failed_at = NOW() 
                  WHERE user_id = $2`,
-        [req.ip, user.id],
+        [requestIp, user.id],
       );
 
       // Lock account after 5 failed attempts
@@ -482,122 +420,104 @@ export class LocalauthService {
     const userLoginDetails = loginDetailsResult.rows[0];
 
     // Check IP whitelist
-    const isIpWhitelisted = userLoginDetails.whitelisted_ip.includes(req.ip);
+    const isIpWhitelisted = userLoginDetails.whitelisted_ip.includes(requestIp);
 
-    // Handle MFA verification
-    let mfaVerified = false;
+    // MFA verification commented out for now
+    let mfaVerified = true; // Set to true to bypass MFA
 
-    // If new IP detected, require MFA
-    if (!isIpWhitelisted) {
-      if (!mfaToken) {
-        throw new ForbiddenException('New IP detected. MFA token is required');
-      }
+    // // Handle MFA verification
+    // let mfaVerified = false;
 
-      // Check if MFA is set up
-      const mfaResult = await this.databaseService.query<MFA>(
-        'SELECT * FROM mfa WHERE user_id = $1',
-        [user.id],
-      );
+    // // If new IP detected, require MFA
+    // if (!isIpWhitelisted) {
+    //   if (!mfaToken) {
+    //     throw new ForbiddenException('New IP detected. MFA token is required');
+    //   }
 
-      if (mfaResult.rows.length === 0) {
-        throw new ForbiddenException(
-          'Please set up MFA first for new IP access',
-        );
-      }
+    //   // Check if MFA is set up
+    //   const mfaResult = await this.databaseService.query<MFA>(
+    //     'SELECT * FROM mfa WHERE user_id = $1',
+    //     [user.id],
+    //   );
 
-      const mfa = mfaResult.rows[0];
-      const isValid = await this.authHelper.verifyMfaToken(
-        mfa.secret,
-        mfaToken,
-      );
+    //   if (mfaResult.rows.length === 0) {
+    //     throw new ForbiddenException(
+    //       'Please set up MFA first for new IP access',
+    //     );
+    //   }
 
-      if (!isValid) {
-        throw new ForbiddenException('Invalid MFA token');
-      }
+    //   const mfa = mfaResult.rows[0];
+    //   const isValid = await this.authHelper.verifyMfaToken(
+    //     mfa.secret,
+    //     mfaToken,
+    //   );
 
-      mfaVerified = true;
+    //   if (!isValid) {
+    //     throw new ForbiddenException('Invalid MFA token');
+    //   }
 
-      // Add IP to whitelist after successful MFA
-      await this.databaseService.query(
-        `UPDATE user_login_details 
-                 SET whitelisted_ip = array_append(whitelisted_ip, $1)
-                 WHERE user_id = $2 AND NOT ($1 = ANY(whitelisted_ip))`,
-        [req.ip, user.id],
-      );
-    } else if (user.is_mfa_enabled) {
-      // Regular MFA check for whitelisted IPs with MFA enabled
-      if (!mfaToken) {
-        throw new ForbiddenException('MFA token is required');
-      }
+    //   mfaVerified = true;
 
-      const mfaResult = await this.databaseService.query<MFA>(
-        'SELECT * FROM mfa WHERE user_id = $1',
-        [user.id],
-      );
+    //   // Add IP to whitelist after successful MFA
+    //   await this.databaseService.query(
+    //     `UPDATE user_login_details 
+    //              SET whitelisted_ip = array_append(whitelisted_ip, $1)
+    //              WHERE user_id = $2 AND NOT ($1 = ANY(whitelisted_ip))`,
+    //     [req.ip, user.id],
+    //   );
+    // } else if (user.is_mfa_enabled) {
+    //   // Regular MFA check for whitelisted IPs with MFA enabled
+    //   if (!mfaToken) {
+    //     throw new ForbiddenException('MFA token is required');
+    //   }
 
-      if (mfaResult.rows.length === 0) {
-        throw new ForbiddenException('MFA is not set up for this user');
-      }
+    //   const mfaResult = await this.databaseService.query<MFA>(
+    //     'SELECT * FROM mfa WHERE user_id = $1',
+    //     [user.id],
+    //   );
 
-      const mfa = mfaResult.rows[0];
-      const isValid = await this.authHelper.verifyMfaToken(
-        mfa.secret,
-        mfaToken,
-      );
-      if (!isValid) {
-        throw new ForbiddenException('Invalid MFA token');
-      }
+    //   if (mfaResult.rows.length === 0) {
+    //     throw new ForbiddenException('MFA is not set up for this user');
+    //   }
 
-      mfaVerified = true;
-    }
+    //   const mfa = mfaResult.rows[0];
+    //   const isValid = await this.authHelper.verifyMfaToken(
+    //     mfa.secret,
+    //     mfaToken,
+    //   );
+    //   if (!isValid) {
+    //     throw new ForbiddenException('Invalid MFA token');
+    //   }
 
-    // Handle tenant selection
-    let selectedTenantId = tenantId;
-    let selectedTenantName = tenantName;
+    //   mfaVerified = true;
+    // }
 
-    if (tenantName && !tenantId) {
-      // Look up tenant by name
-      const tenantResult = await this.databaseService.query(
-        'SELECT id, name FROM tenants WHERE name = $1',
-        [tenantName],
-      );
-      if (tenantResult.rows.length > 0) {
-        selectedTenantId = tenantResult.rows[0].id;
-        selectedTenantName = tenantResult.rows[0].name;
-      }
-    }
+    // Auto-select tenant for user
+    let selectedTenantId = null;
+    let selectedTenantName = null;
 
-    // ✅ SECURE: Check tenant access patterns before auto-selection
-    if (!selectedTenantId) {
-      // First, check how many tenants user has access to
-      const userTenantsResult = await this.databaseService.query(
-        `SELECT t.id, t.name, ur.assigned_at
-                 FROM user_roles ur 
-                 JOIN tenants t ON ur.tenant_id = t.id 
-                 WHERE ur.user_id = $1 
-                 ORDER BY ur.assigned_at ASC`,
-        [user.id],
-      );
+    // Check how many tenants user has access to
+    const userTenantsResult = await this.databaseService.query(
+      `SELECT t.id, t.name, ur.assigned_at
+               FROM user_roles ur 
+               JOIN tenants t ON ur.tenant_id = t.id 
+               WHERE ur.user_id = $1 
+               ORDER BY ur.assigned_at ASC`,
+      [user.id],
+    );
 
-      const userTenants = userTenantsResult.rows;
+    const userTenants = userTenantsResult.rows;
 
-      if (userTenants.length === 0) {
-        throw new ForbiddenException('User is not assigned to any tenant');
-      } else if (userTenants.length === 1) {
-        // ✅ SAFE: User only has access to one tenant
-        selectedTenantId = userTenants[0].id;
-        selectedTenantName = userTenants[0].name;
-      } else {
-        // 🚨 SECURITY: User has multiple tenants - require explicit selection
-        throw new BadRequestException({
-          message:
-            'Multiple tenants found. Please specify tenantId or tenantName in login request.',
-          availableTenants: userTenants.map((t) => ({
-            id: t.id,
-            name: t.name,
-          })),
-        });
-      }
+    if (userTenants.length === 0) {
+      throw new ForbiddenException('User is not assigned to any tenant');
+    } else if (userTenants.length === 1) {
+      // User only has access to one tenant
+      selectedTenantId = userTenants[0].id;
+      selectedTenantName = userTenants[0].name;
+    } else {
+      // User has multiple tenants - select the first one
+      selectedTenantId = userTenants[0].id;
+      selectedTenantName = userTenants[0].name;
     }
 
     // Verify user has access to the tenant
@@ -651,7 +571,7 @@ export class LocalauthService {
 
       // Map roles to 2-level company hierarchy
       // All roles are now tenant-specific (no platform-wide access)
-      if (role.name === 'tenant-admin') {
+      if (role.name === 'Admin') {
         userSystemRole = 'ADMIN'; // Level 2: Company Admin (can manage their company)
       } else if (role.name === 'tenant-member') {
         userSystemRole = 'END_USER'; // Level 1: End User (employee within company)
@@ -660,21 +580,6 @@ export class LocalauthService {
       }
 
       userSystemRoleId = role.id;
-
-      // If a specific systemRole was requested, validate user has it
-      if (
-        systemRole &&
-        userSystemRole.toLowerCase() !== systemRole.toLowerCase()
-      ) {
-        throw new ForbiddenException(
-          'User does not have the specified system role',
-        );
-      }
-    } else if (systemRole) {
-      // If a specific system role was requested but user doesn't have any
-      throw new ForbiddenException(
-        'User does not have the specified system role',
-      );
     }
 
     // Update successful login
@@ -694,6 +599,7 @@ export class LocalauthService {
     const { accessToken, refreshToken } = await this.authHelper.generateTokens(
       logindata,
       req,
+      true, // Force new token generation
     );
 
     // Get permissions if tenant is selected

@@ -47,32 +47,58 @@ export class PermissionGuard implements CanActivate {
         throw new ForbiddenException('Invalid permission format');
       }
 
-      let action: string;
-      let resource: string;
-
-      // Handle both colon format (reports:read) and underscore format (READ_REPORTS)
-      if (permissionName.includes(':')) {
-        [resource, action] = permissionName.toLowerCase().split(':');
-      } else if (permissionName.includes('_')) {
-        [action, resource] = permissionName.toLowerCase().split('_');
-      } else {
-        console.error(
-          `[PERMISSION_GUARD] Invalid permission format: ${permissionName}`,
-        );
-        throw new ForbiddenException('Invalid permission format');
-      }
-
-      if (!action || !resource) {
-        console.error(
-          `[PERMISSION_GUARD] Invalid permission format: ${permissionName}`,
-        );
-        throw new ForbiddenException('Invalid permission format');
-      }
-
-      const resourcePlural = resource.endsWith('s') ? resource : `${resource}s`;
-
-      // 🔒 USE HIERARCHICAL PERMISSION CHECK instead of basic check
+      // 🔒 FLEXIBLE PERMISSION CHECK - Check both direct permission and hierarchical permission
       try {
+        // First, try to check if the user has the exact permission name
+        const hasExactPermission = await this.rbacService.hasPermissionByName(
+          user.id,
+          permissionName,
+        );
+
+        if (hasExactPermission) {
+          continue; // User has the exact permission, allow access
+        }
+
+        // If exact permission not found, try to parse and check hierarchical permission
+        let action: string;
+        let resource: string;
+
+        // Handle different permission formats
+        if (permissionName.includes(':')) {
+          const parts = permissionName.toLowerCase().split(':');
+          
+          // Handle manage:resource:action format (e.g., manage:regions:read)
+          if (parts.length === 3 && parts[0] === 'manage') {
+            resource = parts[1];
+            action = parts[2];
+          } else if (parts.length === 2) {
+            // Handle resource:action format (e.g., regions:read)
+            [resource, action] = parts;
+          } else {
+            console.error(
+              `[PERMISSION_GUARD] Invalid permission format: ${permissionName}`,
+            );
+            throw new ForbiddenException('Invalid permission format');
+          }
+        } else if (permissionName.includes('_')) {
+          [action, resource] = permissionName.toLowerCase().split('_');
+        } else {
+          console.error(
+            `[PERMISSION_GUARD] Invalid permission format: ${permissionName}`,
+          );
+          throw new ForbiddenException('Invalid permission format');
+        }
+
+        if (!action || !resource) {
+          console.error(
+            `[PERMISSION_GUARD] Invalid permission format: ${permissionName}`,
+          );
+          throw new ForbiddenException('Invalid permission format');
+        }
+
+        const resourcePlural = resource.endsWith('s') ? resource : `${resource}s`;
+
+        // Check hierarchical permission
         await this.rbacService.checkHierarchicalPermission(
           user.id,
           resourcePlural,
@@ -80,7 +106,7 @@ export class PermissionGuard implements CanActivate {
         );
       } catch (error) {
         console.error(
-          `[PERMISSION_GUARD] Hierarchical permission denied for ${user.id}: ${permissionName}`,
+          `[PERMISSION_GUARD] Permission denied for ${user.id}: ${permissionName}`,
           error.message,
         );
         throw new ForbiddenException(

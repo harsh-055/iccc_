@@ -1,0 +1,91 @@
+[
+  {
+    "id": "INC-2024-001",
+    "title": "Blacklisted Person Detected",
+    "type": "blacklisted_person",
+    "severity": "critical",
+    "status": "active",
+    "Camera_id": "Cam-11103",
+    "Camera_name": "Camera 1",
+    "location": {
+      "city": "Gurugram",
+      "sector": "Sector21",
+      "address": "Smart City Office, Main Gate",
+      "coordinates": {
+        "lat": 28.459245,
+        "long": 77.026834
+      }
+    },
+    "timestamp": "2024-12-20T12:00:00.000Z",
+    "videoUrl": "https://cdn.pixabay.com/video/2023/04/15/158776-821127736_large.mp4",
+    "thumbnailUrl": "https://cdn.pixabay.com/video/2023/04/15/158776-821127736_large.jpg",
+    "duration": 120,
+    "currentTime": 17,
+    "description": "Blacklisted individual detected near main entrance wearing dark hoodie",
+    "confidence": 95,
+    "matchedFaces": [
+      {
+        "id": "FACE-001",
+        "name": "John Suspect",
+        "confidence": 95,
+        "imageUrl": "https://randomuser.me/api/portraits/men/1.jpg",
+        "blacklistReason": "Previous theft incident",
+        "lastSeen": "2024-12-15T10:30:00.000Z"
+      }
+    ],
+    "eventDetails": {
+      "camera": "Camera Name 1",
+      "distanceFromCamera": "50 m",
+      "skinTone": "Dusky",
+      "location": "Smart City Office",
+      "source": "Camera 1",
+      "nearestCam": "PTZ-501 - Parking Entry",
+      "detectionTime": "12:00 PM",
+      "peopleCount": 1
+    },
+    "assignedTo": "Security Team Alpha",
+    "alertSent": true,
+    "sopLaunched": true,
+    "sopSteps": [
+      {
+        "stepNumber": 1,
+        "title": "Manual Activity",
+        "description": "Review matched photo, live feed & camera metadata",
+        "status": "completed",
+        "assignedTo": "Operator 1",
+        "completedBy": "Operator 1",
+        "completedAt": "2024-12-20T12:02:00.000Z",
+        "estimatedTime": 2,
+        "actualTime": 2,
+        "instructions": "View Instructions",
+        "checklistItems": [
+          {
+            "id": "CHK-001",
+            "description": "Verify person identity",
+            "completed": true,
+            "completedBy": "Operator 1",
+            "completedAt": "2024-12-20T12:02:00.000Z"
+          }
+        ]
+      },
+      {
+        "stepNumber": 2,
+        "title": "Automatic Activity",
+        "description": "Notify the Operator Admin",
+        "status": "completed",
+        "estimatedTime": 1,
+        "actualTime": 1,
+        "completedAt": "2024-12-20T12:03:00.000Z"
+      },
+      {
+        "stepNumber": 3,
+        "title": "Manual Activity",
+        "description": "Make announcement in the affected area",
+        "status": "in_progress",
+        "assignedTo": "Security Team",
+        "estimatedTime": 5,
+        "instructions": "View Instructions"
+      }
+    ]
+  }
+]

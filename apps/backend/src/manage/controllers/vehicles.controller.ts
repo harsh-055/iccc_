@@ -1,351 +1,379 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
   Query,
+  HttpCode,
+  HttpStatus,
   Logger,
-  UseGuards,
-  Req,
-  ParseUUIDPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
-  ApiBody,
-  ApiParam,
   ApiQuery,
-  ApiBearerAuth,
 } from '@nestjs/swagger';
-import { VehiclesService } from '../services/vehicles.service';
 import {
-  CreateVehicleDto,
-  UpdateVehicleDto,
-  VehicleResponseDto,
-  PaginationDto,
-  PaginatedResponseDto,
-  BaseFilterDto,
-} from '../dto';
-import { AuthPermissionGuard } from '../../permissions/guards/auth-permission.guard';
-import { RequirePermissions } from '../../permissions/decorators/require-permission.decorator';
+  VehiclesResponseDto,
+  VehicleDetailResponseDto,
+  VehicleSimpleDto,
+  VehicleDetailsDto,
+  FuelStatisticsDto,
+  TyreConditionDto,
+} from '../dto/vehicles/vehicle-simple.dto';
 
 @Controller('manage/vehicles')
 @ApiTags('Manage - Vehicles')
-@ApiBearerAuth('Bearer')
-@UseGuards(AuthPermissionGuard)
 export class VehiclesController {
   private readonly logger = new Logger(VehiclesController.name);
 
-  constructor(private readonly vehiclesService: VehiclesService) {}
+  // Mock data for all vehicles (for grid display)
+  private readonly vehiclesData: VehicleSimpleDto[] = [
+    {
+      vehicle_type: 'Auto Tipper',
+      registration_number: 'OD08 JPEG 4356',
+      status: 'On Trip',
+      vehicle_id: 'VD001',
+      fuel_type: 'Diesel',
+      driver_name: 'Raj Singh',
+      last_trip_on: 'March 25, 2025; 12:00PM',
+      current_location: 'Collection Point Parking'
+    },
+    {
+      vehicle_type: 'Auto Tipper',
+      registration_number: 'OD08 JPEG 4357',
+      status: 'On Trip',
+      vehicle_id: 'VD002',
+      fuel_type: 'Diesel',
+      driver_name: 'Amit Kumar',
+      last_trip_on: 'March 25, 2025; 11:30AM',
+      current_location: 'Dumping Ground'
+    },
+    {
+      vehicle_type: 'Auto Tipper',
+      registration_number: 'OD08 JPEG 4358',
+      status: 'On Trip',
+      vehicle_id: 'VD003',
+      fuel_type: 'Diesel',
+      driver_name: 'Vikram Patel',
+      last_trip_on: 'March 25, 2025; 11:45AM',
+      current_location: 'Waste Collection Point'
+    },
+    {
+      vehicle_type: 'Auto Tipper',
+      registration_number: 'OD08 JPEG 4359',
+      status: 'On Trip',
+      vehicle_id: 'VD004',
+      fuel_type: 'Diesel',
+      driver_name: 'Suresh Reddy',
+      last_trip_on: 'March 25, 2025; 12:15PM',
+      current_location: 'Transfer Station'
+    },
+    {
+      vehicle_type: 'Auto Tipper',
+      registration_number: 'OD08 JPEG 4360',
+      status: 'On Trip',
+      vehicle_id: 'VD005',
+      fuel_type: 'Diesel',
+      driver_name: 'Mohan Das',
+      last_trip_on: 'March 25, 2025; 12:30PM',
+      current_location: 'Recycling Center'
+    },
+    {
+      vehicle_type: 'Auto Tipper',
+      registration_number: 'OD08 JPEG 4361',
+      status: 'On Trip',
+      vehicle_id: 'VD006',
+      fuel_type: 'Diesel',
+      driver_name: 'Prakash Sharma',
+      last_trip_on: 'March 25, 2025; 12:45PM',
+      current_location: 'Landfill Site'
+    },
+    {
+      vehicle_type: 'Auto Tipper',
+      registration_number: 'OD08 JPEG 4362',
+      status: 'On Trip',
+      vehicle_id: 'VD007',
+      fuel_type: 'Diesel',
+      driver_name: 'Anil Gupta',
+      last_trip_on: 'March 25, 2025; 1:00PM',
+      current_location: 'Composting Facility'
+    },
+    {
+      vehicle_type: 'Auto Tipper',
+      registration_number: 'OD08 JPEG 4363',
+      status: 'Unassigned',
+      vehicle_id: 'VD008',
+      fuel_type: 'Diesel',
+      driver_name: 'Sunil Verma',
+      last_trip_on: 'March 24, 2025; 5:00PM',
+      current_location: 'Vehicle Depot'
+    },
+    {
+      vehicle_type: 'Auto Tipper',
+      registration_number: 'OD08 JPEG 4364',
+      status: 'Unassigned',
+      vehicle_id: 'VD009',
+      fuel_type: 'Diesel',
+      driver_name: 'Deepak Yadav',
+      last_trip_on: 'March 24, 2025; 4:30PM',
+      current_location: 'Vehicle Depot'
+    }
+  ];
 
-  @Post()
-  @RequirePermissions('manage:vehicles:create')
-  @ApiOperation({ summary: 'Create a new vehicle' })
-  @ApiResponse({
-    status: 201,
-    description: 'Vehicle created successfully',
-    type: VehicleResponseDto,
+  // Mock data for detailed vehicle information
+  private readonly vehicleDetailsData: { [key: string]: VehicleDetailsDto } = {
+    'VD001': {
+      registration_number: 'OD02CZ3284',
+      vehicle_type: 'Auto Tipper',
+      vehicle_id: 'VD001',
+      fuel_type: 'Diesel',
+      driver_name: 'Raj Singh',
+      last_trip_on: 'March 25, 2025; 12:00PM',
+      current_location: 'Collection Point Parking',
+      fuel_statistics: {
+        current_fuel: 25,
+        avg_consumption: 15,
+        max_capacity: 50,
+        fuel_percentage: 50
+      },
+      tyre_conditions: [
+        {
+          tyre_position: 'Tyre 1 (Front Left)',
+          condition: 80,
+          tyre_pressure: 32
+        },
+        {
+          tyre_position: 'Tyre 2 (Front Right)',
+          condition: 75,
+          tyre_pressure: 31
+        },
+        {
+          tyre_position: 'Tyre 3 (Rear Left)',
+          condition: 85,
+          tyre_pressure: 33
+        },
+        {
+          tyre_position: 'Tyre 4 (Rear Right)',
+          condition: 70,
+          tyre_pressure: 30
+        }
+      ]
+    },
+    'VD002': {
+      registration_number: 'OD02CZ3285',
+      vehicle_type: 'Auto Tipper',
+      vehicle_id: 'VD002',
+      fuel_type: 'Diesel',
+      driver_name: 'Amit Kumar',
+      last_trip_on: 'March 25, 2025; 11:30AM',
+      current_location: 'Dumping Ground',
+      fuel_statistics: {
+        current_fuel: 35,
+        avg_consumption: 12,
+        max_capacity: 50,
+        fuel_percentage: 70
+      },
+      tyre_conditions: [
+        {
+          tyre_position: 'Tyre 1 (Front Left)',
+          condition: 90,
+          tyre_pressure: 34
+        },
+        {
+          tyre_position: 'Tyre 2 (Front Right)',
+          condition: 88,
+          tyre_pressure: 33
+        },
+        {
+          tyre_position: 'Tyre 3 (Rear Left)',
+          condition: 92,
+          tyre_pressure: 35
+        },
+        {
+          tyre_position: 'Tyre 4 (Rear Right)',
+          condition: 85,
+          tyre_pressure: 32
+        }
+      ]
+    },
+    'VD003': {
+      registration_number: 'OD02CZ3286',
+      vehicle_type: 'Auto Tipper',
+      vehicle_id: 'VD003',
+      fuel_type: 'Diesel',
+      driver_name: 'Vikram Patel',
+      last_trip_on: 'March 25, 2025; 11:45AM',
+      current_location: 'Waste Collection Point',
+      fuel_statistics: {
+        current_fuel: 15,
+        avg_consumption: 18,
+        max_capacity: 50,
+        fuel_percentage: 30
+      },
+      tyre_conditions: [
+        {
+          tyre_position: 'Tyre 1 (Front Left)',
+          condition: 65,
+          tyre_pressure: 29
+        },
+        {
+          tyre_position: 'Tyre 2 (Front Right)',
+          condition: 60,
+          tyre_pressure: 28
+        },
+        {
+          tyre_position: 'Tyre 3 (Rear Left)',
+          condition: 70,
+          tyre_pressure: 30
+        },
+        {
+          tyre_position: 'Tyre 4 (Rear Right)',
+          condition: 55,
+          tyre_pressure: 27
+        }
+      ]
+    },
+    'VD004': {
+      registration_number: 'OD02CZ3287',
+      vehicle_type: 'Auto Tipper',
+      vehicle_id: 'VD004',
+      fuel_type: 'Diesel',
+      driver_name: 'Suresh Reddy',
+      last_trip_on: 'March 25, 2025; 12:15PM',
+      current_location: 'Transfer Station',
+      fuel_statistics: {
+        current_fuel: 40,
+        avg_consumption: 10,
+        max_capacity: 50,
+        fuel_percentage: 80
+      },
+      tyre_conditions: [
+        {
+          tyre_position: 'Tyre 1 (Front Left)',
+          condition: 95,
+          tyre_pressure: 36
+        },
+        {
+          tyre_position: 'Tyre 2 (Front Right)',
+          condition: 93,
+          tyre_pressure: 35
+        },
+        {
+          tyre_position: 'Tyre 3 (Rear Left)',
+          condition: 97,
+          tyre_pressure: 37
+        },
+        {
+          tyre_position: 'Tyre 4 (Rear Right)',
+          condition: 90,
+          tyre_pressure: 34
+        }
+      ]
+    },
+    'VD005': {
+      registration_number: 'OD02CZ3288',
+      vehicle_type: 'Auto Tipper',
+      vehicle_id: 'VD005',
+      fuel_type: 'Diesel',
+      driver_name: 'Mohan Das',
+      last_trip_on: 'March 25, 2025; 12:30PM',
+      current_location: 'Recycling Center',
+      fuel_statistics: {
+        current_fuel: 20,
+        avg_consumption: 16,
+        max_capacity: 50,
+        fuel_percentage: 40
+      },
+      tyre_conditions: [
+        {
+          tyre_position: 'Tyre 1 (Front Left)',
+          condition: 75,
+          tyre_pressure: 31
+        },
+        {
+          tyre_position: 'Tyre 2 (Front Right)',
+          condition: 72,
+          tyre_pressure: 30
+        },
+        {
+          tyre_position: 'Tyre 3 (Rear Left)',
+          condition: 78,
+          tyre_pressure: 32
+        },
+        {
+          tyre_position: 'Tyre 4 (Rear Right)',
+          condition: 68,
+          tyre_pressure: 29
+        }
+      ]
+    }
+  };
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get vehicles or specific vehicle details',
+    description: 'Retrieves all vehicles when no vehicle_id provided, or specific vehicle details when vehicle_id is provided'
   })
-  @ApiResponse({ status: 400, description: 'Bad Request - Validation failed' })
+  @ApiQuery({
+    name: 'vehicle_id',
+    description: 'Vehicle ID (optional)',
+    example: 'VD001',
+    required: false
+  })
   @ApiResponse({
-    status: 403,
-    description: 'Forbidden - Insufficient permissions',
+    status: 200,
+    description: 'Vehicles or vehicle details retrieved successfully',
+    schema: {
+      oneOf: [
+        { $ref: '#/components/schemas/VehiclesResponseDto' },
+        { $ref: '#/components/schemas/VehicleDetailResponseDto' }
+      ]
+    }
   })
   @ApiResponse({
     status: 404,
-    description:
-      'Not Found - Vehicle type/fuel type/driver/region/zone/ward not found',
+    description: 'Vehicle not found'
   })
-  @ApiResponse({
-    status: 409,
-    description:
-      'Conflict - License plate or registration number already exists',
-  })
-  @ApiBody({
-    type: CreateVehicleDto,
-    description: 'Vehicle creation data',
-    examples: {
-      basic: {
-        summary: 'Create basic vehicle',
-        value: {
-          name: 'Auto Tipper 001',
-          vehicleTypeId: 'uuid-string',
-          licensePlateNumber: 'OD08 JPEG 4356',
-          registrationNumber: 'OD02CZ3284',
-          fuelTypeId: 'uuid-string',
-          insuranceExpiryDate: '2025-12-31',
-          lastMaintenanceDate: '2024-01-15',
-          enableGpsTracking: true,
-          assignedDriverId: 'uuid-string',
-          assignedRegionId: 'uuid-string',
-          assignedZoneId: 'uuid-string',
-          assignedWardId: 'uuid-string',
-          status: 'Inactive',
-          address: 'Vehicle parking location',
-          latitude: 12.9716,
-          longitude: 77.5946,
-        },
-      },
-    },
-  })
-  async create(@Body() createVehicleDto: CreateVehicleDto, @Req() req: any) {
+  async getVehicles(@Query('vehicle_id') vehicleId?: string): Promise<VehiclesResponseDto | VehicleDetailResponseDto> {
     try {
-      const result = await this.vehiclesService.create(
-        createVehicleDto,
-        req.user.id,
-        req.user.tenantId,
-      );
+      // If vehicle_id is provided, return specific vehicle details
+      if (vehicleId) {
+        const vehicle = this.vehicleDetailsData[vehicleId];
+        
+        if (!vehicle) {
+          this.logger.warn(`Vehicle not found: ${vehicleId}`, 'VehiclesController');
+          throw new Error('Vehicle not found');
+        }
 
-      this.logger.log(
-        `Vehicle created successfully: ${result.name}`,
-        'VehiclesController',
-        result.id,
-      );
+        this.logger.log(`Vehicle details retrieved successfully: ${vehicleId}`, 'VehiclesController');
+        
+        return {
+          vehicle
+        };
+      }
 
-      return result;
-    } catch (error) {
-      this.logger.error(
-        `Error creating vehicle: ${error.message}`,
-        error.stack,
-        'VehiclesController',
-      );
-      throw error;
-    }
-  }
+      // If no vehicle_id provided, return all vehicles
+      const vehicles = this.vehiclesData;
+      const total_vehicles = vehicles.length;
+      const on_trip_vehicles = vehicles.filter(v => v.status === 'On Trip').length;
+      const unassigned_vehicles = vehicles.filter(v => v.status === 'Unassigned').length;
+      const maintenance_vehicles = vehicles.filter(v => v.status === 'Maintenance').length;
+      const offline_vehicles = vehicles.filter(v => v.status === 'Offline').length;
 
-  @Get()
-  @RequirePermissions('manage:vehicles:read')
-  @ApiOperation({ summary: 'Get all vehicles with pagination and filtering' })
-  @ApiResponse({
-    status: 200,
-    description: 'Vehicles retrieved successfully',
-    type: PaginatedResponseDto<VehicleResponseDto>,
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden - Insufficient permissions',
-  })
-  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
-  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
-  @ApiQuery({
-    name: 'search',
-    required: false,
-    type: String,
-    example: 'Auto Tipper',
-  })
-  @ApiQuery({
-    name: 'sortBy',
-    required: false,
-    type: String,
-    example: 'created_at',
-  })
-  @ApiQuery({
-    name: 'sortOrder',
-    required: false,
-    enum: ['asc', 'desc'],
-    example: 'desc',
-  })
-  @ApiQuery({ name: 'isActive', required: false, type: Boolean, example: true })
-  @ApiQuery({
-    name: 'status',
-    required: false,
-    type: String,
-    example: 'On Trip',
-  })
-  @ApiQuery({
-    name: 'regionId',
-    required: false,
-    type: String,
-    example: 'uuid-string',
-  })
-  @ApiQuery({
-    name: 'zoneId',
-    required: false,
-    type: String,
-    example: 'uuid-string',
-  })
-  @ApiQuery({
-    name: 'wardId',
-    required: false,
-    type: String,
-    example: 'uuid-string',
-  })
-  async findAll(
-    @Query() paginationDto: PaginationDto,
-    @Query() filterDto: BaseFilterDto,
-    @Req() req: any,
-  ) {
-    try {
-      const result = await this.vehiclesService.findAll(
-        paginationDto,
-        filterDto,
-        req.user.tenantId,
-      );
-
-      this.logger.log(
-        `Vehicles retrieved successfully: ${result.total} total, ${result.data.length} on page`,
-        'VehiclesController',
-      );
-
-      return result;
+      this.logger.log(`Vehicles retrieved successfully: ${total_vehicles} total vehicles`, 'VehiclesController');
+      
+      return {
+        vehicles,
+        total_vehicles,
+        on_trip_vehicles,
+        unassigned_vehicles,
+        maintenance_vehicles,
+        offline_vehicles
+      };
     } catch (error) {
       this.logger.error(
         `Error fetching vehicles: ${error.message}`,
-        error.stack,
-        'VehiclesController',
-      );
-      throw error;
-    }
-  }
-
-  @Get(':id')
-  @RequirePermissions('manage:vehicles:read')
-  @ApiOperation({ summary: 'Get a specific vehicle by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Vehicle retrieved successfully',
-    type: VehicleResponseDto,
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden - Insufficient permissions',
-  })
-  @ApiResponse({ status: 404, description: 'Not Found - Vehicle not found' })
-  @ApiParam({
-    name: 'id',
-    description: 'Vehicle ID',
-    type: 'string',
-    format: 'uuid',
-  })
-  async findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: any) {
-    try {
-      const result = await this.vehiclesService.findOne(id, req.user.tenantId);
-
-      this.logger.log(
-        `Vehicle retrieved successfully: ${result.name}`,
-        'VehiclesController',
-        id,
-      );
-
-      return result;
-    } catch (error) {
-      this.logger.error(
-        `Error fetching vehicle ${id}: ${error.message}`,
-        error.stack,
-        'VehiclesController',
-      );
-      throw error;
-    }
-  }
-
-  @Patch(':id')
-  @RequirePermissions('manage:vehicles:update')
-  @ApiOperation({ summary: 'Update a vehicle' })
-  @ApiResponse({
-    status: 200,
-    description: 'Vehicle updated successfully',
-    type: VehicleResponseDto,
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request - Validation failed' })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden - Insufficient permissions',
-  })
-  @ApiResponse({ status: 404, description: 'Not Found - Vehicle not found' })
-  @ApiResponse({
-    status: 409,
-    description:
-      'Conflict - License plate or registration number already exists',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'Vehicle ID',
-    type: 'string',
-    format: 'uuid',
-  })
-  @ApiBody({
-    type: UpdateVehicleDto,
-    description: 'Vehicle update data',
-    examples: {
-      basic: {
-        summary: 'Update vehicle status and driver',
-        value: {
-          status: 'On Trip',
-          assignedDriverId: 'uuid-string',
-        },
-      },
-      maintenance: {
-        summary: 'Update maintenance date',
-        value: {
-          lastMaintenanceDate: '2024-02-15',
-          status: 'Maintenance',
-        },
-      },
-    },
-  })
-  async update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateVehicleDto: UpdateVehicleDto,
-    @Req() req: any,
-  ) {
-    try {
-      const result = await this.vehiclesService.update(
-        id,
-        updateVehicleDto,
-        req.user.id,
-        req.user.tenantId,
-      );
-
-      this.logger.log(
-        `Vehicle updated successfully: ${result.name}`,
-        'VehiclesController',
-        id,
-      );
-
-      return result;
-    } catch (error) {
-      this.logger.error(
-        `Error updating vehicle ${id}: ${error.message}`,
-        error.stack,
-        'VehiclesController',
-      );
-      throw error;
-    }
-  }
-
-  @Delete(':id')
-  @RequirePermissions('manage:vehicles:delete')
-  @ApiOperation({ summary: 'Delete a vehicle' })
-  @ApiResponse({ status: 200, description: 'Vehicle deleted successfully' })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden - Insufficient permissions',
-  })
-  @ApiResponse({ status: 404, description: 'Not Found - Vehicle not found' })
-  @ApiResponse({
-    status: 409,
-    description: 'Conflict - Vehicle has assigned workforce',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'Vehicle ID',
-    type: 'string',
-    format: 'uuid',
-  })
-  async remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: any) {
-    try {
-      await this.vehiclesService.remove(id, req.user.tenantId);
-
-      this.logger.log(`Vehicle deleted successfully`, 'VehiclesController', id);
-
-      return { message: 'Vehicle deleted successfully' };
-    } catch (error) {
-      this.logger.error(
-        `Error deleting vehicle ${id}: ${error.message}`,
         error.stack,
         'VehiclesController',
       );

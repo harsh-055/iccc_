@@ -5,6 +5,7 @@ import {
   IsBoolean,
   MaxLength,
   IsUUID,
+  IsNumber,
 } from 'class-validator';
 
 export class CreateZoneDto {
@@ -16,6 +17,15 @@ export class CreateZoneDto {
   @IsString()
   @MaxLength(255)
   name: string;
+
+  @ApiProperty({
+    description: 'Zone number for ordering and display',
+    example: 1,
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  zoneNo?: number;
 
   @ApiProperty({
     description: 'Zone description',

@@ -26,15 +26,15 @@ export class DevicesService {
     tenantId: string,
   ): Promise<DeviceResponseDto> {
     try {
-      // Check if device with same serial number already exists
+      // Check if device with same device_id already exists
       const existingDevice = await this.databaseService.query(
-        'SELECT id FROM devices WHERE serial_number = $1 AND tenant_id = $2 AND is_active = true',
-        [createDeviceDto.serialNumber, tenantId],
+        'SELECT id FROM devices WHERE device_id = $1 AND tenant_id = $2 AND is_active = true',
+        [createDeviceDto.deviceId, tenantId],
       );
 
       if (existingDevice.rows.length > 0) {
         throw new ConflictException(
-          'Device with this serial number already exists',
+          'Device with this device ID already exists',
         );
       }
 
@@ -58,11 +58,47 @@ export class DevicesService {
         throw new NotFoundException('Manufacturer not found');
       }
 
+      // Validate zone if provided
+      if (createDeviceDto.zoneId) {
+        const zone = await this.databaseService.query(
+          'SELECT id FROM zones WHERE id = $1 AND tenant_id = $2 AND is_active = true',
+          [createDeviceDto.zoneId, tenantId],
+        );
+
+        if (zone.rows.length === 0) {
+          throw new NotFoundException('Zone not found');
+        }
+      }
+
+      // Validate ward if provided
+      if (createDeviceDto.wardId) {
+        const ward = await this.databaseService.query(
+          'SELECT id FROM wards WHERE id = $1 AND tenant_id = $2 AND is_active = true',
+          [createDeviceDto.wardId, tenantId],
+        );
+
+        if (ward.rows.length === 0) {
+          throw new NotFoundException('Ward not found');
+        }
+      }
+
+      // Validate node if provided
+      if (createDeviceDto.nodeId) {
+        const node = await this.databaseService.query(
+          'SELECT id FROM nodes WHERE id = $1 AND tenant_id = $2 AND is_active = true',
+          [createDeviceDto.nodeId, tenantId],
+        );
+
+        if (node.rows.length === 0) {
+          throw new NotFoundException('Node not found');
+        }
+      }
+
       // Validate site if provided
-      if (createDeviceDto.assignedSiteId) {
+      if (createDeviceDto.siteId) {
         const site = await this.databaseService.query(
           'SELECT id FROM sites WHERE id = $1 AND tenant_id = $2 AND is_active = true',
-          [createDeviceDto.assignedSiteId, tenantId],
+          [createDeviceDto.siteId, tenantId],
         );
 
         if (site.rows.length === 0) {
@@ -72,31 +108,37 @@ export class DevicesService {
 
       const result = await this.databaseService.query(
         `INSERT INTO devices (
-          name, device_type_id, manufacturer_id, serial_number, model, firmware_version,
-          status, installation_date, last_maintenance_date, battery_level, signal_strength,
-          enable_gps_tracking, assigned_site_id, address, latitude, longitude, description,
+          device_name, device_id, device_type_id, node_id, status, zone_id, ward_id, site_id,
+          device_location, manufacturer_id, installed_on, warranty_expiry_date,
+          health_status, http_port, base_ip_address, start_ip_address, end_ip_address,
+          multicasting_enabled, image_url, address, latitude, longitude,
           tenant_id, created_by
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)
         RETURNING *`,
         [
-          createDeviceDto.name,
+          createDeviceDto.deviceName,
+          createDeviceDto.deviceId,
           createDeviceDto.deviceTypeId,
+          createDeviceDto.nodeId,
+          createDeviceDto.status || 'Inactive',
+          createDeviceDto.zoneId,
+          createDeviceDto.wardId,
+          createDeviceDto.siteId,
+          createDeviceDto.deviceLocation,
           createDeviceDto.manufacturerId,
-          createDeviceDto.serialNumber,
-          createDeviceDto.model,
-          createDeviceDto.firmwareVersion,
-          createDeviceDto.status,
-          createDeviceDto.installationDate,
-          createDeviceDto.lastMaintenanceDate,
-          createDeviceDto.batteryLevel,
-          createDeviceDto.signalStrength,
-          createDeviceDto.enableGpsTracking ?? true,
-          createDeviceDto.assignedSiteId,
+          createDeviceDto.installedOn,
+          createDeviceDto.warrantyExpiryDate,
+          createDeviceDto.healthStatus || 'Good',
+          createDeviceDto.httpPort,
+          createDeviceDto.baseIpAddress,
+          createDeviceDto.startIpAddress,
+          createDeviceDto.endIpAddress,
+          createDeviceDto.multicastingEnabled || false,
+          createDeviceDto.imageUrl,
           createDeviceDto.address,
           createDeviceDto.latitude,
           createDeviceDto.longitude,
-          createDeviceDto.description,
           tenantId,
           userId,
         ],
@@ -144,15 +186,21 @@ export class DevicesService {
         paramIndex++;
       }
 
-      if (filterDto.assignedSiteId) {
-        whereConditions.push(`d.assigned_site_id = $${paramIndex}`);
-        queryParams.push(filterDto.assignedSiteId);
+      if (filterDto.zoneId) {
+        whereConditions.push(`d.zone_id = $${paramIndex}`);
+        queryParams.push(filterDto.zoneId);
+        paramIndex++;
+      }
+
+      if (filterDto.wardId) {
+        whereConditions.push(`d.ward_id = $${paramIndex}`);
+        queryParams.push(filterDto.wardId);
         paramIndex++;
       }
 
       if (search) {
         whereConditions.push(
-          `(d.name ILIKE $${paramIndex} OR d.serial_number ILIKE $${paramIndex} OR d.model ILIKE $${paramIndex})`,
+          `(d.device_name ILIKE $${paramIndex} OR d.device_id ILIKE $${paramIndex} OR d.device_location ILIKE $${paramIndex} OR d.address ILIKE $${paramIndex})`,
         );
         queryParams.push(`%${search}%`);
         paramIndex++;
@@ -181,16 +229,22 @@ export class DevicesService {
           d.*,
           dt.name as device_type_name,
           m.name as manufacturer_name,
-          s.name as assigned_site_name,
+          z.name as zone_name,
+          w.name as ward_name,
+          n.name as node_name,
+          s.name as site_name,
           COALESCE(alerts_count.count, 0) as active_alerts_count
         FROM devices d
         LEFT JOIN device_types dt ON d.device_type_id = dt.id
         LEFT JOIN manufacturers m ON d.manufacturer_id = m.id
-        LEFT JOIN sites s ON d.assigned_site_id = s.id
+        LEFT JOIN zones z ON d.zone_id = z.id
+        LEFT JOIN wards w ON d.ward_id = w.id
+        LEFT JOIN nodes n ON d.node_id = n.id
+        LEFT JOIN sites s ON d.site_id = s.id
         LEFT JOIN (
           SELECT device_id, COUNT(*) as count 
           FROM device_alerts 
-          WHERE is_active = true AND status = 'Active'
+          WHERE is_resolved = false
           GROUP BY device_id
         ) alerts_count ON d.id = alerts_count.device_id
         ${whereClause}
@@ -228,16 +282,22 @@ export class DevicesService {
           d.*,
           dt.name as device_type_name,
           m.name as manufacturer_name,
-          s.name as assigned_site_name,
+          z.name as zone_name,
+          w.name as ward_name,
+          n.name as node_name,
+          s.name as site_name,
           COALESCE(alerts_count.count, 0) as active_alerts_count
         FROM devices d
         LEFT JOIN device_types dt ON d.device_type_id = dt.id
         LEFT JOIN manufacturers m ON d.manufacturer_id = m.id
-        LEFT JOIN sites s ON d.assigned_site_id = s.id
+        LEFT JOIN zones z ON d.zone_id = z.id
+        LEFT JOIN wards w ON d.ward_id = w.id
+        LEFT JOIN nodes n ON d.node_id = n.id
+        LEFT JOIN sites s ON d.site_id = s.id
         LEFT JOIN (
           SELECT device_id, COUNT(*) as count 
           FROM device_alerts 
-          WHERE is_active = true AND status = 'Active'
+          WHERE is_resolved = false
           GROUP BY device_id
         ) alerts_count ON d.id = alerts_count.device_id
         WHERE d.id = $1 AND d.tenant_id = $2`,
@@ -265,19 +325,19 @@ export class DevicesService {
       // Check if device exists
       const existingDevice = await this.findOne(id, tenantId);
 
-      // Check if serial number is being updated and if it conflicts
+      // Check if device ID is being updated and if it conflicts
       if (
-        updateDeviceDto.serialNumber &&
-        updateDeviceDto.serialNumber !== existingDevice.serialNumber
+        updateDeviceDto.deviceId &&
+        updateDeviceDto.deviceId !== existingDevice.deviceId
       ) {
-        const serialConflict = await this.databaseService.query(
-          'SELECT id FROM devices WHERE serial_number = $1 AND tenant_id = $2 AND id != $3 AND is_active = true',
-          [updateDeviceDto.serialNumber, tenantId, id],
+        const deviceIdConflict = await this.databaseService.query(
+          'SELECT id FROM devices WHERE device_id = $1 AND tenant_id = $2 AND id != $3 AND is_active = true',
+          [updateDeviceDto.deviceId, tenantId, id],
         );
 
-        if (serialConflict.rows.length > 0) {
+        if (deviceIdConflict.rows.length > 0) {
           throw new ConflictException(
-            'Device with this serial number already exists',
+            'Device with this device ID already exists',
           );
         }
       }
@@ -306,11 +366,47 @@ export class DevicesService {
         }
       }
 
+      // Validate zone if being updated
+      if (updateDeviceDto.zoneId) {
+        const zone = await this.databaseService.query(
+          'SELECT id FROM zones WHERE id = $1 AND tenant_id = $2 AND is_active = true',
+          [updateDeviceDto.zoneId, tenantId],
+        );
+
+        if (zone.rows.length === 0) {
+          throw new NotFoundException('Zone not found');
+        }
+      }
+
+      // Validate ward if being updated
+      if (updateDeviceDto.wardId) {
+        const ward = await this.databaseService.query(
+          'SELECT id FROM wards WHERE id = $1 AND tenant_id = $2 AND is_active = true',
+          [updateDeviceDto.wardId, tenantId],
+        );
+
+        if (ward.rows.length === 0) {
+          throw new NotFoundException('Ward not found');
+        }
+      }
+
+      // Validate node if being updated
+      if (updateDeviceDto.nodeId) {
+        const node = await this.databaseService.query(
+          'SELECT id FROM nodes WHERE id = $1 AND tenant_id = $2 AND is_active = true',
+          [updateDeviceDto.nodeId, tenantId],
+        );
+
+        if (node.rows.length === 0) {
+          throw new NotFoundException('Node not found');
+        }
+      }
+
       // Validate site if being updated
-      if (updateDeviceDto.assignedSiteId) {
+      if (updateDeviceDto.siteId) {
         const site = await this.databaseService.query(
           'SELECT id FROM sites WHERE id = $1 AND tenant_id = $2 AND is_active = true',
-          [updateDeviceDto.assignedSiteId, tenantId],
+          [updateDeviceDto.siteId, tenantId],
         );
 
         if (site.rows.length === 0) {
@@ -323,9 +419,15 @@ export class DevicesService {
       const queryParams = [];
       let paramIndex = 1;
 
-      if (updateDeviceDto.name !== undefined) {
-        updateFields.push(`name = $${paramIndex}`);
-        queryParams.push(updateDeviceDto.name);
+      if (updateDeviceDto.deviceName !== undefined) {
+        updateFields.push(`device_name = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.deviceName);
+        paramIndex++;
+      }
+
+      if (updateDeviceDto.deviceId !== undefined) {
+        updateFields.push(`device_id = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.deviceId);
         paramIndex++;
       }
 
@@ -335,27 +437,9 @@ export class DevicesService {
         paramIndex++;
       }
 
-      if (updateDeviceDto.manufacturerId !== undefined) {
-        updateFields.push(`manufacturer_id = $${paramIndex}`);
-        queryParams.push(updateDeviceDto.manufacturerId);
-        paramIndex++;
-      }
-
-      if (updateDeviceDto.serialNumber !== undefined) {
-        updateFields.push(`serial_number = $${paramIndex}`);
-        queryParams.push(updateDeviceDto.serialNumber);
-        paramIndex++;
-      }
-
-      if (updateDeviceDto.model !== undefined) {
-        updateFields.push(`model = $${paramIndex}`);
-        queryParams.push(updateDeviceDto.model);
-        paramIndex++;
-      }
-
-      if (updateDeviceDto.firmwareVersion !== undefined) {
-        updateFields.push(`firmware_version = $${paramIndex}`);
-        queryParams.push(updateDeviceDto.firmwareVersion);
+      if (updateDeviceDto.nodeId !== undefined) {
+        updateFields.push(`node_id = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.nodeId);
         paramIndex++;
       }
 
@@ -365,39 +449,87 @@ export class DevicesService {
         paramIndex++;
       }
 
-      if (updateDeviceDto.installationDate !== undefined) {
-        updateFields.push(`installation_date = $${paramIndex}`);
-        queryParams.push(updateDeviceDto.installationDate);
+      if (updateDeviceDto.zoneId !== undefined) {
+        updateFields.push(`zone_id = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.zoneId);
         paramIndex++;
       }
 
-      if (updateDeviceDto.lastMaintenanceDate !== undefined) {
-        updateFields.push(`last_maintenance_date = $${paramIndex}`);
-        queryParams.push(updateDeviceDto.lastMaintenanceDate);
+      if (updateDeviceDto.wardId !== undefined) {
+        updateFields.push(`ward_id = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.wardId);
         paramIndex++;
       }
 
-      if (updateDeviceDto.batteryLevel !== undefined) {
-        updateFields.push(`battery_level = $${paramIndex}`);
-        queryParams.push(updateDeviceDto.batteryLevel);
+      if (updateDeviceDto.siteId !== undefined) {
+        updateFields.push(`site_id = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.siteId);
         paramIndex++;
       }
 
-      if (updateDeviceDto.signalStrength !== undefined) {
-        updateFields.push(`signal_strength = $${paramIndex}`);
-        queryParams.push(updateDeviceDto.signalStrength);
+      if (updateDeviceDto.deviceLocation !== undefined) {
+        updateFields.push(`device_location = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.deviceLocation);
         paramIndex++;
       }
 
-      if (updateDeviceDto.enableGpsTracking !== undefined) {
-        updateFields.push(`enable_gps_tracking = $${paramIndex}`);
-        queryParams.push(updateDeviceDto.enableGpsTracking);
+      if (updateDeviceDto.manufacturerId !== undefined) {
+        updateFields.push(`manufacturer_id = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.manufacturerId);
         paramIndex++;
       }
 
-      if (updateDeviceDto.assignedSiteId !== undefined) {
-        updateFields.push(`assigned_site_id = $${paramIndex}`);
-        queryParams.push(updateDeviceDto.assignedSiteId);
+      if (updateDeviceDto.installedOn !== undefined) {
+        updateFields.push(`installed_on = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.installedOn);
+        paramIndex++;
+      }
+
+      if (updateDeviceDto.warrantyExpiryDate !== undefined) {
+        updateFields.push(`warranty_expiry_date = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.warrantyExpiryDate);
+        paramIndex++;
+      }
+
+      if (updateDeviceDto.healthStatus !== undefined) {
+        updateFields.push(`health_status = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.healthStatus);
+        paramIndex++;
+      }
+
+      if (updateDeviceDto.httpPort !== undefined) {
+        updateFields.push(`http_port = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.httpPort);
+        paramIndex++;
+      }
+
+      if (updateDeviceDto.baseIpAddress !== undefined) {
+        updateFields.push(`base_ip_address = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.baseIpAddress);
+        paramIndex++;
+      }
+
+      if (updateDeviceDto.startIpAddress !== undefined) {
+        updateFields.push(`start_ip_address = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.startIpAddress);
+        paramIndex++;
+      }
+
+      if (updateDeviceDto.endIpAddress !== undefined) {
+        updateFields.push(`end_ip_address = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.endIpAddress);
+        paramIndex++;
+      }
+
+      if (updateDeviceDto.multicastingEnabled !== undefined) {
+        updateFields.push(`multicasting_enabled = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.multicastingEnabled);
+        paramIndex++;
+      }
+
+      if (updateDeviceDto.imageUrl !== undefined) {
+        updateFields.push(`image_url = $${paramIndex}`);
+        queryParams.push(updateDeviceDto.imageUrl);
         paramIndex++;
       }
 
@@ -416,12 +548,6 @@ export class DevicesService {
       if (updateDeviceDto.longitude !== undefined) {
         updateFields.push(`longitude = $${paramIndex}`);
         queryParams.push(updateDeviceDto.longitude);
-        paramIndex++;
-      }
-
-      if (updateDeviceDto.description !== undefined) {
-        updateFields.push(`description = $${paramIndex}`);
-        queryParams.push(updateDeviceDto.description);
         paramIndex++;
       }
 
@@ -480,40 +606,41 @@ export class DevicesService {
   }
 
   private mapToResponseDto(device: any): DeviceResponseDto {
-    const today = new Date();
-    const lastMaintenance = new Date(device.last_maintenance_date);
-    const daysSinceLastMaintenance = Math.ceil(
-      (today.getTime() - lastMaintenance.getTime()) / (1000 * 60 * 60 * 24),
-    );
-
     return {
       id: device.id,
-      name: device.name,
+      deviceName: device.device_name,
+      deviceId: device.device_id,
       deviceTypeId: device.device_type_id,
       deviceTypeName: device.device_type_name,
+      nodeId: device.node_id,
+      nodeName: device.node_name,
+      status: device.status,
+      zoneId: device.zone_id,
+      zoneName: device.zone_name,
+      wardId: device.ward_id,
+      wardName: device.ward_name,
+      siteId: device.site_id,
+      siteName: device.site_name,
+      deviceLocation: device.device_location,
       manufacturerId: device.manufacturer_id,
       manufacturerName: device.manufacturer_name,
-      serialNumber: device.serial_number,
-      model: device.model,
-      firmwareVersion: device.firmware_version,
-      status: device.status,
-      installationDate: device.installation_date,
-      lastMaintenanceDate: device.last_maintenance_date,
-      batteryLevel: device.battery_level,
-      signalStrength: device.signal_strength,
-      enableGpsTracking: device.enable_gps_tracking,
-      assignedSiteId: device.assigned_site_id,
-      assignedSiteName: device.assigned_site_name,
+      installedOn: device.installed_on,
+      warrantyExpiryDate: device.warranty_expiry_date,
+      healthStatus: device.health_status,
+      httpPort: device.http_port,
+      baseIpAddress: device.base_ip_address,
+      startIpAddress: device.start_ip_address,
+      endIpAddress: device.end_ip_address,
+      multicastingEnabled: device.multicasting_enabled,
+      imageUrl: device.image_url,
       address: device.address,
       latitude: device.latitude,
       longitude: device.longitude,
-      description: device.description,
       isActive: device.is_active,
       tenantId: device.tenant_id,
       createdBy: device.created_by,
       createdAt: device.created_at,
       updatedAt: device.updated_at,
-      daysSinceLastMaintenance,
       activeAlertsCount: parseInt(device.active_alerts_count) || 0,
     };
   }

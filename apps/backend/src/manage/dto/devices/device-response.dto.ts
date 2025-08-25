@@ -10,9 +10,15 @@ export class DeviceResponseDto {
 
   @ApiProperty({
     description: 'Device name',
-    example: 'Smart Bin Sensor 001',
+    example: 'Smart Bin Sensor',
   })
-  name: string;
+  deviceName: string;
+
+  @ApiProperty({
+    description: 'Device ID',
+    example: '#DID1234',
+  })
+  deviceId: string;
 
   @ApiProperty({
     description: 'Device type ID',
@@ -22,39 +28,21 @@ export class DeviceResponseDto {
 
   @ApiProperty({
     description: 'Device type name',
-    example: 'IoT Sensor',
+    example: 'Camera',
   })
   deviceTypeName: string;
 
   @ApiProperty({
-    description: 'Manufacturer ID',
+    description: 'Node ID',
     example: 'uuid-string',
   })
-  manufacturerId: string;
+  nodeId: string | null;
 
   @ApiProperty({
-    description: 'Manufacturer name',
-    example: 'TechCorp Industries',
+    description: 'Node name',
+    example: 'Node 1',
   })
-  manufacturerName: string;
-
-  @ApiProperty({
-    description: 'Device serial number',
-    example: 'SN123456789',
-  })
-  serialNumber: string;
-
-  @ApiProperty({
-    description: 'Device model',
-    example: 'IoT-Bin-Sensor-v2.0',
-  })
-  model: string;
-
-  @ApiProperty({
-    description: 'Device firmware version',
-    example: 'v1.2.3',
-  })
-  firmwareVersion: string;
+  nodeName: string | null;
 
   @ApiProperty({
     description: 'Device status',
@@ -64,50 +52,116 @@ export class DeviceResponseDto {
   status: DeviceStatus;
 
   @ApiProperty({
-    description: 'Installation date',
-    example: '2024-01-15',
-  })
-  installationDate: Date;
-
-  @ApiProperty({
-    description: 'Last maintenance date',
-    example: '2024-01-15',
-  })
-  lastMaintenanceDate: Date;
-
-  @ApiProperty({
-    description: 'Battery level percentage',
-    example: 85,
-  })
-  batteryLevel: number | null;
-
-  @ApiProperty({
-    description: 'Signal strength percentage',
-    example: 90,
-  })
-  signalStrength: number | null;
-
-  @ApiProperty({
-    description: 'Enable GPS tracking',
-    example: true,
-  })
-  enableGpsTracking: boolean;
-
-  @ApiProperty({
-    description: 'Assigned site ID',
+    description: 'Zone ID',
     example: 'uuid-string',
   })
-  assignedSiteId: string | null;
+  zoneId: string | null;
 
   @ApiProperty({
-    description: 'Assigned site name',
-    example: 'Central Waste Collection Site',
+    description: 'Zone name',
+    example: 'Zone 1',
   })
-  assignedSiteName: string | null;
+  zoneName: string | null;
+
+  @ApiProperty({
+    description: 'Ward ID',
+    example: 'uuid-string',
+  })
+  wardId: string | null;
+
+  @ApiProperty({
+    description: 'Ward name',
+    example: 'Ward 1',
+  })
+  wardName: string | null;
+
+  @ApiProperty({
+    description: 'Site ID where device is installed',
+    example: 'uuid-string',
+  })
+  siteId: string | null;
+
+  @ApiProperty({
+    description: 'Site name where device is installed',
+    example: 'KR Market Workshop',
+  })
+  siteName: string | null;
+
+  @ApiProperty({
+    description: 'Device location',
+    example: 'Location 5',
+  })
+  deviceLocation: string | null;
+
+  @ApiProperty({
+    description: 'Manufacturer ID',
+    example: 'uuid-string',
+  })
+  manufacturerId: string;
+
+  @ApiProperty({
+    description: 'Manufacturer name',
+    example: 'SensorX IoT Pvt Ltd',
+  })
+  manufacturerName: string;
+
+  @ApiProperty({
+    description: 'Installation date',
+    example: '2024-05-12',
+  })
+  installedOn: Date;
+
+  @ApiProperty({
+    description: 'Warranty expiry date',
+    example: '2026-05-12',
+  })
+  warrantyExpiryDate: Date | null;
+
+  @ApiProperty({
+    description: 'Health status',
+    example: 'Good',
+  })
+  healthStatus: string;
+
+  @ApiProperty({
+    description: 'HTTP Port',
+    example: 8080,
+  })
+  httpPort: number | null;
+
+  @ApiProperty({
+    description: 'Base IP Address',
+    example: '198.168.1.1',
+  })
+  baseIpAddress: string | null;
+
+  @ApiProperty({
+    description: 'Start IP Address',
+    example: '198.168.1.1',
+  })
+  startIpAddress: string | null;
+
+  @ApiProperty({
+    description: 'End IP Address',
+    example: '198.168.1.254',
+  })
+  endIpAddress: string | null;
+
+  @ApiProperty({
+    description: 'Enable multicasting',
+    example: true,
+  })
+  multicastingEnabled: boolean;
+
+  @ApiProperty({
+    description: 'Image URL',
+    example: 'https://example.com/device-image.jpg',
+  })
+  imageUrl: string | null;
 
   @ApiProperty({
     description: 'Device location address',
-    example: 'Near Central Park, Main Street',
+    example: 'Smart City Office',
   })
   address: string | null;
 
@@ -122,12 +176,6 @@ export class DeviceResponseDto {
     example: 77.5946,
   })
   longitude: number | null;
-
-  @ApiProperty({
-    description: 'Device description',
-    example: 'Smart waste bin sensor with IoT capabilities',
-  })
-  description: string | null;
 
   @ApiProperty({
     description: 'Whether the device is active',
@@ -158,12 +206,6 @@ export class DeviceResponseDto {
     example: '2024-01-01T00:00:00.000Z',
   })
   updatedAt: Date;
-
-  @ApiProperty({
-    description: 'Days since last maintenance',
-    example: 30,
-  })
-  daysSinceLastMaintenance?: number;
 
   @ApiProperty({
     description: 'Number of active alerts',

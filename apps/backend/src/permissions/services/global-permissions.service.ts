@@ -9,25 +9,41 @@ export class GlobalPermissionsService {
   constructor(private database: DatabaseService) {}
 
   /**
-   * Seed global permissions (shared across all tenants)
+   * Seed all permissions from predefined list
    */
   async seedGlobalPermissions() {
     try {
-      this.logger.log('Starting to seed global permissions...');
+      this.logger.log('Starting to seed all permissions from predefined list...');
 
       for (const permission of PREDEFINED_PERMISSIONS) {
-        // Only create global permissions (not tenant-specific)
-        if (
-          permission.userType === 'ADMIN' ||
-          permission.userType === 'END_USER'
-        ) {
-          await this.createGlobalPermission(permission);
-        }
+        await this.createGlobalPermission(permission);
       }
 
-      this.logger.log('Global permissions seeded successfully');
+      this.logger.log('All permissions seeded successfully');
     } catch (error) {
-      this.logger.error(`Error seeding global permissions: ${error.message}`);
+      this.logger.error(`Error seeding permissions: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Seed permissions by module
+   */
+  async seedPermissionsByModule(module: string) {
+    try {
+      this.logger.log(`Starting to seed permissions for module: ${module}`);
+
+      const modulePermissions = PREDEFINED_PERMISSIONS.filter(
+        (permission) => permission.module === module,
+      );
+
+      for (const permission of modulePermissions) {
+        await this.createGlobalPermission(permission);
+      }
+
+      this.logger.log(`Permissions for module ${module} seeded successfully`);
+    } catch (error) {
+      this.logger.error(`Error seeding permissions for module ${module}: ${error.message}`);
       throw error;
     }
   }

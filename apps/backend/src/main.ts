@@ -10,7 +10,18 @@ import { ConfigService } from '@nestjs/config';
 import { ZodValidationPipe } from './configs/zod-validation.pipeline';
 import { doubleCsrf } from 'csrf-csrf';
 import { ValidationPipe } from '@nestjs/common';
-// import { RedisHealthService } from './health/redis-health.service';
+import { RedisHealthService } from './health/redis-health.service';
+
+// Import DTOs to ensure they're included in Swagger schema
+import {
+  DevicesResponseDto,
+  DeviceDetailResponseDto,
+  DeviceAlertsResponseDto,
+  DeviceSimpleDto,
+  DeviceDetailsDto,
+  DeviceAlertsDto,
+  DeviceAlertDto,
+} from './manage/dto/devices/device-simple.dto'; 
 // ...
 // somewhere in your initialization file
 
@@ -44,16 +55,23 @@ async function bootstrap() {
   // app.use(doubleCsrfProtection);
 
   // Enable CORS (with environment-configurable origins)
+  const corsOrigins = [
+    configService.get<string>('CORS_ORIGIN'),
+    'https://900612472413.ngrok-free.app',
+    'http://localhost:3000',
+    'http://localhost:8080',
+  ].filter(Boolean);
+
   app.enableCors({
-    origin: configService.get<string>('CORS_ORIGIN') || '*', // Restrict in production
+    origin: corsOrigins.length > 0 ? corsOrigins : '*', // Restrict in production
     allowedHeaders: ['Content-Type', ...supertokens.getAllCORSHeaders()],
     credentials: true,
   });
 
   // Swagger Configuration
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('CDMS API')
-    .setDescription('Central Device Management System API Documentation')
+    .setTitle('ICCC API')
+    .setDescription('Integrated Command and Control Centre API Documentation')
     .setVersion('3.0')
     .setContact('API Support', 'https://www.lenscorp.ai', 'support@lenscorp.ai')
     .setExternalDoc('More API Info', 'https://www.lenscorp.ai')
@@ -68,14 +86,35 @@ async function bootstrap() {
     )
     .build();
 
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  const document = SwaggerModule.createDocument(app, swaggerConfig, {
+    extraModels: [
+      DevicesResponseDto,
+      DeviceDetailResponseDto,
+      DeviceAlertsResponseDto,
+      DeviceSimpleDto,
+      DeviceDetailsDto,
+      DeviceAlertsDto,
+      DeviceAlertDto,
+    ],
+  });
 
   // Configure servers based on environment
   const isProduction = process.env.NODE_ENV === 'production';
   const railwayUrl =
     process.env.RAILWAY_STATIC_URL || process.env.RAILWAY_PUBLIC_DOMAIN;
+  const ngrokUrl = process.env.NGROK_URL || 'https://900612472413.ngrok-free.app';
 
   document.servers = [
+    // Development server (Primary - Current)
+    {
+      url: `http://localhost:80/api/v1`,
+      description: 'Local Development Server (Current)',
+    },
+    // Ngrok server (for external access)
+    {
+      url: `${ngrokUrl}/api/v1`,
+      description: 'Ngrok Tunnel Server',
+    },
     // Production server (Railway)
     ...(isProduction && railwayUrl
       ? [
@@ -85,17 +124,14 @@ async function bootstrap() {
           },
         ]
       : []),
-    // Development server
+    // Alternative development ports
     {
-      url: `http://localhost:{port}/api/v1`,
-      description: 'Local Development Server',
-      variables: {
-        port: {
-          default: '80',
-          enum: ['8080', '3000', '5000'],
-          description: 'Available server ports',
-        },
-      },
+      url: `http://localhost:8080/api/v1`,
+      description: 'Alternative Development Port 8080',
+    },
+    {
+      url: `http://localhost:3000/api/v1`,
+      description: 'Alternative Development Port 3000',
     },
   ];
 
@@ -123,24 +159,24 @@ async function bootstrap() {
   console.log(`📄 Swagger Docs available at http://localhost:${port}/api-docs`);
 
   // Trigger Redis health check on startup
-  // try {
-  //   const redisHealthService = app.get(RedisHealthService);
-  //   console.log('🔍 Checking Redis health...');
-  //   const healthStatus = await redisHealthService.checkHealthWithEnvironmentConfig();
+    try {
+    const redisHealthService = app.get(RedisHealthService);
+    console.log('🔍 Checking Redis health...');
+    const healthStatus = await redisHealthService.checkHealthWithEnvironmentConfig();
 
-  //   if (healthStatus.status === 'healthy') {
-  //     console.log('✅ Redis is healthy!');
-  //     console.log(`   Host: ${healthStatus.redis.host}:${healthStatus.redis.port}`);
-  //     console.log(`   Memory: ${healthStatus.redis.memory} bytes`);
-  //     console.log(`   Status: ${healthStatus.redis.status}`);
-  //   } else {
-  //     console.log('❌ Redis health check failed!');
-  //     console.log(`   Error: ${healthStatus.redis.error}`);
-  //     console.log(`   Host: ${healthStatus.redis.host}:${healthStatus.redis.port}`);
-  //   }
-  // } catch (error) {
-  //   console.log('❌ Failed to perform Redis health check:', error.message);
-  // }
+    if (healthStatus.status === 'healthy') {
+      console.log('✅ Redis is healthy!');
+      console.log(`   Host: ${healthStatus.redis.host}:${healthStatus.redis.port}`);
+      console.log(`   Memory: ${healthStatus.redis.memory} bytes`);
+      console.log(`   Status: ${healthStatus.redis.status}`);
+    } else {
+      console.log('❌ Redis health check failed!');
+      console.log(`   Error: ${healthStatus.redis.error}`);
+      console.log(`   Host: ${healthStatus.redis.host}:${healthStatus.redis.port}`);
+    }
+  } catch (error) {
+    console.log('❌ Failed to perform Redis health check:', error.message);
+  }
 }
 
 bootstrap();

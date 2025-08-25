@@ -109,26 +109,6 @@ export class CreateSiteDto {
   address?: string;
 
   @ApiProperty({
-    description: 'Latitude coordinate',
-    example: 12.9716,
-    required: false,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  latitude?: number;
-
-  @ApiProperty({
-    description: 'Longitude coordinate',
-    example: 77.5946,
-    required: false,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  longitude?: number;
-
-  @ApiProperty({
     description: 'Site image URL',
     example: 'https://example.com/site-image.jpg',
     required: false,

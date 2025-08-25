@@ -1,306 +1,128 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  HttpStatus,
-  ParseUUIDPipe,
-  UseGuards,
 } from '@nestjs/common';
-import { PermissionService } from './permission.service';
-// import { PredefinedPermissionsService } from './services/predefined-permissions.service';
-import { CreatePermissionDto } from './dto/create-permission.dto';
-import { UpdatePermissionDto } from './dto/update-permission.dto';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiParam,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
-import { RequirePermissions } from './decorators/require-permission.decorator';
-import { AuthPermissionGuard } from './guards/auth-permission.guard';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { 
+  PermissionCategoryDto, 
+  RolePermissionDto, 
+  PermissionsResponseDto 
+} from './dto/permission-simple.dto';
 
-@ApiTags('permissions')
 @Controller('permissions')
-@ApiBearerAuth()
+@ApiTags('Permissions')
 export class PermissionController {
-  constructor(
-    private readonly permissionService: PermissionService,
-    // private readonly predefinedPermissionsService: PredefinedPermissionsService
-  ) {}
-
-  @Post()
-  @ApiBearerAuth('Bearer')
-  @UseGuards(AuthPermissionGuard)
-  @RequirePermissions('CREATE_PERMISSION')
-  @ApiOperation({ summary: 'Create a new permission' })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'The permission has been successfully created.',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid input data.',
-  })
-  @ApiResponse({
-    status: HttpStatus.CONFLICT,
-    description: 'Permission with this name already exists.',
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Role not found.',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions.',
-  })
-  create(@Body() createPermissionDto: CreatePermissionDto) {
-    return this.permissionService.create(createPermissionDto);
-  }
-
   @Get()
-  @ApiBearerAuth('Bearer')
-  @UseGuards(AuthPermissionGuard)
-  @RequirePermissions('READ_PERMISSION')
-  @ApiOperation({ summary: 'Get all permissions' })
+  @ApiOperation({ summary: 'Get all permissions and role assignments' })
   @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'List of all permissions.',
+    status: 200,
+    description: 'Permissions retrieved successfully',
+    type: PermissionsResponseDto,
   })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions.',
-  })
-  findAll() {
-    return this.permissionService.findAll();
-  }
+  async findAll(): Promise<PermissionsResponseDto> {
+         // Mock data based on the UI shown in the images
+     const categoriesData: PermissionCategoryDto[] = [
+       {
+         category: 'Dashboard',
+         is_selected: true,
+         sub_features: ['Feature 01', 'Feature 02', 'Feature 03'],
+       },
+       {
+         category: 'Sites',
+         is_selected: false,
+         sub_features: ['Feature 01', 'Feature 02'],
+       },
+       {
+         category: 'Devices',
+         is_selected: false,
+         sub_features: ['Feature 01', 'Feature 02', 'Feature 03', 'Feature 04'],
+       },
+       {
+         category: 'Topology',
+         is_selected: false,
+         sub_features: ['Feature 01', 'Feature 02'],
+       },
+       {
+         category: 'Network Diagram',
+         is_selected: false,
+         sub_features: ['Feature 01', 'Feature 02', 'Feature 03'],
+       },
+       {
+         category: 'Alerts',
+         is_selected: false,
+         sub_features: ['Feature 01', 'Feature 02'],
+       },
+       {
+         category: 'Users',
+         is_selected: false,
+         sub_features: ['Feature 01', 'Feature 02', 'Feature 03'],
+       },
+       {
+         category: 'Roles',
+         is_selected: false,
+         sub_features: ['Feature 01', 'Feature 02'],
+       },
+       {
+         category: 'Permissions',
+         is_selected: false,
+         sub_features: ['Feature 01', 'Feature 02', 'Feature 03', 'Feature 04', 'ALL'],
+       },
+     ];
 
-  @Get('basic')
-  @ApiBearerAuth('Bearer')
-  @UseGuards(AuthPermissionGuard)
-  @RequirePermissions('READ_PERMISSION')
-  @ApiOperation({
-    summary: 'Get basic permission information (id, name, and section)',
-    description:
-      'Returns a simplified list of permissions with id, name, and resource section fields for dropdown lists and basic UI components.',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description:
-      'Basic list of permissions with id, name, and resource section.',
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
-            example: 'perm-123e4567-e89b-12d3-a456-426614174001',
-            description: 'Permission ID',
+           // Using actual roles from role controller with hierarchical permissions
+      const rolePermissionsData: RolePermissionDto[] = [
+        {
+          role_name: 'Super Administrator',
+          is_selected: true,
+          permissions: {
+            'Dashboard': { 'Feature 01': true, 'Feature 02': true, 'Feature 03': true },
+            'Sites': { 'Feature 01': true, 'Feature 02': true },
+            'Devices': { 'Feature 01': true, 'Feature 02': true, 'Feature 03': true, 'Feature 04': true },
+            'Topology': { 'Feature 01': true, 'Feature 02': true },
+            'Network Diagram': { 'Feature 01': true, 'Feature 02': true, 'Feature 03': true },
+            'Alerts': { 'Feature 01': true, 'Feature 02': true },
+            'Users': { 'Feature 01': true, 'Feature 02': true, 'Feature 03': true },
+            'Roles': { 'Feature 01': true, 'Feature 02': true },
+            'Permissions': { 'Feature 01': true, 'Feature 02': true, 'Feature 03': true, 'Feature 04': true, 'ALL': true },
           },
-          name: {
-            type: 'string',
-            example: 'CREATE_USER',
-            description: 'Permission name',
+        },
+        {
+          role_name: 'Administrator',
+          is_selected: true,
+          permissions: {
+            'Dashboard': { 'Feature 01': true, 'Feature 02': true, 'Feature 03': false },
+            'Sites': { 'Feature 01': true, 'Feature 02': true },
+            'Devices': { 'Feature 01': true, 'Feature 02': true, 'Feature 03': true, 'Feature 04': false },
+            'Topology': { 'Feature 01': true, 'Feature 02': true },
+            'Network Diagram': { 'Feature 01': true, 'Feature 02': true, 'Feature 03': false },
+            'Alerts': { 'Feature 01': true, 'Feature 02': true },
+            'Users': { 'Feature 01': true, 'Feature 02': true, 'Feature 03': false },
+            'Roles': { 'Feature 01': false, 'Feature 02': false },
+            'Permissions': { 'Feature 01': false, 'Feature 02': false, 'Feature 03': false, 'Feature 04': false, 'ALL': false },
           },
-          resource: {
-            type: 'string',
-            example: 'users',
-            description:
-              'Resource section (e.g., users, roles, devices, events, dashboards)',
+        },
+        {
+          role_name: 'User Admin',
+          is_selected: false,
+          permissions: {
+            'Dashboard': { 'Feature 01': true, 'Feature 02': false, 'Feature 03': false },
+            'Sites': { 'Feature 01': false, 'Feature 02': false },
+            'Devices': { 'Feature 01': false, 'Feature 02': false, 'Feature 03': false, 'Feature 04': false },
+            'Topology': { 'Feature 01': false, 'Feature 02': false },
+            'Network Diagram': { 'Feature 01': false, 'Feature 02': false, 'Feature 03': false },
+            'Alerts': { 'Feature 01': true, 'Feature 02': true },
+            'Users': { 'Feature 01': true, 'Feature 02': true, 'Feature 03': false },
+            'Roles': { 'Feature 01': false, 'Feature 02': false },
+            'Permissions': { 'Feature 01': false, 'Feature 02': false, 'Feature 03': false, 'Feature 04': false, 'ALL': false },
           },
         },
-      },
-      example: [
-        {
-          id: 'perm-123e4567-e89b-12d3-a456-426614174001',
-          name: 'CREATE_USER',
-          resource: 'users',
-        },
-        {
-          id: 'perm-223e4567-e89b-12d3-a456-426614174002',
-          name: 'READ_USER',
-          resource: 'users',
-        },
-        {
-          id: 'perm-323e4567-e89b-12d3-a456-426614174003',
-          name: 'UPDATE_USER',
-          resource: 'users',
-        },
-        {
-          id: 'perm-423e4567-e89b-12d3-a456-426614174004',
-          name: 'DELETE_USER',
-          resource: 'users',
-        },
-        {
-          id: 'perm-523e4567-e89b-12d3-a456-426614174005',
-          name: 'CREATE_ROLE',
-          resource: 'roles',
-        },
-        {
-          id: 'perm-623e4567-e89b-12d3-a456-426614174006',
-          name: 'READ_EVENTS',
-          resource: 'events',
-        },
-        {
-          id: 'perm-723e4567-e89b-12d3-a456-426614174007',
-          name: 'READ_DASHBOARDS',
-          resource: 'dashboards',
-        },
-      ],
-    },
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions.',
-  })
-  findBasic() {
-    return this.permissionService.findBasic();
-  }
+      ];
 
-  @Get('global')
-  @ApiBearerAuth('Bearer')
-  @UseGuards(AuthPermissionGuard)
-  @RequirePermissions('READ_PERMISSION')
-  @ApiOperation({
-    summary: 'Get global permissions (shared across all tenants)',
-    description:
-      'Returns permissions that are available to all tenants (tenant_id IS NULL)',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'List of global permissions.',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions.',
-  })
-  findGlobalPermissions() {
-    return this.permissionService.findGlobalPermissions();
-  }
-
-  @Get('tenant/:tenantId')
-  @ApiBearerAuth('Bearer')
-  @UseGuards(AuthPermissionGuard)
-  @RequirePermissions('READ_PERMISSION')
-  @ApiOperation({
-    summary: 'Get tenant-specific permissions',
-    description: 'Returns permissions that are specific to a particular tenant',
-  })
-  @ApiParam({ name: 'tenantId', description: 'Tenant ID', type: 'string' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'List of tenant-specific permissions.',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions.',
-  })
-  findTenantPermissions(@Param('tenantId') tenantId: string) {
-    return this.permissionService.findTenantPermissions(tenantId);
-  }
-
-  @Get('available/:tenantId')
-  @ApiBearerAuth('Bearer')
-  @UseGuards(AuthPermissionGuard)
-  @RequirePermissions('READ_PERMISSION')
-  @ApiOperation({
-    summary:
-      'Get all permissions available for a tenant (global + tenant-specific)',
-    description:
-      'Returns both global and tenant-specific permissions that a tenant can use',
-  })
-  @ApiParam({ name: 'tenantId', description: 'Tenant ID', type: 'string' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'List of available permissions for the tenant.',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions.',
-  })
-  findPermissionsForTenant(@Param('tenantId') tenantId: string) {
-    return this.permissionService.findPermissionsForTenant(tenantId);
-  }
-
-  @Get(':id')
-  @ApiBearerAuth('Bearer')
-  @UseGuards(AuthPermissionGuard)
-  @RequirePermissions('READ_PERMISSION')
-  @ApiOperation({ summary: 'Get a permission by ID' })
-  @ApiParam({ name: 'id', description: 'Permission ID', type: 'string' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'The permission has been found.',
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Permission not found.',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions.',
-  })
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.permissionService.findOne(id);
-  }
-
-  @Patch(':id')
-  @ApiBearerAuth('Bearer')
-  @UseGuards(AuthPermissionGuard)
-  @RequirePermissions('UPDATE_PERMISSION')
-  @ApiOperation({ summary: 'Update a permission' })
-  @ApiParam({ name: 'id', description: 'Permission ID', type: 'string' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'The permission has been successfully updated.',
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Permission or role not found.',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid input data.',
-  })
-  @ApiResponse({
-    status: HttpStatus.CONFLICT,
-    description: 'Permission with this name already exists.',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions.',
-  })
-  update(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() updatePermissionDto: UpdatePermissionDto,
-  ) {
-    return this.permissionService.update(id, updatePermissionDto);
-  }
-
-  @Delete(':id')
-  @ApiBearerAuth('Bearer')
-  @UseGuards(AuthPermissionGuard)
-  @RequirePermissions('DELETE_PERMISSION')
-  @ApiOperation({ summary: 'Delete a permission' })
-  @ApiParam({ name: 'id', description: 'Permission ID', type: 'string' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'The permission has been successfully deleted.',
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Permission not found.',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions.',
-  })
-  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.permissionService.remove(id);
+    return {
+      categories: categoriesData,
+      role_permissions: rolePermissionsData,
+      total_roles: rolePermissionsData.length,
+      total_categories: categoriesData.length,
+    };
   }
 }

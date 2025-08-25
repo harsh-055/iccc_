@@ -16,6 +16,7 @@ CREATE INDEX IF NOT EXISTS idx_sites_tenant_id ON sites(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_sites_created_by ON sites(created_by);
 
 -- Add trigger for updated_at
+DROP TRIGGER IF EXISTS update_sites_updated_at ON sites;
 CREATE TRIGGER update_sites_updated_at 
     BEFORE UPDATE ON sites 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column(); 

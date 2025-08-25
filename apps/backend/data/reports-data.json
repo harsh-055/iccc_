@@ -1,0 +1,1976 @@
+{
+  "reports": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "reportName": "Monthly Security Analytics Report",
+      "description": "Comprehensive monthly analysis of security incidents, visitor patterns, and system performance metrics across all monitored locations",
+      "createdBy": "user001",
+      "createdByName": "Shuchi Sirpal",
+      "createdByEmail": "shuchi.sirpal@smartcity.gov.in",
+      "tenantId": "tenant001",
+      "tenantName": "Smart City Office",
+      "isActive": true,
+      "createdAt": "2025-03-24T12:00:00.000Z",
+      "updatedAt": "2025-03-24T12:00:00.000Z"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440002",
+      "reportName": "Weekly Visitor Management Summary",
+      "description": "Weekly summary of visitor activities, entry patterns, peak hours analysis, and access control effectiveness for facility management",
+      "createdBy": "user002",
+      "createdByName": "Rajesh Kumar",
+      "createdByEmail": "rajesh.kumar@smartcity.gov.in",
+      "tenantId": "tenant001",
+      "tenantName": "Smart City Office",
+      "isActive": true,
+      "createdAt": "2025-03-24T11:30:00.000Z",
+      "updatedAt": "2025-03-24T11:30:00.000Z"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440003",
+      "reportName": "Incident Response Performance Report",
+      "description": "Analysis of SOS incident response times, resolution effectiveness, and team performance metrics for operational improvement",
+      "createdBy": "user003",
+      "createdByName": "Priya Sharma",
+      "createdByEmail": "priya.sharma@smartcity.gov.in",
+      "tenantId": "tenant002",
+      "tenantName": "Metro Security Division",
+      "isActive": true,
+      "createdAt": "2025-03-24T10:15:00.000Z",
+      "updatedAt": "2025-03-24T10:15:00.000Z"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440004",
+      "reportName": "Camera System Health Report",
+      "description": "Technical report on camera system uptime, performance issues, maintenance requirements, and surveillance coverage analysis",
+      "createdBy": "user004",
+      "createdByName": "Amit Singh",
+      "createdByEmail": "amit.singh@smartcity.gov.in",
+      "tenantId": "tenant001",
+      "tenantName": "Smart City Office",
+      "isActive": true,
+      "createdAt": "2025-03-24T09:45:00.000Z",
+      "updatedAt": "2025-03-24T09:45:00.000Z"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440005",
+      "reportName": "Quarterly Safety Compliance Report",
+      "description": "Quarterly assessment of safety compliance, regulatory adherence, emergency response protocols, and risk management effectiveness",
+      "createdBy": "user005",
+      "createdByName": "Sunita Gupta",
+      "createdByEmail": "sunita.gupta@smartcity.gov.in",
+      "tenantId": "tenant003",
+      "tenantName": "Public Safety Department",
+      "isActive": true,
+      "createdAt": "2025-03-23T16:20:00.000Z",
+      "updatedAt": "2025-03-23T16:20:00.000Z"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440006",
+      "reportName": "Daily Operations Dashboard Report",
+      "description": "Daily operational metrics including visitor flow, security alerts, system status, and staff deployment efficiency across all facilities",
+      "createdBy": "user001",
+      "createdByName": "Shuchi Sirpal",
+      "createdByEmail": "shuchi.sirpal@smartcity.gov.in",
+      "tenantId": "tenant001",
+      "tenantName": "Smart City Office",
+      "isActive": true,
+      "createdAt": "2025-03-23T14:30:00.000Z",
+      "updatedAt": "2025-03-23T14:30:00.000Z"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440007",
+      "reportName": "Access Control Audit Report",
+      "description": "Comprehensive audit of access control systems, unauthorized entry attempts, credential management, and security protocol effectiveness",
+      "createdBy": "user006",
+      "createdByName": "Vikram Patel",
+      "createdByEmail": "vikram.patel@smartcity.gov.in",
+      "tenantId": "tenant002",
+      "tenantName": "Metro Security Division",
+      "isActive": true,
+      "createdAt": "2025-03-23T13:15:00.000Z",
+      "updatedAt": "2025-03-23T13:15:00.000Z"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440008",
+      "reportName": "Emergency Response Drill Report",
+      "description": "Evaluation of emergency response procedures, evacuation protocols, and crisis management effectiveness during scheduled safety drills",
+      "createdBy": "user007",
+      "createdByName": "Neha Agarwal",
+      "createdByEmail": "neha.agarwal@smartcity.gov.in",
+      "tenantId": "tenant003",
+      "tenantName": "Public Safety Department",
+      "isActive": true,
+      "createdAt": "2025-03-23T11:45:00.000Z",
+      "updatedAt": "2025-03-23T11:45:00.000Z"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440009",
+      "reportName": "Facial Recognition Accuracy Report",
+      "description": "Technical analysis of facial recognition system accuracy, false positive rates, and identification performance across different lighting conditions",
+      "createdBy": "user008",
+      "createdByName": "Rohit Verma",
+      "createdByEmail": "rohit.verma@smartcity.gov.in",
+      "tenantId": "tenant001",
+      "tenantName": "Smart City Office",
+      "isActive": true,
+      "createdAt": "2025-03-22T15:20:00.000Z",
+      "updatedAt": "2025-03-22T15:20:00.000Z"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440010",
+      "reportName": "Traffic Flow Analysis Report",
+      "description": "Analysis of pedestrian and vehicle traffic patterns, congestion points, and flow optimization recommendations for public areas",
+      "createdBy": "user009",
+      "createdByName": "Kavita Joshi",
+      "createdByEmail": "kavita.joshi@smartcity.gov.in",
+      "tenantId": "tenant004",
+      "tenantName": "Traffic Management Authority",
+      "isActive": true,
+      "createdAt": "2025-03-22T12:00:00.000Z",
+      "updatedAt": "2025-03-22T12:00:00.000Z"
+    }
+  ],
+  "reportTables": {
+    "550e8400-e29b-41d4-a716-446655440001": {
+      "alertTable": [
+        {
+          "id": "7b441ee1-6ab3-4ca8-a419-1728f449e866",
+          "alertType": "High Priority",
+          "location": "Zone A",
+          "timestamp": "2025-08-25T07:00:22.754Z",
+          "status": "Active",
+          "assignedTo": "John Doe"
+        },
+        {
+          "id": "2b819624-1dbe-4f8f-83f7-176d304e12d4",
+          "alertType": "Medium Priority",
+          "location": "Zone B",
+          "timestamp": "2025-08-25T06:55:22.754Z",
+          "status": "Resolved",
+          "assignedTo": "Jane Smith"
+        },
+        {
+          "id": "d42e4086-1e4d-4717-9c21-bca5e9d63048",
+          "alertType": "Low Priority",
+          "location": "Zone C",
+          "timestamp": "2025-08-25T06:25:22.754Z",
+          "status": "Pending",
+          "assignedTo": "Mike Johnson"
+        },
+        {
+          "id": "2249c941-31ef-441c-a8a5-45a2cd5372f2",
+          "alertType": "Critical",
+          "location": "Zone D",
+          "timestamp": "2025-08-25T05:55:22.754Z",
+          "status": "Active",
+          "assignedTo": "Sarah Wilson"
+        }
+      ],
+      "vehicleTrackingTable1": [
+        {
+          "id": "93a5b6b1-9723-4190-9d5d-ed1f05cffd61",
+          "vehicleId": "VH001",
+          "driverName": "Robert Wilson",
+          "currentLocation": "Main Street",
+          "speed": 45,
+          "fuelLevel": 85,
+          "status": "Active"
+        },
+        {
+          "id": "e6266b5b-7ae3-45b6-aa21-e65e1feb3097",
+          "vehicleId": "VH002",
+          "driverName": "Sarah Davis",
+          "currentLocation": "Park Avenue",
+          "speed": 32,
+          "fuelLevel": 62,
+          "status": "Active"
+        },
+        {
+          "id": "7db9f268-cb0e-43f1-889f-9b416b74f2af",
+          "vehicleId": "VH003",
+          "driverName": "Tom Brown",
+          "currentLocation": "Highway 101",
+          "speed": 78,
+          "fuelLevel": 40,
+          "status": "Active"
+        },
+        {
+          "id": "2a85b6eb-172a-4bc8-99e1-14b8e5c0db3a",
+          "vehicleId": "VH004",
+          "driverName": "Emma Johnson",
+          "currentLocation": "Oak Avenue",
+          "speed": 28,
+          "fuelLevel": 72,
+          "status": "Idle"
+        }
+      ],
+      "vehicleTrackingTable2": [
+        {
+          "id": "31fb63e2-0840-4131-b640-79f1050c9e62",
+          "vehicleId": "VH005",
+          "driverName": "Michael Chen",
+          "currentLocation": "Industrial Zone",
+          "speed": 55,
+          "fuelLevel": 90,
+          "status": "Active"
+        },
+        {
+          "id": "a55b3a86-ddbd-4e81-954f-5984831ea596",
+          "vehicleId": "VH006",
+          "driverName": "Lisa Anderson",
+          "currentLocation": "Downtown",
+          "speed": 25,
+          "fuelLevel": 45,
+          "status": "Active"
+        },
+        {
+          "id": "37ad18f5-9a1c-4869-8be8-4a3e2308c1cc",
+          "vehicleId": "VH007",
+          "driverName": "David Martinez",
+          "currentLocation": "Airport Road",
+          "speed": 65,
+          "fuelLevel": 78,
+          "status": "Active"
+        },
+        {
+          "id": "f753560a-1b32-4365-ae13-9fc7480d0184",
+          "vehicleId": "VH008",
+          "driverName": "Jennifer Lee",
+          "currentLocation": "Service Station",
+          "speed": 0,
+          "fuelLevel": 15,
+          "status": "Maintenance"
+        }
+      ],
+      "vehicleTrackingTable3": [
+        {
+          "id": "06539fef-74ee-497e-9b12-43111810bd3b",
+          "vehicleId": "VH009",
+          "driverName": "James Rodriguez",
+          "currentLocation": "Sector 5",
+          "speed": 48,
+          "fuelLevel": 55,
+          "status": "Active"
+        },
+        {
+          "id": "22471f34-0a65-4a40-b461-1c55972c1709",
+          "vehicleId": "VH010",
+          "driverName": "Maria Garcia",
+          "currentLocation": "Ring Road",
+          "speed": 72,
+          "fuelLevel": 68,
+          "status": "Active"
+        },
+        {
+          "id": "6c3c1ac2-0059-4256-8f09-9ab529384e39",
+          "vehicleId": "VH011",
+          "driverName": "William Taylor",
+          "currentLocation": "Market Area",
+          "speed": 18,
+          "fuelLevel": 82,
+          "status": "Idle"
+        },
+        {
+          "id": "98c21f14-82f5-4f87-a2f3-68fa387ea50a",
+          "vehicleId": "VH012",
+          "driverName": "Sophie Turner",
+          "currentLocation": "Tech Park",
+          "speed": 38,
+          "fuelLevel": 50,
+          "status": "Active"
+        }
+      ],
+      "broadcastTable": [
+        {
+          "id": "819864bd-92ca-49fc-a272-4a0ddfee8a0b",
+          "messageTitle": "System Maintenance",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T06:10:22.754Z",
+          "priority": "High",
+          "status": "Delivered"
+        },
+        {
+          "id": "a2ba2f43-ad6e-40a1-a83a-510d58eb7c4b",
+          "messageTitle": "Route Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T05:40:22.754Z",
+          "priority": "Medium",
+          "status": "Delivered"
+        },
+        {
+          "id": "8358b861-d715-4cb2-9fed-fb2d35227c4b",
+          "messageTitle": "Weather Alert",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T04:55:22.754Z",
+          "priority": "High",
+          "status": "Read"
+        },
+        {
+          "id": "7319cd81-f0d4-433e-8408-27fc721d74a9",
+          "messageTitle": "Traffic Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T03:50:22.754Z",
+          "priority": "Low",
+          "status": "Delivered"
+        }
+      ]
+    },
+    "550e8400-e29b-41d4-a716-446655440002": {
+      "alertTable": [
+        {
+          "id": "16fd866f-869a-4c11-9beb-a1f0fbb533d2",
+          "alertType": "High Priority",
+          "location": "Zone A",
+          "timestamp": "2025-08-25T07:00:22.754Z",
+          "status": "Active",
+          "assignedTo": "John Doe"
+        },
+        {
+          "id": "1808a29d-522c-4fca-9385-afc4fd7939c1",
+          "alertType": "Medium Priority",
+          "location": "Zone B",
+          "timestamp": "2025-08-25T06:55:22.754Z",
+          "status": "Resolved",
+          "assignedTo": "Jane Smith"
+        },
+        {
+          "id": "f8dad122-748b-4adf-897b-448945e69cfb",
+          "alertType": "Low Priority",
+          "location": "Zone C",
+          "timestamp": "2025-08-25T06:25:22.754Z",
+          "status": "Pending",
+          "assignedTo": "Mike Johnson"
+        },
+        {
+          "id": "e026b4c4-b681-4dbe-9f8d-b2604e46bfaa",
+          "alertType": "Critical",
+          "location": "Zone D",
+          "timestamp": "2025-08-25T05:55:22.754Z",
+          "status": "Active",
+          "assignedTo": "Sarah Wilson"
+        }
+      ],
+      "vehicleTrackingTable1": [
+        {
+          "id": "7e04b607-5545-4928-9eb0-4480153b68b7",
+          "vehicleId": "VH001",
+          "driverName": "Robert Wilson",
+          "currentLocation": "Main Street",
+          "speed": 45,
+          "fuelLevel": 85,
+          "status": "Active"
+        },
+        {
+          "id": "d99a8b99-1190-44f8-a84e-5d69fc748169",
+          "vehicleId": "VH002",
+          "driverName": "Sarah Davis",
+          "currentLocation": "Park Avenue",
+          "speed": 32,
+          "fuelLevel": 62,
+          "status": "Active"
+        },
+        {
+          "id": "174d2802-0bfd-472a-9f95-25dfb57bc79e",
+          "vehicleId": "VH003",
+          "driverName": "Tom Brown",
+          "currentLocation": "Highway 101",
+          "speed": 78,
+          "fuelLevel": 40,
+          "status": "Active"
+        },
+        {
+          "id": "3f9cb9df-d187-40fb-bf7f-71b3e2f0a091",
+          "vehicleId": "VH004",
+          "driverName": "Emma Johnson",
+          "currentLocation": "Oak Avenue",
+          "speed": 28,
+          "fuelLevel": 72,
+          "status": "Idle"
+        }
+      ],
+      "vehicleTrackingTable2": [
+        {
+          "id": "9b24b3a0-4f3c-4dd8-93f4-f6dd5c49f4a7",
+          "vehicleId": "VH005",
+          "driverName": "Michael Chen",
+          "currentLocation": "Industrial Zone",
+          "speed": 55,
+          "fuelLevel": 90,
+          "status": "Active"
+        },
+        {
+          "id": "716819a3-5e36-4c0b-aa25-d7c5a3868282",
+          "vehicleId": "VH006",
+          "driverName": "Lisa Anderson",
+          "currentLocation": "Downtown",
+          "speed": 25,
+          "fuelLevel": 45,
+          "status": "Active"
+        },
+        {
+          "id": "3b0f3a68-6ff3-4217-9c3f-6dce830e6a37",
+          "vehicleId": "VH007",
+          "driverName": "David Martinez",
+          "currentLocation": "Airport Road",
+          "speed": 65,
+          "fuelLevel": 78,
+          "status": "Active"
+        },
+        {
+          "id": "1ff65d1a-82d8-449c-b60a-fb3d4eb8c364",
+          "vehicleId": "VH008",
+          "driverName": "Jennifer Lee",
+          "currentLocation": "Service Station",
+          "speed": 0,
+          "fuelLevel": 15,
+          "status": "Maintenance"
+        }
+      ],
+      "vehicleTrackingTable3": [
+        {
+          "id": "8c248084-da61-4cd6-8deb-e2cb2ee11141",
+          "vehicleId": "VH009",
+          "driverName": "James Rodriguez",
+          "currentLocation": "Sector 5",
+          "speed": 48,
+          "fuelLevel": 55,
+          "status": "Active"
+        },
+        {
+          "id": "2cb25601-a442-46b0-a049-36267ec0ad53",
+          "vehicleId": "VH010",
+          "driverName": "Maria Garcia",
+          "currentLocation": "Ring Road",
+          "speed": 72,
+          "fuelLevel": 68,
+          "status": "Active"
+        },
+        {
+          "id": "12970fb6-74cf-4e71-ac61-00a1fb9fa5a5",
+          "vehicleId": "VH011",
+          "driverName": "William Taylor",
+          "currentLocation": "Market Area",
+          "speed": 18,
+          "fuelLevel": 82,
+          "status": "Idle"
+        },
+        {
+          "id": "4f916dde-5854-4506-92e9-c1d647a14e47",
+          "vehicleId": "VH012",
+          "driverName": "Sophie Turner",
+          "currentLocation": "Tech Park",
+          "speed": 38,
+          "fuelLevel": 50,
+          "status": "Active"
+        }
+      ],
+      "broadcastTable": [
+        {
+          "id": "3089e45f-8c30-481d-b83d-d08866f57d2e",
+          "messageTitle": "System Maintenance",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T06:10:22.754Z",
+          "priority": "High",
+          "status": "Delivered"
+        },
+        {
+          "id": "5579c8d0-81ce-4d04-834e-980cef94c065",
+          "messageTitle": "Route Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T05:40:22.754Z",
+          "priority": "Medium",
+          "status": "Delivered"
+        },
+        {
+          "id": "cdc36a91-f1bb-4df0-9a0a-31e177da1711",
+          "messageTitle": "Weather Alert",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T04:55:22.754Z",
+          "priority": "High",
+          "status": "Read"
+        },
+        {
+          "id": "48ff7843-bc47-4667-bc78-501fadb5ca6e",
+          "messageTitle": "Traffic Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T03:50:22.754Z",
+          "priority": "Low",
+          "status": "Delivered"
+        }
+      ]
+    },
+    "550e8400-e29b-41d4-a716-446655440003": {
+      "alertTable": [
+        {
+          "id": "d11ff8aa-b3b9-4244-90cd-c99cbdabc922",
+          "alertType": "High Priority",
+          "location": "Zone A",
+          "timestamp": "2025-08-25T07:00:22.754Z",
+          "status": "Active",
+          "assignedTo": "John Doe"
+        },
+        {
+          "id": "705efcae-28ba-4446-9e57-4b7385afcfe2",
+          "alertType": "Medium Priority",
+          "location": "Zone B",
+          "timestamp": "2025-08-25T06:55:22.754Z",
+          "status": "Resolved",
+          "assignedTo": "Jane Smith"
+        },
+        {
+          "id": "e0f11481-df9f-4e32-83eb-a249c6384a8b",
+          "alertType": "Low Priority",
+          "location": "Zone C",
+          "timestamp": "2025-08-25T06:25:22.754Z",
+          "status": "Pending",
+          "assignedTo": "Mike Johnson"
+        },
+        {
+          "id": "4b4e4711-7b41-46c3-9b35-5b428de3d406",
+          "alertType": "Critical",
+          "location": "Zone D",
+          "timestamp": "2025-08-25T05:55:22.754Z",
+          "status": "Active",
+          "assignedTo": "Sarah Wilson"
+        }
+      ],
+      "vehicleTrackingTable1": [
+        {
+          "id": "5c8fbbed-8db7-46cf-a71c-a27e31203c2d",
+          "vehicleId": "VH001",
+          "driverName": "Robert Wilson",
+          "currentLocation": "Main Street",
+          "speed": 45,
+          "fuelLevel": 85,
+          "status": "Active"
+        },
+        {
+          "id": "c4953400-47e6-4852-a10a-83fd03555c74",
+          "vehicleId": "VH002",
+          "driverName": "Sarah Davis",
+          "currentLocation": "Park Avenue",
+          "speed": 32,
+          "fuelLevel": 62,
+          "status": "Active"
+        },
+        {
+          "id": "b0e8d60a-38d2-4b4d-8043-289d37605fdf",
+          "vehicleId": "VH003",
+          "driverName": "Tom Brown",
+          "currentLocation": "Highway 101",
+          "speed": 78,
+          "fuelLevel": 40,
+          "status": "Active"
+        },
+        {
+          "id": "b345f5cf-4263-457c-a10f-816bbe523371",
+          "vehicleId": "VH004",
+          "driverName": "Emma Johnson",
+          "currentLocation": "Oak Avenue",
+          "speed": 28,
+          "fuelLevel": 72,
+          "status": "Idle"
+        }
+      ],
+      "vehicleTrackingTable2": [
+        {
+          "id": "fcf5f694-6605-4d0c-95a8-77a216d90f66",
+          "vehicleId": "VH005",
+          "driverName": "Michael Chen",
+          "currentLocation": "Industrial Zone",
+          "speed": 55,
+          "fuelLevel": 90,
+          "status": "Active"
+        },
+        {
+          "id": "9574c3ee-132b-40a1-8a11-79f07a793747",
+          "vehicleId": "VH006",
+          "driverName": "Lisa Anderson",
+          "currentLocation": "Downtown",
+          "speed": 25,
+          "fuelLevel": 45,
+          "status": "Active"
+        },
+        {
+          "id": "5b39a32a-e52d-4392-bb0d-85ec31a59f50",
+          "vehicleId": "VH007",
+          "driverName": "David Martinez",
+          "currentLocation": "Airport Road",
+          "speed": 65,
+          "fuelLevel": 78,
+          "status": "Active"
+        },
+        {
+          "id": "578f19eb-7bfe-4978-8b03-710706404263",
+          "vehicleId": "VH008",
+          "driverName": "Jennifer Lee",
+          "currentLocation": "Service Station",
+          "speed": 0,
+          "fuelLevel": 15,
+          "status": "Maintenance"
+        }
+      ],
+      "vehicleTrackingTable3": [
+        {
+          "id": "085a6c6f-a8ac-4a20-9440-0e00d8be171e",
+          "vehicleId": "VH009",
+          "driverName": "James Rodriguez",
+          "currentLocation": "Sector 5",
+          "speed": 48,
+          "fuelLevel": 55,
+          "status": "Active"
+        },
+        {
+          "id": "8b86e627-0dd1-4bce-84da-2814e5485f06",
+          "vehicleId": "VH010",
+          "driverName": "Maria Garcia",
+          "currentLocation": "Ring Road",
+          "speed": 72,
+          "fuelLevel": 68,
+          "status": "Active"
+        },
+        {
+          "id": "f8bfffbe-4fbb-431d-8df0-7677324fd302",
+          "vehicleId": "VH011",
+          "driverName": "William Taylor",
+          "currentLocation": "Market Area",
+          "speed": 18,
+          "fuelLevel": 82,
+          "status": "Idle"
+        },
+        {
+          "id": "bbf0af06-a62f-4ac8-95a0-6cd8f59e2ff4",
+          "vehicleId": "VH012",
+          "driverName": "Sophie Turner",
+          "currentLocation": "Tech Park",
+          "speed": 38,
+          "fuelLevel": 50,
+          "status": "Active"
+        }
+      ],
+      "broadcastTable": [
+        {
+          "id": "5b101d17-57cf-41fc-8d87-d96c748c3e9b",
+          "messageTitle": "System Maintenance",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T06:10:22.754Z",
+          "priority": "High",
+          "status": "Delivered"
+        },
+        {
+          "id": "bec78834-b966-463b-9c52-f62389676131",
+          "messageTitle": "Route Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T05:40:22.754Z",
+          "priority": "Medium",
+          "status": "Delivered"
+        },
+        {
+          "id": "70423e55-2242-4a72-a4db-040978248aef",
+          "messageTitle": "Weather Alert",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T04:55:22.754Z",
+          "priority": "High",
+          "status": "Read"
+        },
+        {
+          "id": "4382408e-b637-4240-b8df-2cade25f2d22",
+          "messageTitle": "Traffic Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T03:50:22.754Z",
+          "priority": "Low",
+          "status": "Delivered"
+        }
+      ]
+    },
+    "550e8400-e29b-41d4-a716-446655440004": {
+      "alertTable": [
+        {
+          "id": "92834aa5-e4fd-4b7a-8fce-6f553dbbfad5",
+          "alertType": "High Priority",
+          "location": "Zone A",
+          "timestamp": "2025-08-25T07:00:22.755Z",
+          "status": "Active",
+          "assignedTo": "John Doe"
+        },
+        {
+          "id": "3800edf6-c552-4b29-af94-db3823ac4ee8",
+          "alertType": "Medium Priority",
+          "location": "Zone B",
+          "timestamp": "2025-08-25T06:55:22.755Z",
+          "status": "Resolved",
+          "assignedTo": "Jane Smith"
+        },
+        {
+          "id": "2db90e2e-9123-4e1c-9f2e-4eff53bfa9b8",
+          "alertType": "Low Priority",
+          "location": "Zone C",
+          "timestamp": "2025-08-25T06:25:22.755Z",
+          "status": "Pending",
+          "assignedTo": "Mike Johnson"
+        },
+        {
+          "id": "2a94bd4f-d1c2-4ee1-b4a5-b6e878e83230",
+          "alertType": "Critical",
+          "location": "Zone D",
+          "timestamp": "2025-08-25T05:55:22.755Z",
+          "status": "Active",
+          "assignedTo": "Sarah Wilson"
+        }
+      ],
+      "vehicleTrackingTable1": [
+        {
+          "id": "0cce4a11-fb53-44c6-ba88-d5e6b1376be4",
+          "vehicleId": "VH001",
+          "driverName": "Robert Wilson",
+          "currentLocation": "Main Street",
+          "speed": 45,
+          "fuelLevel": 85,
+          "status": "Active"
+        },
+        {
+          "id": "8800028f-24d2-41c8-870d-ab5b4b64d917",
+          "vehicleId": "VH002",
+          "driverName": "Sarah Davis",
+          "currentLocation": "Park Avenue",
+          "speed": 32,
+          "fuelLevel": 62,
+          "status": "Active"
+        },
+        {
+          "id": "3ecd13a3-c7ce-4f3d-afae-f7297cd8c43a",
+          "vehicleId": "VH003",
+          "driverName": "Tom Brown",
+          "currentLocation": "Highway 101",
+          "speed": 78,
+          "fuelLevel": 40,
+          "status": "Active"
+        },
+        {
+          "id": "97a1be6b-8528-4bbd-a9b4-447baf726b9e",
+          "vehicleId": "VH004",
+          "driverName": "Emma Johnson",
+          "currentLocation": "Oak Avenue",
+          "speed": 28,
+          "fuelLevel": 72,
+          "status": "Idle"
+        }
+      ],
+      "vehicleTrackingTable2": [
+        {
+          "id": "ca3f9486-62b1-44b5-a84e-1797d7caa1f1",
+          "vehicleId": "VH005",
+          "driverName": "Michael Chen",
+          "currentLocation": "Industrial Zone",
+          "speed": 55,
+          "fuelLevel": 90,
+          "status": "Active"
+        },
+        {
+          "id": "59641b85-0d7b-49bf-ae4a-8508a29a0ef2",
+          "vehicleId": "VH006",
+          "driverName": "Lisa Anderson",
+          "currentLocation": "Downtown",
+          "speed": 25,
+          "fuelLevel": 45,
+          "status": "Active"
+        },
+        {
+          "id": "767eb546-3d12-4b34-a21f-b871525439df",
+          "vehicleId": "VH007",
+          "driverName": "David Martinez",
+          "currentLocation": "Airport Road",
+          "speed": 65,
+          "fuelLevel": 78,
+          "status": "Active"
+        },
+        {
+          "id": "a62a9c96-d6aa-46bc-bd4c-41e8429d0cba",
+          "vehicleId": "VH008",
+          "driverName": "Jennifer Lee",
+          "currentLocation": "Service Station",
+          "speed": 0,
+          "fuelLevel": 15,
+          "status": "Maintenance"
+        }
+      ],
+      "vehicleTrackingTable3": [
+        {
+          "id": "55957031-c8b9-4d3e-ba8c-00b6ad97e944",
+          "vehicleId": "VH009",
+          "driverName": "James Rodriguez",
+          "currentLocation": "Sector 5",
+          "speed": 48,
+          "fuelLevel": 55,
+          "status": "Active"
+        },
+        {
+          "id": "fae8f75d-a931-4858-a6cf-29cba53f0a90",
+          "vehicleId": "VH010",
+          "driverName": "Maria Garcia",
+          "currentLocation": "Ring Road",
+          "speed": 72,
+          "fuelLevel": 68,
+          "status": "Active"
+        },
+        {
+          "id": "6d8f7f23-bee4-4d34-a638-2b4929f8acd7",
+          "vehicleId": "VH011",
+          "driverName": "William Taylor",
+          "currentLocation": "Market Area",
+          "speed": 18,
+          "fuelLevel": 82,
+          "status": "Idle"
+        },
+        {
+          "id": "3319590e-bcf6-475a-8531-a4464d0afa8b",
+          "vehicleId": "VH012",
+          "driverName": "Sophie Turner",
+          "currentLocation": "Tech Park",
+          "speed": 38,
+          "fuelLevel": 50,
+          "status": "Active"
+        }
+      ],
+      "broadcastTable": [
+        {
+          "id": "b232306a-3ac5-4910-b8bc-89e52c01aef0",
+          "messageTitle": "System Maintenance",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T06:10:22.755Z",
+          "priority": "High",
+          "status": "Delivered"
+        },
+        {
+          "id": "207b75f5-4ad3-49aa-bb29-884889b3b1a6",
+          "messageTitle": "Route Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T05:40:22.755Z",
+          "priority": "Medium",
+          "status": "Delivered"
+        },
+        {
+          "id": "55d8a3ed-a7f2-44a1-a35e-aa0b66935f6a",
+          "messageTitle": "Weather Alert",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T04:55:22.755Z",
+          "priority": "High",
+          "status": "Read"
+        },
+        {
+          "id": "6a10338d-4458-46cd-a00b-713cc80e881c",
+          "messageTitle": "Traffic Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T03:50:22.755Z",
+          "priority": "Low",
+          "status": "Delivered"
+        }
+      ]
+    },
+    "550e8400-e29b-41d4-a716-446655440005": {
+      "alertTable": [
+        {
+          "id": "8a0b62c7-4de9-430b-a3c0-7f7e49ecd51e",
+          "alertType": "High Priority",
+          "location": "Zone A",
+          "timestamp": "2025-08-25T07:00:22.755Z",
+          "status": "Active",
+          "assignedTo": "John Doe"
+        },
+        {
+          "id": "d3ff2c33-2574-4cac-bfbf-e4877d090365",
+          "alertType": "Medium Priority",
+          "location": "Zone B",
+          "timestamp": "2025-08-25T06:55:22.755Z",
+          "status": "Resolved",
+          "assignedTo": "Jane Smith"
+        },
+        {
+          "id": "2bcd447a-834f-4d68-a9e6-8bcb9538c25a",
+          "alertType": "Low Priority",
+          "location": "Zone C",
+          "timestamp": "2025-08-25T06:25:22.755Z",
+          "status": "Pending",
+          "assignedTo": "Mike Johnson"
+        },
+        {
+          "id": "30383885-e329-4c35-a475-4581da1f6894",
+          "alertType": "Critical",
+          "location": "Zone D",
+          "timestamp": "2025-08-25T05:55:22.755Z",
+          "status": "Active",
+          "assignedTo": "Sarah Wilson"
+        }
+      ],
+      "vehicleTrackingTable1": [
+        {
+          "id": "e4ee649f-814c-47d8-ad5c-4080ce06366e",
+          "vehicleId": "VH001",
+          "driverName": "Robert Wilson",
+          "currentLocation": "Main Street",
+          "speed": 45,
+          "fuelLevel": 85,
+          "status": "Active"
+        },
+        {
+          "id": "234f1ea0-7c28-46d6-bb08-4144af785acc",
+          "vehicleId": "VH002",
+          "driverName": "Sarah Davis",
+          "currentLocation": "Park Avenue",
+          "speed": 32,
+          "fuelLevel": 62,
+          "status": "Active"
+        },
+        {
+          "id": "e3c6c6d4-ccd6-4d0c-9b7d-a9ff4d1f6540",
+          "vehicleId": "VH003",
+          "driverName": "Tom Brown",
+          "currentLocation": "Highway 101",
+          "speed": 78,
+          "fuelLevel": 40,
+          "status": "Active"
+        },
+        {
+          "id": "de78b716-869b-4c8e-b86f-24bf9878047e",
+          "vehicleId": "VH004",
+          "driverName": "Emma Johnson",
+          "currentLocation": "Oak Avenue",
+          "speed": 28,
+          "fuelLevel": 72,
+          "status": "Idle"
+        }
+      ],
+      "vehicleTrackingTable2": [
+        {
+          "id": "affdd3ec-795f-4592-bfae-45d9d8c5004b",
+          "vehicleId": "VH005",
+          "driverName": "Michael Chen",
+          "currentLocation": "Industrial Zone",
+          "speed": 55,
+          "fuelLevel": 90,
+          "status": "Active"
+        },
+        {
+          "id": "2eb35d9a-7829-4877-8063-a0d11376edca",
+          "vehicleId": "VH006",
+          "driverName": "Lisa Anderson",
+          "currentLocation": "Downtown",
+          "speed": 25,
+          "fuelLevel": 45,
+          "status": "Active"
+        },
+        {
+          "id": "02ada513-4138-4810-96db-25e7246ec9d4",
+          "vehicleId": "VH007",
+          "driverName": "David Martinez",
+          "currentLocation": "Airport Road",
+          "speed": 65,
+          "fuelLevel": 78,
+          "status": "Active"
+        },
+        {
+          "id": "f4366764-2e86-4822-82c6-39e79a39844b",
+          "vehicleId": "VH008",
+          "driverName": "Jennifer Lee",
+          "currentLocation": "Service Station",
+          "speed": 0,
+          "fuelLevel": 15,
+          "status": "Maintenance"
+        }
+      ],
+      "vehicleTrackingTable3": [
+        {
+          "id": "f553d77b-801f-485d-a4d7-26dfb71a0763",
+          "vehicleId": "VH009",
+          "driverName": "James Rodriguez",
+          "currentLocation": "Sector 5",
+          "speed": 48,
+          "fuelLevel": 55,
+          "status": "Active"
+        },
+        {
+          "id": "72f34af6-036c-4e03-aac8-6bdefb675c81",
+          "vehicleId": "VH010",
+          "driverName": "Maria Garcia",
+          "currentLocation": "Ring Road",
+          "speed": 72,
+          "fuelLevel": 68,
+          "status": "Active"
+        },
+        {
+          "id": "417a66ca-87a3-4d03-bdf1-243fed61103b",
+          "vehicleId": "VH011",
+          "driverName": "William Taylor",
+          "currentLocation": "Market Area",
+          "speed": 18,
+          "fuelLevel": 82,
+          "status": "Idle"
+        },
+        {
+          "id": "93da2609-1761-4c92-8a60-0c19a9936d8e",
+          "vehicleId": "VH012",
+          "driverName": "Sophie Turner",
+          "currentLocation": "Tech Park",
+          "speed": 38,
+          "fuelLevel": 50,
+          "status": "Active"
+        }
+      ],
+      "broadcastTable": [
+        {
+          "id": "f0a2c470-0af7-45ab-b07b-e549ffc09042",
+          "messageTitle": "System Maintenance",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T06:10:22.755Z",
+          "priority": "High",
+          "status": "Delivered"
+        },
+        {
+          "id": "e6a74d49-a660-48cf-bb0e-06ff57e97f1c",
+          "messageTitle": "Route Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T05:40:22.755Z",
+          "priority": "Medium",
+          "status": "Delivered"
+        },
+        {
+          "id": "e4b17a4a-e982-4f0e-bdbb-7a53ef4b4bd5",
+          "messageTitle": "Weather Alert",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T04:55:22.755Z",
+          "priority": "High",
+          "status": "Read"
+        },
+        {
+          "id": "4e6e3d49-a50f-4193-a0a8-8f2a37cb0b0d",
+          "messageTitle": "Traffic Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T03:50:22.755Z",
+          "priority": "Low",
+          "status": "Delivered"
+        }
+      ]
+    },
+    "550e8400-e29b-41d4-a716-446655440006": {
+      "alertTable": [
+        {
+          "id": "b2bafbe3-a4da-45ee-8e52-d3bd14c134c7",
+          "alertType": "High Priority",
+          "location": "Zone A",
+          "timestamp": "2025-08-25T07:00:22.755Z",
+          "status": "Active",
+          "assignedTo": "John Doe"
+        },
+        {
+          "id": "c18cc362-1513-4738-a1d7-da9a4b795292",
+          "alertType": "Medium Priority",
+          "location": "Zone B",
+          "timestamp": "2025-08-25T06:55:22.755Z",
+          "status": "Resolved",
+          "assignedTo": "Jane Smith"
+        },
+        {
+          "id": "ea46bd6c-b08d-468f-bb4f-30f701678681",
+          "alertType": "Low Priority",
+          "location": "Zone C",
+          "timestamp": "2025-08-25T06:25:22.755Z",
+          "status": "Pending",
+          "assignedTo": "Mike Johnson"
+        },
+        {
+          "id": "44c36227-2aca-47f9-bc2d-b9b997131878",
+          "alertType": "Critical",
+          "location": "Zone D",
+          "timestamp": "2025-08-25T05:55:22.755Z",
+          "status": "Active",
+          "assignedTo": "Sarah Wilson"
+        }
+      ],
+      "vehicleTrackingTable1": [
+        {
+          "id": "861305af-a72e-48fd-93db-c396a2bbd288",
+          "vehicleId": "VH001",
+          "driverName": "Robert Wilson",
+          "currentLocation": "Main Street",
+          "speed": 45,
+          "fuelLevel": 85,
+          "status": "Active"
+        },
+        {
+          "id": "6e3dfbc7-6633-405e-bd46-ea0c6b1b1d89",
+          "vehicleId": "VH002",
+          "driverName": "Sarah Davis",
+          "currentLocation": "Park Avenue",
+          "speed": 32,
+          "fuelLevel": 62,
+          "status": "Active"
+        },
+        {
+          "id": "cd084de9-719f-40a3-893c-0f40ffa2ff0e",
+          "vehicleId": "VH003",
+          "driverName": "Tom Brown",
+          "currentLocation": "Highway 101",
+          "speed": 78,
+          "fuelLevel": 40,
+          "status": "Active"
+        },
+        {
+          "id": "efe3b0cb-8fa6-4418-8eaa-7da532c8366d",
+          "vehicleId": "VH004",
+          "driverName": "Emma Johnson",
+          "currentLocation": "Oak Avenue",
+          "speed": 28,
+          "fuelLevel": 72,
+          "status": "Idle"
+        }
+      ],
+      "vehicleTrackingTable2": [
+        {
+          "id": "03f6ef66-d2ad-4315-9069-d43b6db4f9b5",
+          "vehicleId": "VH005",
+          "driverName": "Michael Chen",
+          "currentLocation": "Industrial Zone",
+          "speed": 55,
+          "fuelLevel": 90,
+          "status": "Active"
+        },
+        {
+          "id": "528afb28-6c0d-4158-bc8d-3a659269c9b2",
+          "vehicleId": "VH006",
+          "driverName": "Lisa Anderson",
+          "currentLocation": "Downtown",
+          "speed": 25,
+          "fuelLevel": 45,
+          "status": "Active"
+        },
+        {
+          "id": "7a77738b-009c-44dc-8bf1-e1e8084b5cc9",
+          "vehicleId": "VH007",
+          "driverName": "David Martinez",
+          "currentLocation": "Airport Road",
+          "speed": 65,
+          "fuelLevel": 78,
+          "status": "Active"
+        },
+        {
+          "id": "e2941888-4f91-4b20-b7f1-3bf180ce2dcc",
+          "vehicleId": "VH008",
+          "driverName": "Jennifer Lee",
+          "currentLocation": "Service Station",
+          "speed": 0,
+          "fuelLevel": 15,
+          "status": "Maintenance"
+        }
+      ],
+      "vehicleTrackingTable3": [
+        {
+          "id": "c8f485c0-fd6d-41cd-bde1-5566dbb40919",
+          "vehicleId": "VH009",
+          "driverName": "James Rodriguez",
+          "currentLocation": "Sector 5",
+          "speed": 48,
+          "fuelLevel": 55,
+          "status": "Active"
+        },
+        {
+          "id": "443b2ce6-8870-43d8-89f2-99071bf22963",
+          "vehicleId": "VH010",
+          "driverName": "Maria Garcia",
+          "currentLocation": "Ring Road",
+          "speed": 72,
+          "fuelLevel": 68,
+          "status": "Active"
+        },
+        {
+          "id": "089de5f4-e36a-4850-b6d2-b931caaeea9f",
+          "vehicleId": "VH011",
+          "driverName": "William Taylor",
+          "currentLocation": "Market Area",
+          "speed": 18,
+          "fuelLevel": 82,
+          "status": "Idle"
+        },
+        {
+          "id": "da40120e-a108-4a32-a5fa-3b798d732245",
+          "vehicleId": "VH012",
+          "driverName": "Sophie Turner",
+          "currentLocation": "Tech Park",
+          "speed": 38,
+          "fuelLevel": 50,
+          "status": "Active"
+        }
+      ],
+      "broadcastTable": [
+        {
+          "id": "33e6a689-325d-4d2a-8267-d494d07c42b7",
+          "messageTitle": "System Maintenance",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T06:10:22.755Z",
+          "priority": "High",
+          "status": "Delivered"
+        },
+        {
+          "id": "9ff6d38a-24e7-4d48-9106-538b64a2e875",
+          "messageTitle": "Route Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T05:40:22.755Z",
+          "priority": "Medium",
+          "status": "Delivered"
+        },
+        {
+          "id": "1211edae-6b49-47e4-b164-ec52fd6ad83c",
+          "messageTitle": "Weather Alert",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T04:55:22.755Z",
+          "priority": "High",
+          "status": "Read"
+        },
+        {
+          "id": "893e9f34-1c21-4ec2-9e0b-a1f48edc098c",
+          "messageTitle": "Traffic Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T03:50:22.755Z",
+          "priority": "Low",
+          "status": "Delivered"
+        }
+      ]
+    },
+    "550e8400-e29b-41d4-a716-446655440007": {
+      "alertTable": [
+        {
+          "id": "d1153690-5596-42f3-9fb8-8d9387c2b302",
+          "alertType": "High Priority",
+          "location": "Zone A",
+          "timestamp": "2025-08-25T07:00:22.755Z",
+          "status": "Active",
+          "assignedTo": "John Doe"
+        },
+        {
+          "id": "199f7892-2c80-4dbf-903d-f33d1bc7b755",
+          "alertType": "Medium Priority",
+          "location": "Zone B",
+          "timestamp": "2025-08-25T06:55:22.755Z",
+          "status": "Resolved",
+          "assignedTo": "Jane Smith"
+        },
+        {
+          "id": "d7992ef9-9e61-4718-acef-bad12a1fe786",
+          "alertType": "Low Priority",
+          "location": "Zone C",
+          "timestamp": "2025-08-25T06:25:22.755Z",
+          "status": "Pending",
+          "assignedTo": "Mike Johnson"
+        },
+        {
+          "id": "8998e79d-4471-4f83-97c6-0cce2740a201",
+          "alertType": "Critical",
+          "location": "Zone D",
+          "timestamp": "2025-08-25T05:55:22.755Z",
+          "status": "Active",
+          "assignedTo": "Sarah Wilson"
+        }
+      ],
+      "vehicleTrackingTable1": [
+        {
+          "id": "fb3def1b-f36e-475f-a1fd-b496c912784a",
+          "vehicleId": "VH001",
+          "driverName": "Robert Wilson",
+          "currentLocation": "Main Street",
+          "speed": 45,
+          "fuelLevel": 85,
+          "status": "Active"
+        },
+        {
+          "id": "684ca825-dd7d-4240-8ca1-e731d69e4882",
+          "vehicleId": "VH002",
+          "driverName": "Sarah Davis",
+          "currentLocation": "Park Avenue",
+          "speed": 32,
+          "fuelLevel": 62,
+          "status": "Active"
+        },
+        {
+          "id": "c9cd854b-6188-44f6-a0eb-4a83a5d05ab0",
+          "vehicleId": "VH003",
+          "driverName": "Tom Brown",
+          "currentLocation": "Highway 101",
+          "speed": 78,
+          "fuelLevel": 40,
+          "status": "Active"
+        },
+        {
+          "id": "2fe860ef-07a6-4182-a355-0a453774368e",
+          "vehicleId": "VH004",
+          "driverName": "Emma Johnson",
+          "currentLocation": "Oak Avenue",
+          "speed": 28,
+          "fuelLevel": 72,
+          "status": "Idle"
+        }
+      ],
+      "vehicleTrackingTable2": [
+        {
+          "id": "790aceb1-f201-46f2-b786-6e19a5dc1594",
+          "vehicleId": "VH005",
+          "driverName": "Michael Chen",
+          "currentLocation": "Industrial Zone",
+          "speed": 55,
+          "fuelLevel": 90,
+          "status": "Active"
+        },
+        {
+          "id": "acb3bbeb-81d0-4a1b-86ca-ff41183da362",
+          "vehicleId": "VH006",
+          "driverName": "Lisa Anderson",
+          "currentLocation": "Downtown",
+          "speed": 25,
+          "fuelLevel": 45,
+          "status": "Active"
+        },
+        {
+          "id": "0cba27ad-7b9c-42ed-bd1b-4e238952cda9",
+          "vehicleId": "VH007",
+          "driverName": "David Martinez",
+          "currentLocation": "Airport Road",
+          "speed": 65,
+          "fuelLevel": 78,
+          "status": "Active"
+        },
+        {
+          "id": "362cadeb-d154-4860-8ac9-67f9973d0a87",
+          "vehicleId": "VH008",
+          "driverName": "Jennifer Lee",
+          "currentLocation": "Service Station",
+          "speed": 0,
+          "fuelLevel": 15,
+          "status": "Maintenance"
+        }
+      ],
+      "vehicleTrackingTable3": [
+        {
+          "id": "f6b4d034-4bef-45a5-adfd-5c5ec6458821",
+          "vehicleId": "VH009",
+          "driverName": "James Rodriguez",
+          "currentLocation": "Sector 5",
+          "speed": 48,
+          "fuelLevel": 55,
+          "status": "Active"
+        },
+        {
+          "id": "ebd91b13-2a61-4be4-8345-1a166ba1d3f3",
+          "vehicleId": "VH010",
+          "driverName": "Maria Garcia",
+          "currentLocation": "Ring Road",
+          "speed": 72,
+          "fuelLevel": 68,
+          "status": "Active"
+        },
+        {
+          "id": "987eb811-463a-4460-ae10-df4e1786db90",
+          "vehicleId": "VH011",
+          "driverName": "William Taylor",
+          "currentLocation": "Market Area",
+          "speed": 18,
+          "fuelLevel": 82,
+          "status": "Idle"
+        },
+        {
+          "id": "86d81ab0-36e1-46d6-97d3-c9159ccdb469",
+          "vehicleId": "VH012",
+          "driverName": "Sophie Turner",
+          "currentLocation": "Tech Park",
+          "speed": 38,
+          "fuelLevel": 50,
+          "status": "Active"
+        }
+      ],
+      "broadcastTable": [
+        {
+          "id": "a6176101-7c1a-41a5-bfc6-5dfc418698b7",
+          "messageTitle": "System Maintenance",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T06:10:22.755Z",
+          "priority": "High",
+          "status": "Delivered"
+        },
+        {
+          "id": "d99d3514-079a-4a0a-bd9d-a3b9a7a03e82",
+          "messageTitle": "Route Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T05:40:22.755Z",
+          "priority": "Medium",
+          "status": "Delivered"
+        },
+        {
+          "id": "befbef85-9122-4527-b099-735f759036d8",
+          "messageTitle": "Weather Alert",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T04:55:22.755Z",
+          "priority": "High",
+          "status": "Read"
+        },
+        {
+          "id": "3965ebac-207f-434d-bff5-e62b19bf367a",
+          "messageTitle": "Traffic Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T03:50:22.755Z",
+          "priority": "Low",
+          "status": "Delivered"
+        }
+      ]
+    },
+    "550e8400-e29b-41d4-a716-446655440008": {
+      "alertTable": [
+        {
+          "id": "9ff03604-877a-4d11-8e52-ccfe0e990f19",
+          "alertType": "High Priority",
+          "location": "Zone A",
+          "timestamp": "2025-08-25T07:00:22.755Z",
+          "status": "Active",
+          "assignedTo": "John Doe"
+        },
+        {
+          "id": "d140768a-f539-4b87-9c02-db75db8e0da3",
+          "alertType": "Medium Priority",
+          "location": "Zone B",
+          "timestamp": "2025-08-25T06:55:22.755Z",
+          "status": "Resolved",
+          "assignedTo": "Jane Smith"
+        },
+        {
+          "id": "abad05c2-1c49-480c-a6fd-3d96753bf5a1",
+          "alertType": "Low Priority",
+          "location": "Zone C",
+          "timestamp": "2025-08-25T06:25:22.755Z",
+          "status": "Pending",
+          "assignedTo": "Mike Johnson"
+        },
+        {
+          "id": "c4f6cb3e-d93f-4a4e-be08-f48bff606002",
+          "alertType": "Critical",
+          "location": "Zone D",
+          "timestamp": "2025-08-25T05:55:22.755Z",
+          "status": "Active",
+          "assignedTo": "Sarah Wilson"
+        }
+      ],
+      "vehicleTrackingTable1": [
+        {
+          "id": "8a7a198f-b15d-4139-8653-3317f8d3dbe1",
+          "vehicleId": "VH001",
+          "driverName": "Robert Wilson",
+          "currentLocation": "Main Street",
+          "speed": 45,
+          "fuelLevel": 85,
+          "status": "Active"
+        },
+        {
+          "id": "68906069-354c-4e07-940f-dd52d5f29cf3",
+          "vehicleId": "VH002",
+          "driverName": "Sarah Davis",
+          "currentLocation": "Park Avenue",
+          "speed": 32,
+          "fuelLevel": 62,
+          "status": "Active"
+        },
+        {
+          "id": "75feac13-e88f-4e92-9ecd-aea38a247af3",
+          "vehicleId": "VH003",
+          "driverName": "Tom Brown",
+          "currentLocation": "Highway 101",
+          "speed": 78,
+          "fuelLevel": 40,
+          "status": "Active"
+        },
+        {
+          "id": "001238d8-cb0b-4b1e-913c-7bced22667df",
+          "vehicleId": "VH004",
+          "driverName": "Emma Johnson",
+          "currentLocation": "Oak Avenue",
+          "speed": 28,
+          "fuelLevel": 72,
+          "status": "Idle"
+        }
+      ],
+      "vehicleTrackingTable2": [
+        {
+          "id": "cd19d4c5-52b9-4fde-857e-36984cc03034",
+          "vehicleId": "VH005",
+          "driverName": "Michael Chen",
+          "currentLocation": "Industrial Zone",
+          "speed": 55,
+          "fuelLevel": 90,
+          "status": "Active"
+        },
+        {
+          "id": "6cdc93d5-64a0-434b-a343-30516e83af95",
+          "vehicleId": "VH006",
+          "driverName": "Lisa Anderson",
+          "currentLocation": "Downtown",
+          "speed": 25,
+          "fuelLevel": 45,
+          "status": "Active"
+        },
+        {
+          "id": "cf27ebdf-018c-4ab1-92fa-ba0748c95682",
+          "vehicleId": "VH007",
+          "driverName": "David Martinez",
+          "currentLocation": "Airport Road",
+          "speed": 65,
+          "fuelLevel": 78,
+          "status": "Active"
+        },
+        {
+          "id": "73f016ab-932b-4227-ba17-ee5526602552",
+          "vehicleId": "VH008",
+          "driverName": "Jennifer Lee",
+          "currentLocation": "Service Station",
+          "speed": 0,
+          "fuelLevel": 15,
+          "status": "Maintenance"
+        }
+      ],
+      "vehicleTrackingTable3": [
+        {
+          "id": "cbc977e0-eb6c-4319-b9d1-13dc161f90d2",
+          "vehicleId": "VH009",
+          "driverName": "James Rodriguez",
+          "currentLocation": "Sector 5",
+          "speed": 48,
+          "fuelLevel": 55,
+          "status": "Active"
+        },
+        {
+          "id": "c0931a73-0859-4bed-999c-71994c1a77d4",
+          "vehicleId": "VH010",
+          "driverName": "Maria Garcia",
+          "currentLocation": "Ring Road",
+          "speed": 72,
+          "fuelLevel": 68,
+          "status": "Active"
+        },
+        {
+          "id": "e4d05a36-fecf-4c22-88bc-e7c6f355d2c6",
+          "vehicleId": "VH011",
+          "driverName": "William Taylor",
+          "currentLocation": "Market Area",
+          "speed": 18,
+          "fuelLevel": 82,
+          "status": "Idle"
+        },
+        {
+          "id": "2a6ec83a-6b2d-462f-8851-7f2f02c08ce8",
+          "vehicleId": "VH012",
+          "driverName": "Sophie Turner",
+          "currentLocation": "Tech Park",
+          "speed": 38,
+          "fuelLevel": 50,
+          "status": "Active"
+        }
+      ],
+      "broadcastTable": [
+        {
+          "id": "ad15311c-a88b-4e23-ab8f-9bf169234c99",
+          "messageTitle": "System Maintenance",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T06:10:22.755Z",
+          "priority": "High",
+          "status": "Delivered"
+        },
+        {
+          "id": "ca51ceff-a903-4d5c-ac4f-7be35861b6f9",
+          "messageTitle": "Route Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T05:40:22.755Z",
+          "priority": "Medium",
+          "status": "Delivered"
+        },
+        {
+          "id": "a952d6a1-e129-4d3b-a2fc-0e7c48759980",
+          "messageTitle": "Weather Alert",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T04:55:22.755Z",
+          "priority": "High",
+          "status": "Read"
+        },
+        {
+          "id": "906292bd-885d-4182-b766-6fc3d18ad769",
+          "messageTitle": "Traffic Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T03:50:22.755Z",
+          "priority": "Low",
+          "status": "Delivered"
+        }
+      ]
+    },
+    "550e8400-e29b-41d4-a716-446655440009": {
+      "alertTable": [
+        {
+          "id": "0e434a45-1b10-4627-b12e-a9afeae3af9d",
+          "alertType": "High Priority",
+          "location": "Zone A",
+          "timestamp": "2025-08-25T07:00:22.755Z",
+          "status": "Active",
+          "assignedTo": "John Doe"
+        },
+        {
+          "id": "93687027-3ac4-40ad-a6ea-84af9f756f44",
+          "alertType": "Medium Priority",
+          "location": "Zone B",
+          "timestamp": "2025-08-25T06:55:22.755Z",
+          "status": "Resolved",
+          "assignedTo": "Jane Smith"
+        },
+        {
+          "id": "5cc21ad3-acb0-413f-b1a6-9f622867c0ad",
+          "alertType": "Low Priority",
+          "location": "Zone C",
+          "timestamp": "2025-08-25T06:25:22.755Z",
+          "status": "Pending",
+          "assignedTo": "Mike Johnson"
+        },
+        {
+          "id": "6b9bee1d-caa5-45c9-b300-f2772490b61f",
+          "alertType": "Critical",
+          "location": "Zone D",
+          "timestamp": "2025-08-25T05:55:22.755Z",
+          "status": "Active",
+          "assignedTo": "Sarah Wilson"
+        }
+      ],
+      "vehicleTrackingTable1": [
+        {
+          "id": "3ebb3d9b-748c-4610-a079-24e5f7c2487f",
+          "vehicleId": "VH001",
+          "driverName": "Robert Wilson",
+          "currentLocation": "Main Street",
+          "speed": 45,
+          "fuelLevel": 85,
+          "status": "Active"
+        },
+        {
+          "id": "cf3a7304-be83-44e2-b74d-f2d83aa80571",
+          "vehicleId": "VH002",
+          "driverName": "Sarah Davis",
+          "currentLocation": "Park Avenue",
+          "speed": 32,
+          "fuelLevel": 62,
+          "status": "Active"
+        },
+        {
+          "id": "3fa15880-2b03-4822-ac72-73b3667fed6a",
+          "vehicleId": "VH003",
+          "driverName": "Tom Brown",
+          "currentLocation": "Highway 101",
+          "speed": 78,
+          "fuelLevel": 40,
+          "status": "Active"
+        },
+        {
+          "id": "f60dd613-8153-4576-a764-126b88be5c5e",
+          "vehicleId": "VH004",
+          "driverName": "Emma Johnson",
+          "currentLocation": "Oak Avenue",
+          "speed": 28,
+          "fuelLevel": 72,
+          "status": "Idle"
+        }
+      ],
+      "vehicleTrackingTable2": [
+        {
+          "id": "b5115114-bf87-4e38-945f-125eb7eb8e2e",
+          "vehicleId": "VH005",
+          "driverName": "Michael Chen",
+          "currentLocation": "Industrial Zone",
+          "speed": 55,
+          "fuelLevel": 90,
+          "status": "Active"
+        },
+        {
+          "id": "b294d10c-4e32-4763-97d0-8038b3906699",
+          "vehicleId": "VH006",
+          "driverName": "Lisa Anderson",
+          "currentLocation": "Downtown",
+          "speed": 25,
+          "fuelLevel": 45,
+          "status": "Active"
+        },
+        {
+          "id": "bae055f7-9df6-4e52-9e81-1813b7b5c1b0",
+          "vehicleId": "VH007",
+          "driverName": "David Martinez",
+          "currentLocation": "Airport Road",
+          "speed": 65,
+          "fuelLevel": 78,
+          "status": "Active"
+        },
+        {
+          "id": "0fb03050-e6f8-4a13-b8bb-dac462f521c8",
+          "vehicleId": "VH008",
+          "driverName": "Jennifer Lee",
+          "currentLocation": "Service Station",
+          "speed": 0,
+          "fuelLevel": 15,
+          "status": "Maintenance"
+        }
+      ],
+      "vehicleTrackingTable3": [
+        {
+          "id": "df50483d-c702-45b6-b704-ef56b6b9bbc4",
+          "vehicleId": "VH009",
+          "driverName": "James Rodriguez",
+          "currentLocation": "Sector 5",
+          "speed": 48,
+          "fuelLevel": 55,
+          "status": "Active"
+        },
+        {
+          "id": "c5cac816-1dbd-4c3d-84d2-69104b8ca5aa",
+          "vehicleId": "VH010",
+          "driverName": "Maria Garcia",
+          "currentLocation": "Ring Road",
+          "speed": 72,
+          "fuelLevel": 68,
+          "status": "Active"
+        },
+        {
+          "id": "84575e97-073c-4dc0-a148-c03b7fa118da",
+          "vehicleId": "VH011",
+          "driverName": "William Taylor",
+          "currentLocation": "Market Area",
+          "speed": 18,
+          "fuelLevel": 82,
+          "status": "Idle"
+        },
+        {
+          "id": "a52a67a6-083a-46f5-9296-2c4586dc0e00",
+          "vehicleId": "VH012",
+          "driverName": "Sophie Turner",
+          "currentLocation": "Tech Park",
+          "speed": 38,
+          "fuelLevel": 50,
+          "status": "Active"
+        }
+      ],
+      "broadcastTable": [
+        {
+          "id": "194be55e-8b10-4d57-bf86-8f1a5d97bf72",
+          "messageTitle": "System Maintenance",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T06:10:22.755Z",
+          "priority": "High",
+          "status": "Delivered"
+        },
+        {
+          "id": "27772ddb-a8ea-4d84-9e10-90fb39ad2e63",
+          "messageTitle": "Route Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T05:40:22.755Z",
+          "priority": "Medium",
+          "status": "Delivered"
+        },
+        {
+          "id": "42a01242-2249-4bf7-b5c6-c228af7d2755",
+          "messageTitle": "Weather Alert",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T04:55:22.755Z",
+          "priority": "High",
+          "status": "Read"
+        },
+        {
+          "id": "4b3b2c00-9117-47b6-92e8-ff483f2d1a3e",
+          "messageTitle": "Traffic Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T03:50:22.755Z",
+          "priority": "Low",
+          "status": "Delivered"
+        }
+      ]
+    },
+    "550e8400-e29b-41d4-a716-446655440010": {
+      "alertTable": [
+        {
+          "id": "cfaefa34-3402-4768-9d1c-1fe628800078",
+          "alertType": "High Priority",
+          "location": "Zone A",
+          "timestamp": "2025-08-25T07:00:22.755Z",
+          "status": "Active",
+          "assignedTo": "John Doe"
+        },
+        {
+          "id": "073dd9e2-b5fc-44b2-9955-97f841c36e87",
+          "alertType": "Medium Priority",
+          "location": "Zone B",
+          "timestamp": "2025-08-25T06:55:22.755Z",
+          "status": "Resolved",
+          "assignedTo": "Jane Smith"
+        },
+        {
+          "id": "026191e9-1fe2-4804-94ea-d9c5ef5a7b8c",
+          "alertType": "Low Priority",
+          "location": "Zone C",
+          "timestamp": "2025-08-25T06:25:22.755Z",
+          "status": "Pending",
+          "assignedTo": "Mike Johnson"
+        },
+        {
+          "id": "e1729c44-0c1d-4bce-ae61-351e0e4d5c6a",
+          "alertType": "Critical",
+          "location": "Zone D",
+          "timestamp": "2025-08-25T05:55:22.755Z",
+          "status": "Active",
+          "assignedTo": "Sarah Wilson"
+        }
+      ],
+      "vehicleTrackingTable1": [
+        {
+          "id": "e58d8c58-90da-42b8-9561-09fbf806d710",
+          "vehicleId": "VH001",
+          "driverName": "Robert Wilson",
+          "currentLocation": "Main Street",
+          "speed": 45,
+          "fuelLevel": 85,
+          "status": "Active"
+        },
+        {
+          "id": "71037aa4-639b-4bc2-9d2b-83abacf1ad0e",
+          "vehicleId": "VH002",
+          "driverName": "Sarah Davis",
+          "currentLocation": "Park Avenue",
+          "speed": 32,
+          "fuelLevel": 62,
+          "status": "Active"
+        },
+        {
+          "id": "0fbe0bcd-afc5-492a-ba9e-81de214d1f7b",
+          "vehicleId": "VH003",
+          "driverName": "Tom Brown",
+          "currentLocation": "Highway 101",
+          "speed": 78,
+          "fuelLevel": 40,
+          "status": "Active"
+        },
+        {
+          "id": "c0cb2a5a-b937-41c9-9c01-f8fd4e797b1e",
+          "vehicleId": "VH004",
+          "driverName": "Emma Johnson",
+          "currentLocation": "Oak Avenue",
+          "speed": 28,
+          "fuelLevel": 72,
+          "status": "Idle"
+        }
+      ],
+      "vehicleTrackingTable2": [
+        {
+          "id": "522b8901-21e3-4fdc-a215-d59a429584a5",
+          "vehicleId": "VH005",
+          "driverName": "Michael Chen",
+          "currentLocation": "Industrial Zone",
+          "speed": 55,
+          "fuelLevel": 90,
+          "status": "Active"
+        },
+        {
+          "id": "15fd4b40-d1a5-4790-b5a6-f5053d0bbf3b",
+          "vehicleId": "VH006",
+          "driverName": "Lisa Anderson",
+          "currentLocation": "Downtown",
+          "speed": 25,
+          "fuelLevel": 45,
+          "status": "Active"
+        },
+        {
+          "id": "914e67bc-ff2d-4b39-bd6d-85763a531d80",
+          "vehicleId": "VH007",
+          "driverName": "David Martinez",
+          "currentLocation": "Airport Road",
+          "speed": 65,
+          "fuelLevel": 78,
+          "status": "Active"
+        },
+        {
+          "id": "c5aef71c-47f2-40bd-852e-1309e19f2500",
+          "vehicleId": "VH008",
+          "driverName": "Jennifer Lee",
+          "currentLocation": "Service Station",
+          "speed": 0,
+          "fuelLevel": 15,
+          "status": "Maintenance"
+        }
+      ],
+      "vehicleTrackingTable3": [
+        {
+          "id": "3224eac2-aabc-4b86-ab95-74092f3c3c06",
+          "vehicleId": "VH009",
+          "driverName": "James Rodriguez",
+          "currentLocation": "Sector 5",
+          "speed": 48,
+          "fuelLevel": 55,
+          "status": "Active"
+        },
+        {
+          "id": "c0b4f439-5864-4d22-bc6e-3e6abf98a4f2",
+          "vehicleId": "VH010",
+          "driverName": "Maria Garcia",
+          "currentLocation": "Ring Road",
+          "speed": 72,
+          "fuelLevel": 68,
+          "status": "Active"
+        },
+        {
+          "id": "0d835c8a-54ee-4da9-b554-cd88b5cd719a",
+          "vehicleId": "VH011",
+          "driverName": "William Taylor",
+          "currentLocation": "Market Area",
+          "speed": 18,
+          "fuelLevel": 82,
+          "status": "Idle"
+        },
+        {
+          "id": "622b0549-ba57-4c16-84c1-4f0a659d27a9",
+          "vehicleId": "VH012",
+          "driverName": "Sophie Turner",
+          "currentLocation": "Tech Park",
+          "speed": 38,
+          "fuelLevel": 50,
+          "status": "Active"
+        }
+      ],
+      "broadcastTable": [
+        {
+          "id": "5738b239-bef2-45aa-a575-6b6fe51d87dc",
+          "messageTitle": "System Maintenance",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T06:10:22.755Z",
+          "priority": "High",
+          "status": "Delivered"
+        },
+        {
+          "id": "2f4e3508-a494-4836-bf89-51d34795fdac",
+          "messageTitle": "Route Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T05:40:22.755Z",
+          "priority": "Medium",
+          "status": "Delivered"
+        },
+        {
+          "id": "1c1acc49-733c-42dc-b73d-730efd3df900",
+          "messageTitle": "Weather Alert",
+          "recipient": "All Users",
+          "sentTime": "2025-08-25T04:55:22.755Z",
+          "priority": "High",
+          "status": "Read"
+        },
+        {
+          "id": "d563e0d7-4adf-4a1d-9502-1215cbd6800d",
+          "messageTitle": "Traffic Update",
+          "recipient": "Drivers",
+          "sentTime": "2025-08-25T03:50:22.755Z",
+          "priority": "Low",
+          "status": "Delivered"
+        }
+      ]
+    }
+  }
+}

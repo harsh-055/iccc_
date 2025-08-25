@@ -1,5 +1,5 @@
 // Common DTOs
-export * from './common/pagination.dto';
+export { PaginationDto, PaginatedResponseDto } from '../../common/dto/pagination.dto';
 export * from './common/filter.dto';
 
 // Regions DTOs
@@ -11,16 +11,19 @@ export * from './regions/region-response.dto';
 export * from './zones/create-zone.dto';
 export * from './zones/update-zone.dto';
 export * from './zones/zone-response.dto';
+export * from './zones/zone-filter.dto';
 
 // Wards DTOs
 export * from './wards/create-ward.dto';
 export * from './wards/update-ward.dto';
 export * from './wards/ward-response.dto';
+export * from './wards/ward-filter.dto';
 
 // Sites DTOs
 export * from './sites/create-site.dto';
 export * from './sites/update-site.dto';
 export * from './sites/site-response.dto';
+export * from './sites/site-filter.dto';
 
 // Vehicles DTOs
 export * from './vehicles/create-vehicle.dto';
@@ -31,6 +34,7 @@ export * from './vehicles/vehicle-response.dto';
 export * from './devices/create-device.dto';
 export * from './devices/update-device.dto';
 export * from './devices/device-response.dto';
+export * from './devices/device-simple.dto';
 
 // Inventory DTOs
 export * from './inventory/create-inventory-item.dto';

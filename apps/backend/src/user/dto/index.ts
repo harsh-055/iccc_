@@ -13,4 +13,5 @@ export {
   MfaDto,
   LoginDetailsDto,
   TenantDto,
+  ParentDto,
 } from './user-response.dto';

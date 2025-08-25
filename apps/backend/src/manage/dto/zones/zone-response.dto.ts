@@ -14,6 +14,12 @@ export class ZoneResponseDto {
   name: string;
 
   @ApiProperty({
+    description: 'Zone number for ordering and display',
+    example: 1,
+  })
+  zoneNo?: number;
+
+  @ApiProperty({
     description: 'Zone description',
     example: 'Primary waste collection zone',
   })

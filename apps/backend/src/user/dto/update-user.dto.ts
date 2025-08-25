@@ -85,8 +85,8 @@ export class UpdateUserDto extends PartialType(
 
   @ApiProperty({
     description:
-      'Parent username to assign to this user (use this OR parentId, not both)',
-    example: 'admin_user',
+      'Parent user ID (UUID) to assign to this user. Use this OR parentId, not both.',
+    example: '550e8400-e29b-41d4-a716-446655440001',
     required: false,
   })
   @IsString()

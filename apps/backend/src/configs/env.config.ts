@@ -63,14 +63,14 @@ class EnvironmentVariables {
   // @IsString()
   // CORS_ORIGIN?: string;
 
-  // Redis Configuration (COMMENTED OUT)
-  // @IsString()
-  // REDIS_HOST: string;
+  // Redis Configuration
+  @IsString()
+  REDIS_HOST: string;
 
-  // @IsNumber()
-  // @Min(0)
-  // @Max(65535)
-  // REDIS_PORT: number;
+  @IsNumber()
+  @Min(0)
+  @Max(65535)
+  REDIS_PORT: number;
 
   // @IsString()
   // REDIS_PASSWORD?: string;

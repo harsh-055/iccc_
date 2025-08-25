@@ -125,6 +125,14 @@ export class TenantDto {
   description?: string;
 }
 
+export class ParentDto {
+  @ApiProperty({ description: 'Parent user ID' })
+  id: string;
+
+  @ApiProperty({ description: 'Parent user full name' })
+  name: string;
+}
+
 export class UserResponseDto {
   @ApiProperty({ description: 'User ID' })
   id: string;
@@ -132,7 +140,13 @@ export class UserResponseDto {
   // @ApiProperty({ description: 'Auto-generated 8-10 digit account ID' })
   // accountId: string;
 
-  @ApiProperty({ description: 'User name' })
+  @ApiProperty({ description: 'User first name' })
+  firstName: string;
+
+  @ApiProperty({ description: 'User last name' })
+  lastName: string;
+
+  @ApiProperty({ description: 'User full name (computed)' })
   name: string;
 
   @ApiProperty({ description: 'User email' })
@@ -186,6 +200,10 @@ export class UserResponseDto {
   @Type(() => TenantDto)
   tenant?: TenantDto;
 
+  @ApiProperty({ description: 'Parent user information', required: false })
+  @Type(() => ParentDto)
+  parent?: ParentDto;
+
   // @ApiProperty({ description: 'Groups the user belongs to', type: [GroupDto] })
   // @Type(() => GroupDto)
   // groups: GroupDto[];
@@ -207,7 +225,7 @@ export class UserResponseDto {
   userLoginDetails?: LoginDetailsDto;
 
   @ApiProperty({
-    description: 'Site IDs associated with the user',
+    description: 'Site IDs associated with the user (from user_sites table)',
     type: [String],
     required: false,
   })

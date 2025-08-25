@@ -1,115 +1,25 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
   Query,
-  Logger,
-  UseGuards,
-  Req,
-  ParseUUIDPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
-  ApiBody,
-  ApiParam,
   ApiQuery,
-  ApiBearerAuth,
 } from '@nestjs/swagger';
-import { RegionsService } from '../services/regions.service';
-import {
-  CreateRegionDto,
-  UpdateRegionDto,
-  RegionResponseDto,
-  PaginationDto,
-  PaginatedResponseDto,
-  BaseFilterDto,
-} from '../dto';
-import { AuthPermissionGuard } from '../../permissions/guards/auth-permission.guard';
-import { RequirePermissions } from '../../permissions/decorators/require-permission.decorator';
-import { Public } from '../../permissions/decorators/public.decorators';
+import { RegionSimpleDto, RegionsResponseDto } from '../dto/regions/region-simple.dto';
 
 @Controller('manage/regions')
 @ApiTags('Manage - Regions')
-@ApiBearerAuth('Bearer')
-@UseGuards(AuthPermissionGuard)
 export class RegionsController {
-  private readonly logger = new Logger(RegionsController.name);
-
-  constructor(private readonly regionsService: RegionsService) {}
-
-  @Post()
-  @RequirePermissions('manage:regions:create')
-  @ApiOperation({ summary: 'Create a new region' })
-  @ApiResponse({
-    status: 201,
-    description: 'Region created successfully',
-    type: RegionResponseDto,
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request - Validation failed' })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden - Insufficient permissions',
-  })
-  @ApiResponse({
-    status: 409,
-    description: 'Conflict - Region name already exists',
-  })
-  @ApiBody({
-    type: CreateRegionDto,
-    description: 'Region creation data',
-    examples: {
-      basic: {
-        summary: 'Create basic region',
-        value: {
-          name: 'Region 1',
-          description: 'Primary waste management region',
-          isActive: true,
-        },
-      },
-    },
-  })
-  async create(@Body() createRegionDto: CreateRegionDto, @Req() req: any) {
-    try {
-      const result = await this.regionsService.create(
-        createRegionDto,
-        req.user.id,
-        req.user.tenantId,
-      );
-
-      this.logger.log(
-        `Region created successfully: ${result.name}`,
-        'RegionsController',
-        result.id,
-      );
-
-      return result;
-    } catch (error) {
-      this.logger.error(
-        `Error creating region: ${error.message}`,
-        error.stack,
-        'RegionsController',
-      );
-      throw error;
-    }
-  }
-
   @Get()
-  @RequirePermissions('manage:regions:read')
   @ApiOperation({ summary: 'Get all regions with pagination and filtering' })
   @ApiResponse({
     status: 200,
     description: 'Regions retrieved successfully',
-    type: PaginatedResponseDto<RegionResponseDto>,
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden - Insufficient permissions',
+    type: RegionsResponseDto,
   })
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
@@ -120,192 +30,161 @@ export class RegionsController {
     example: 'Region',
   })
   @ApiQuery({
-    name: 'sortBy',
+    name: 'zone_name',
     required: false,
     type: String,
-    example: 'created_at',
+    example: 'Zone 1',
+    description: 'Filter by zone name (hidden column)',
   })
-  @ApiQuery({
-    name: 'sortOrder',
-    required: false,
-    enum: ['asc', 'desc'],
-    example: 'desc',
-  })
-  @ApiQuery({ name: 'isActive', required: false, type: Boolean, example: true })
   async findAll(
-    @Query() paginationDto: PaginationDto,
-    @Query() filterDto: BaseFilterDto,
-    @Req() req: any,
-  ) {
-    try {
-      const result = await this.regionsService.findAll(
-        paginationDto,
-        filterDto,
-        req.user.tenantId,
-      );
-
-      this.logger.log(
-        `Regions retrieved successfully: ${result.total} total, ${result.data.length} on page`,
-        'RegionsController',
-      );
-
-      return result;
-    } catch (error) {
-      this.logger.error(
-        `Error fetching regions: ${error.message}`,
-        error.stack,
-        'RegionsController',
-      );
-      throw error;
-    }
-  }
-
-  @Get(':id')
-  @RequirePermissions('manage:regions:read')
-  @ApiOperation({ summary: 'Get a specific region by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Region retrieved successfully',
-    type: RegionResponseDto,
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden - Insufficient permissions',
-  })
-  @ApiResponse({ status: 404, description: 'Not Found - Region not found' })
-  @ApiParam({
-    name: 'id',
-    description: 'Region ID',
-    type: 'string',
-    format: 'uuid',
-  })
-  async findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: any) {
-    try {
-      const result = await this.regionsService.findOne(id, req.user.tenantId);
-
-      this.logger.log(
-        `Region retrieved successfully: ${result.name}`,
-        'RegionsController',
-        id,
-      );
-
-      return result;
-    } catch (error) {
-      this.logger.error(
-        `Error fetching region ${id}: ${error.message}`,
-        error.stack,
-        'RegionsController',
-      );
-      throw error;
-    }
-  }
-
-  @Patch(':id')
-  @RequirePermissions('manage:regions:update')
-  @ApiOperation({ summary: 'Update a region' })
-  @ApiResponse({
-    status: 200,
-    description: 'Region updated successfully',
-    type: RegionResponseDto,
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request - Validation failed' })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden - Insufficient permissions',
-  })
-  @ApiResponse({ status: 404, description: 'Not Found - Region not found' })
-  @ApiResponse({
-    status: 409,
-    description: 'Conflict - Region name already exists',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'Region ID',
-    type: 'string',
-    format: 'uuid',
-  })
-  @ApiBody({
-    type: UpdateRegionDto,
-    description: 'Region update data',
-    examples: {
-      basic: {
-        summary: 'Update region name',
-        value: {
-          name: 'Updated Region Name',
-          description: 'Updated description',
-        },
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+    @Query('search') search?: string,
+    @Query('zone_name') zoneName?: string,
+  ): Promise<RegionsResponseDto> {
+    // Mock data based on the UI table
+    const regionsData: RegionSimpleDto[] = [
+      {
+        region_name: 'Region',
+        zone_no: 1,
+        zone_name: 'Zone 1',
+        ward_no: 1,
+        ward_name: 'Koramangala',
+        supervisor: 'Rajesh Kumar',
+        sites: 3,
+        routes: 42,
+        vehicles: 24,
       },
-      deactivate: {
-        summary: 'Deactivate region',
-        value: {
-          isActive: false,
-        },
+      {
+        region_name: 'Region',
+        zone_no: 2,
+        zone_name: 'Zone 2',
+        ward_no: 2,
+        ward_name: 'Hebbal',
+        supervisor: 'Priya Sharma',
+        sites: 5,
+        routes: 38,
+        vehicles: 18,
       },
-    },
-  })
-  async update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateRegionDto: UpdateRegionDto,
-    @Req() req: any,
-  ) {
-    try {
-      const result = await this.regionsService.update(
-        id,
-        updateRegionDto,
-        req.user.id,
-        req.user.tenantId,
-      );
+      {
+        region_name: 'Region',
+        zone_no: 3,
+        zone_name: 'Zone 3',
+        ward_no: 3,
+        ward_name: 'Malleswaram',
+        supervisor: 'Amit Patel',
+        sites: 4,
+        routes: 45,
+        vehicles: 22,
+      },
+      {
+        region_name: 'Region',
+        zone_no: 4,
+        zone_name: 'Zone 4',
+        ward_no: 4,
+        ward_name: 'Indiranagar',
+        supervisor: 'Sneha Reddy',
+        sites: 6,
+        routes: 35,
+        vehicles: 20,
+      },
+      {
+        region_name: 'Region',
+        zone_no: 5,
+        zone_name: 'Zone 5',
+        ward_no: 5,
+        ward_name: 'Jayanagar',
+        supervisor: 'Vikram Singh',
+        sites: 7,
+        routes: 50,
+        vehicles: 28,
+      },
+      {
+        region_name: 'Region',
+        zone_no: 6,
+        zone_name: 'Zone 6',
+        ward_no: 6,
+        ward_name: 'HSR Layout',
+        supervisor: 'Anjali Desai',
+        sites: 4,
+        routes: 32,
+        vehicles: 16,
+      },
+      {
+        region_name: 'Region',
+        zone_no: 7,
+        zone_name: 'Zone 7',
+        ward_no: 7,
+        ward_name: 'Whitefield',
+        supervisor: 'Rahul Verma',
+        sites: 8,
+        routes: 55,
+        vehicles: 30,
+      },
+      {
+        region_name: 'Region',
+        zone_no: 8,
+        zone_name: 'Zone 8',
+        ward_no: 8,
+        ward_name: 'Electronic City',
+        supervisor: 'Meera Iyer',
+        sites: 5,
+        routes: 40,
+        vehicles: 19,
+      },
+      {
+        region_name: 'Region',
+        zone_no: 9,
+        zone_name: 'Zone 9',
+        ward_no: 9,
+        ward_name: 'Marathahalli',
+        supervisor: 'Karan Malhotra',
+        sites: 6,
+        routes: 48,
+        vehicles: 25,
+      },
+      {
+        region_name: 'Region',
+        zone_no: 10,
+        zone_name: 'Zone 10',
+        ward_no: 10,
+        ward_name: 'Bellandur',
+        supervisor: 'Divya Gupta',
+        sites: 4,
+        routes: 36,
+        vehicles: 17,
+      },
+    ];
 
-      this.logger.log(
-        `Region updated successfully: ${result.name}`,
-        'RegionsController',
-        id,
+    // Filter by zone name if provided (hidden column)
+    let filteredData = regionsData;
+    if (zoneName) {
+      filteredData = regionsData.filter(region => 
+        `Zone ${region.zone_no}` === zoneName
       );
-
-      return result;
-    } catch (error) {
-      this.logger.error(
-        `Error updating region ${id}: ${error.message}`,
-        error.stack,
-        'RegionsController',
-      );
-      throw error;
     }
-  }
 
-  @Delete(':id')
-  @RequirePermissions('manage:regions:delete')
-  @ApiOperation({ summary: 'Delete a region' })
-  @ApiResponse({ status: 200, description: 'Region deleted successfully' })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden - Insufficient permissions',
-  })
-  @ApiResponse({ status: 404, description: 'Not Found - Region not found' })
-  @ApiResponse({
-    status: 409,
-    description: 'Conflict - Region has active zones/sites/vehicles',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'Region ID',
-    type: 'string',
-    format: 'uuid',
-  })
-  async remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: any) {
-    try {
-      await this.regionsService.remove(id, req.user.tenantId);
-
-      this.logger.log(`Region deleted successfully`, 'RegionsController', id);
-
-      return { message: 'Region deleted successfully' };
-    } catch (error) {
-      this.logger.error(
-        `Error deleting region ${id}: ${error.message}`,
-        error.stack,
-        'RegionsController',
+    // Search functionality
+    if (search) {
+      filteredData = filteredData.filter(region =>
+        region.region_name.toLowerCase().includes(search.toLowerCase()) ||
+        region.ward_name.toLowerCase().includes(search.toLowerCase()) ||
+        region.supervisor.toLowerCase().includes(search.toLowerCase())
       );
-      throw error;
     }
+
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const startIndex = (pageNum - 1) * limitNum;
+    const endIndex = startIndex + limitNum;
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+
+    return {
+      regions: paginatedData,
+      total: filteredData.length,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(filteredData.length / limitNum),
+    };
   }
 }

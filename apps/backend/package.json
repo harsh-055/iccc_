@@ -10,6 +10,10 @@
     "build": "NODE_OPTIONS=\"--max-old-space-size=2048\" nest build && ls -la dist/",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "migrate": "tsx database/migrate.ts",
+    "seed:permissions": "tsx src/permissions/scripts/seed-all-permissions.ts",
+    "seed:permissions:simple": "tsx src/permissions/scripts/seed-permissions-simple.ts",
+    "assign:role-permissions": "tsx src/permissions/scripts/assign-role-permissions.ts",
+    "clean:permissions": "tsx src/permissions/scripts/clean-permissions.ts",
     
     "realtime:enable": "tsx scripts/manage-realtime.ts enable",
     "realtime:disable": "tsx scripts/manage-realtime.ts disable",

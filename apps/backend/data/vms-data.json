@@ -1,0 +1,733 @@
+{
+  "dashboardStats": {
+    "totalVisitors": 47,
+    "currentVisitorsInside": 8,
+    "activeEntryGates": 3,
+    "deniedEntries": 2,
+    "repeatVisitorCount": 15,
+    "averageTime": "22 minutes"
+  },
+  "peakVisitorHours": [
+    {
+      "time": "9:00 AM",
+      "visitors": 38
+    },
+    {
+      "time": "10:00 AM",
+      "visitors": 42
+    },
+    {
+      "time": "11:00 AM",
+      "visitors": 48
+    },
+    {
+      "time": "12:00 PM",
+      "visitors": 55
+    },
+    {
+      "time": "1:00 PM",
+      "visitors": 62
+    },
+    {
+      "time": "2:00 PM",
+      "visitors": 58
+    },
+    {
+      "time": "3:00 PM",
+      "visitors": 53
+    },
+    {
+      "time": "4:00 PM",
+      "visitors": 49
+    },
+    {
+      "time": "5:00 PM",
+      "visitors": 45
+    },
+    {
+      "time": "6:00 PM",
+      "visitors": 41
+    },
+    {
+      "time": "7:00 PM",
+      "visitors": 36
+    },
+    {
+      "time": "8:00 PM",
+      "visitors": 32
+    }
+  ],
+  "recentAlerts": [
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    },
+    {
+      "alertName": "Alert Name",
+      "location": "Smart City Office",
+      "severity": "Critical",
+      "time": "4 minutes ago"
+    }
+  ],
+  "liveMonitoringFeeds": [
+    {
+      "id": "CAM001",
+      "name": "Entry Gate 1",
+      "location": "Smart City Office - Main Entrance",
+      "videoUrl": "https://www.youtube.com/embed/ByED80IKdIU?autoplay=1&mute=1",
+      "thumbnailUrl": "https://picsum.photos/320/240?random=1",
+      "isActive": true,
+      "cameraType": "Entry Gate"
+    },
+    {
+      "id": "CAM002",
+      "name": "Reception Area",
+      "location": "Smart City Office - Reception",
+      "videoUrl": "https://www.youtube.com/embed/1-iS7LArMPA?autoplay=1&mute=1",
+      "thumbnailUrl": "https://picsum.photos/320/240?random=2",
+      "isActive": true,
+      "cameraType": "Indoor"
+    },
+    {
+      "id": "CAM003",
+      "name": "Parking Area",
+      "location": "Smart City Office - Parking",
+      "videoUrl": "https://www.youtube.com/embed/eJ7ZkQ5TC08?autoplay=1&mute=1",
+      "thumbnailUrl": "https://picsum.photos/320/240?random=3",
+      "isActive": true,
+      "cameraType": "Outdoor"
+    },
+    {
+      "id": "CAM004",
+      "name": "Corridor View",
+      "location": "Smart City Office - Main Corridor",
+      "videoUrl": "https://www.youtube.com/embed/wCcMcaiRbhM?autoplay=1&mute=1",
+      "thumbnailUrl": "https://picsum.photos/320/240?random=4",
+      "isActive": true,
+      "cameraType": "Indoor"
+    },
+    {
+      "id": "CAM005",
+      "name": "Exit Gate",
+      "location": "Smart City Office - Exit",
+      "videoUrl": "https://www.youtube.com/embed/V1Ay8hOLVU0?autoplay=1&mute=1",
+      "thumbnailUrl": "https://picsum.photos/320/240?random=5",
+      "isActive": true,
+      "cameraType": "Entry Gate"
+    },
+    {
+      "id": "CAM006",
+      "name": "Conference Room",
+      "location": "Smart City Office - Meeting Room A",
+      "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1",
+      "thumbnailUrl": "https://picsum.photos/320/240?random=6",
+      "isActive": true,
+      "cameraType": "Indoor"
+    },
+    {
+      "id": "CAM007",
+      "name": "Garden Area",
+      "location": "Smart City Office - Garden",
+      "videoUrl": "https://www.youtube.com/embed/5_XSYlAfJZM?autoplay=1&mute=1",
+      "thumbnailUrl": "https://picsum.photos/320/240?random=7",
+      "isActive": true,
+      "cameraType": "Outdoor"
+    },
+    {
+      "id": "CAM008",
+      "name": "Server Room",
+      "location": "Smart City Office - IT Room",
+      "videoUrl": "https://www.youtube.com/embed/ChOhcHD8fBA?autoplay=1&mute=1",
+      "thumbnailUrl": "https://picsum.photos/320/240?random=8",
+      "isActive": false,
+      "cameraType": "Security"
+    },
+    {
+      "id": "CAM009",
+      "name": "Cafeteria",
+      "location": "Smart City Office - Food Court",
+      "videoUrl": "https://www.youtube.com/embed/ddFvjfvPnqk?autoplay=1&mute=1",
+      "thumbnailUrl": "https://picsum.photos/320/240?random=9",
+      "isActive": true,
+      "cameraType": "Indoor"
+    },
+    {
+      "id": "CAM010",
+      "name": "Terrace View",
+      "location": "Smart City Office - Rooftop",
+      "videoUrl": "https://www.youtube.com/embed/jNQXAC9IVRw?autoplay=1&mute=1",
+      "thumbnailUrl": "https://picsum.photos/320/240?random=10",
+      "isActive": true,
+      "cameraType": "Outdoor"
+    },
+    {
+      "id": "CAM011",
+      "name": "Emergency Exit",
+      "location": "Smart City Office - Emergency Gate",
+      "videoUrl": "https://www.youtube.com/embed/HDntl7yzzVI?autoplay=1&mute=1",
+      "thumbnailUrl": "https://picsum.photos/320/240?random=11",
+      "isActive": true,
+      "cameraType": "Security"
+    },
+    {
+      "id": "CAM012",
+      "name": "Lobby Area",
+      "location": "Smart City Office - Main Lobby",
+      "videoUrl": "https://www.youtube.com/embed/qC0vDKVPCrw?autoplay=1&mute=1",
+      "thumbnailUrl": "https://picsum.photos/320/240?random=12",
+      "isActive": true,
+      "cameraType": "Indoor"
+    }
+  ],
+  "visitorLogs": [
+    {
+      "visitorName": "Rajesh Kumar",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 1",
+      "date": "Today",
+      "time": "2 PM - 3 PM",
+      "status": "Inside",
+      "qrCode": "QRC008",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Priya Sharma",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 1",
+      "date": "Today",
+      "time": "1 PM - 2 PM",
+      "status": "Flagged",
+      "qrCode": "QRC009",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Amit Singh",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 2",
+      "date": "Today",
+      "time": "12 PM - 1 PM",
+      "status": "Checked Out",
+      "qrCode": "QRC010",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Sunita Gupta",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 1",
+      "date": "Today",
+      "time": "11 AM - 12 PM",
+      "status": "Checked Out",
+      "qrCode": "QRC011",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Vikram Patel",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 3",
+      "date": "Today",
+      "time": "10 AM - 11 AM",
+      "status": "Checked Out",
+      "qrCode": "QRC012",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Neha Agarwal",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 1",
+      "date": "Today",
+      "time": "9 AM - 10 AM",
+      "status": "Checked Out",
+      "qrCode": "QRC013",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Rohit Verma",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 2",
+      "date": "Today",
+      "time": "3 PM - 4 PM",
+      "status": "Checked Out",
+      "qrCode": "QRC014",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Kavita Joshi",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 1",
+      "date": "Today",
+      "time": "2 PM - 3 PM",
+      "status": "Checked Out",
+      "qrCode": "QRC015",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Deepak Mehta",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 1",
+      "date": "Today",
+      "time": "1 PM - 2 PM",
+      "status": "Flagged",
+      "qrCode": "QRC016",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Anjali Reddy",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 3",
+      "date": "Today",
+      "time": "4 PM - 5 PM",
+      "status": "Checked Out",
+      "qrCode": "QRC017",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Manoj Yadav",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 2",
+      "date": "Today",
+      "time": "11 AM - 12 PM",
+      "status": "Checked Out",
+      "qrCode": "QRC018",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Sonia Kapoor",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 1",
+      "date": "Today",
+      "time": "10 AM - 11 AM",
+      "status": "Checked Out",
+      "qrCode": "QRC019",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Arjun Nair",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 1",
+      "date": "Today",
+      "time": "3 PM - 4 PM",
+      "status": "Flagged",
+      "qrCode": "QRC020",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Pooja Bansal",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 2",
+      "date": "Today",
+      "time": "2 PM - 3 PM",
+      "status": "Inside",
+      "qrCode": "QRC021",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Ravi Choudhary",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 1",
+      "date": "Today",
+      "time": "1 PM - 2 PM",
+      "status": "Checked Out",
+      "qrCode": "QRC022",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Divya Mishra",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 3",
+      "date": "Today",
+      "time": "4 PM - 5 PM",
+      "status": "Inside",
+      "qrCode": "QRC023",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Kiran Rao",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 1",
+      "date": "Today",
+      "time": "9 AM - 10 AM",
+      "status": "Inside",
+      "qrCode": "QRC024",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Suresh Iyer",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 2",
+      "date": "Today",
+      "time": "3 PM - 4 PM",
+      "status": "Checked Out",
+      "qrCode": "QRC025",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Meera Shah",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 1",
+      "date": "Today",
+      "time": "2 PM - 3 PM",
+      "status": "Inside",
+      "qrCode": "QRC026",
+      "actions": "View Feed"
+    },
+    {
+      "visitorName": "Ashok Sinha",
+      "purpose": "Water Board",
+      "entryPoint": "Entry Gate 3",
+      "date": "Today",
+      "time": "1 PM - 2 PM",
+      "status": "Inside",
+      "qrCode": "QRC027",
+      "actions": "View Feed"
+    }
+  ],
+  "entryRequests": [
+    {
+      "id": "REQ001",
+      "visitorName": "Rahul Gupta",
+      "location": "Smart City Office",
+      "status": "Pending",
+      "date": "March 25, 2025",
+      "time": "3:00 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Aadhar Card",
+      "actions": [
+        "Approve",
+        "Reject"
+      ]
+    },
+    {
+      "id": "REQ002",
+      "visitorName": "Sneha Agrawal",
+      "location": "Smart City Office",
+      "status": "Pending",
+      "date": "March 25, 2025",
+      "time": "2:30 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Aadhar Card",
+      "actions": [
+        "Approve",
+        "Reject"
+      ]
+    },
+    {
+      "id": "REQ003",
+      "visitorName": "Arpit Sharma",
+      "location": "Smart City Office",
+      "status": "Rejected",
+      "date": "March 25, 2025",
+      "time": "2:00 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Aadhar Card",
+      "actions": [
+        "View Details"
+      ]
+    },
+    {
+      "id": "REQ004",
+      "visitorName": "Manisha Patel",
+      "location": "Smart City Office",
+      "status": "Pending",
+      "date": "March 25, 2025",
+      "time": "4:00 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Pan Card",
+      "actions": [
+        "Approve",
+        "Reject"
+      ]
+    },
+    {
+      "id": "REQ005",
+      "visitorName": "Vikas Jain",
+      "location": "Smart City Office",
+      "status": "Pending",
+      "date": "March 25, 2025",
+      "time": "1:30 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Driving License",
+      "actions": [
+        "Approve",
+        "Reject"
+      ]
+    },
+    {
+      "id": "REQ006",
+      "visitorName": "Lakshmi Nair",
+      "location": "Smart City Office",
+      "status": "Pending",
+      "date": "March 25, 2025",
+      "time": "5:00 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Aadhar Card",
+      "actions": [
+        "Approve",
+        "Reject"
+      ]
+    },
+    {
+      "id": "REQ007",
+      "visitorName": "Sandeep Kumar",
+      "location": "Smart City Office",
+      "status": "Pending",
+      "date": "March 25, 2025",
+      "time": "11:00 AM",
+      "purpose": "Meeting with Manager",
+      "idType": "Voter ID",
+      "actions": [
+        "Approve",
+        "Reject"
+      ]
+    },
+    {
+      "id": "REQ008",
+      "visitorName": "Rekha Singh",
+      "location": "Smart City Office",
+      "status": "Pending",
+      "date": "March 25, 2025",
+      "time": "10:30 AM",
+      "purpose": "Meeting with Manager",
+      "idType": "Aadhar Card",
+      "actions": [
+        "Approve",
+        "Reject"
+      ]
+    },
+    {
+      "id": "REQ009",
+      "visitorName": "Anil Chopra",
+      "location": "Smart City Office",
+      "status": "Approved",
+      "date": "March 25, 2025",
+      "time": "9:00 AM",
+      "purpose": "Meeting with Manager",
+      "idType": "Pan Card",
+      "actions": [
+        "View Details"
+      ]
+    },
+    {
+      "id": "REQ010",
+      "visitorName": "Geeta Verma",
+      "location": "Smart City Office",
+      "status": "Approved",
+      "date": "March 25, 2025",
+      "time": "9:30 AM",
+      "purpose": "Meeting with Manager",
+      "idType": "Aadhar Card",
+      "actions": [
+        "View Details"
+      ]
+    },
+    {
+      "id": "REQ011",
+      "visitorName": "Sunil Yadav",
+      "location": "Smart City Office",
+      "status": "Approved",
+      "date": "March 24, 2025",
+      "time": "4:30 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Driving License",
+      "actions": [
+        "View Details"
+      ]
+    },
+    {
+      "id": "REQ012",
+      "visitorName": "Nita Bhargava",
+      "location": "Smart City Office",
+      "status": "Rejected",
+      "date": "March 24, 2025",
+      "time": "3:15 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Voter ID",
+      "actions": [
+        "View Details"
+      ]
+    },
+    {
+      "id": "REQ013",
+      "visitorName": "Prakash Reddy",
+      "location": "Smart City Office",
+      "status": "Approved",
+      "date": "March 24, 2025",
+      "time": "2:45 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Aadhar Card",
+      "actions": [
+        "View Details"
+      ]
+    },
+    {
+      "id": "REQ014",
+      "visitorName": "Shweta Malhotra",
+      "location": "Smart City Office",
+      "status": "Approved",
+      "date": "March 24, 2025",
+      "time": "1:00 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Pan Card",
+      "actions": [
+        "View Details"
+      ]
+    },
+    {
+      "id": "REQ015",
+      "visitorName": "Harish Bhatia",
+      "location": "Smart City Office",
+      "status": "Approved",
+      "date": "March 24, 2025",
+      "time": "12:30 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Aadhar Card",
+      "actions": [
+        "View Details"
+      ]
+    },
+    {
+      "id": "REQ016",
+      "visitorName": "Kavya Menon",
+      "location": "Smart City Office",
+      "status": "Approved",
+      "date": "March 24, 2025",
+      "time": "11:15 AM",
+      "purpose": "Meeting with Manager",
+      "idType": "Driving License",
+      "actions": [
+        "View Details"
+      ]
+    },
+    {
+      "id": "REQ017",
+      "visitorName": "Rajat Saxena",
+      "location": "Smart City Office",
+      "status": "Approved",
+      "date": "March 24, 2025",
+      "time": "10:00 AM",
+      "purpose": "Meeting with Manager",
+      "idType": "Voter ID",
+      "actions": [
+        "View Details"
+      ]
+    },
+    {
+      "id": "REQ018",
+      "visitorName": "Preeti Khandelwal",
+      "location": "Smart City Office",
+      "status": "Approved",
+      "date": "March 23, 2025",
+      "time": "4:00 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Aadhar Card",
+      "actions": [
+        "View Details"
+      ]
+    },
+    {
+      "id": "REQ019",
+      "visitorName": "Ajay Bansal",
+      "location": "Smart City Office",
+      "status": "Approved",
+      "date": "March 23, 2025",
+      "time": "3:30 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Pan Card",
+      "actions": [
+        "View Details"
+      ]
+    },
+    {
+      "id": "REQ020",
+      "visitorName": "Shalini Tiwari",
+      "location": "Smart City Office",
+      "status": "Approved",
+      "date": "March 23, 2025",
+      "time": "2:15 PM",
+      "purpose": "Meeting with Manager",
+      "idType": "Aadhar Card",
+      "actions": [
+        "View Details"
+      ]
+    }
+  ]
+}

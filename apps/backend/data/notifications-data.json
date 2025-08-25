@@ -1,0 +1,366 @@
+{
+  "groupTypes": [
+    {
+      "id": "b30e2575-9053-4368-b728-576b5aeddc49",
+      "name": "whatsapp",
+      "display_name": "WhatsApp",
+      "description": "Send notifications to WhatsApp groups",
+      "is_active": true,
+      "created_at": "2025-03-20T10:00:00.000Z",
+      "updated_at": "2025-03-20T10:00:00.000Z"
+    },
+    {
+      "id": "1735833c-6c31-4418-92bd-345c1abaae27",
+      "name": "sms",
+      "display_name": "SMS",
+      "description": "Send notifications via SMS",
+      "is_active": true,
+      "created_at": "2025-03-20T10:00:00.000Z",
+      "updated_at": "2025-03-20T10:00:00.000Z"
+    },
+    {
+      "id": "bb41e20e-6344-45b7-b928-53a8eac93389",
+      "name": "email",
+      "display_name": "Email",
+      "description": "Send notifications via Email",
+      "is_active": true,
+      "created_at": "2025-03-20T10:00:00.000Z",
+      "updated_at": "2025-03-20T10:00:00.000Z"
+    }
+  ],
+  "groups": [
+    {
+      "id": "02f0c7c8-69dc-4a27-aaf1-d561cb28f8fd",
+      "name": "Emergency Contacts",
+      "description": "Emergency contacts for critical incidents",
+      "group_type_id": "b30e2575-9053-4368-b728-576b5aeddc49",
+      "tenant_id": "tenant001",
+      "created_by": "user001",
+      "is_active": true,
+      "created_at": "2025-03-24T12:00:00.000Z",
+      "updated_at": "2025-03-24T12:00:00.000Z",
+      "group_type": {
+        "id": "b30e2575-9053-4368-b728-576b5aeddc49",
+        "name": "whatsapp",
+        "display_name": "WhatsApp",
+        "description": "Send notifications to WhatsApp groups",
+        "is_active": true,
+        "created_at": "2025-03-20T10:00:00.000Z",
+        "updated_at": "2025-03-20T10:00:00.000Z"
+      },
+      "tenant_name": "Smart City Office",
+      "created_by_name": "Shuchi Sirpal",
+      "recipient_count": 3
+    },
+    {
+      "id": "efad89d6-8633-45de-99e5-ba0cd6ac328e",
+      "name": "Support Team",
+      "description": "Support team for incident notifications",
+      "group_type_id": "b30e2575-9053-4368-b728-576b5aeddc49",
+      "created_by": "user002",
+      "tenant_id": "tenant001",
+      "is_active": true,
+      "created_at": "2025-03-24T11:30:00.000Z",
+      "updated_at": "2025-03-24T11:30:00.000Z",
+      "group_type": {
+        "id": "b30e2575-9053-4368-b728-576b5aeddc49",
+        "name": "whatsapp",
+        "display_name": "WhatsApp",
+        "description": "Send notifications to WhatsApp groups",
+        "is_active": true,
+        "created_at": "2025-03-20T10:00:00.000Z",
+        "updated_at": "2025-03-20T10:00:00.000Z"
+      },
+      "tenant_name": "Smart City Office",
+      "created_by_name": "Rajesh Kumar",
+      "recipient_count": 3
+    },
+    {
+      "id": "ff5bb4f6-36bc-4304-b0f3-0572a4736180",
+      "name": "SMS Alert Group",
+      "description": "SMS notifications for security alerts",
+      "group_type_id": "1735833c-6c31-4418-92bd-345c1abaae27",
+      "tenant_id": "tenant001",
+      "created_by": "user003",
+      "is_active": true,
+      "created_at": "2025-03-24T10:15:00.000Z",
+      "updated_at": "2025-03-24T10:15:00.000Z",
+      "group_type": {
+        "id": "1735833c-6c31-4418-92bd-345c1abaae27",
+        "name": "sms",
+        "display_name": "SMS",
+        "description": "Send notifications via SMS",
+        "is_active": true,
+        "created_at": "2025-03-20T10:00:00.000Z",
+        "updated_at": "2025-03-20T10:00:00.000Z"
+      },
+      "tenant_name": "Smart City Office",
+      "created_by_name": "Priya Sharma",
+      "recipient_count": 2
+    },
+    {
+      "id": "01235844-7b51-4a4c-91bc-81bfa6956622",
+      "name": "SMS Notification Group",
+      "description": "General SMS notifications for staff",
+      "group_type_id": "1735833c-6c31-4418-92bd-345c1abaae27",
+      "tenant_id": "tenant001",
+      "created_by": "user004",
+      "is_active": true,
+      "created_at": "2025-03-24T09:45:00.000Z",
+      "updated_at": "2025-03-24T09:45:00.000Z",
+      "group_type": {
+        "id": "1735833c-6c31-4418-92bd-345c1abaae27",
+        "name": "sms",
+        "display_name": "SMS",
+        "description": "Send notifications via SMS",
+        "is_active": true,
+        "created_at": "2025-03-20T10:00:00.000Z",
+        "updated_at": "2025-03-20T10:00:00.000Z"
+      },
+      "tenant_name": "Smart City Office",
+      "created_by_name": "Amit Singh",
+      "recipient_count": 2
+    },
+    {
+      "id": "3f377d74-951b-4994-9455-c66fd6d7684a",
+      "name": "Email Marketing",
+      "description": "Email notifications for marketing and updates",
+      "group_type_id": "bb41e20e-6344-45b7-b928-53a8eac93389",
+      "tenant_id": "tenant001",
+      "created_by": "user005",
+      "is_active": true,
+      "created_at": "2025-03-23T16:20:00.000Z",
+      "updated_at": "2025-03-23T16:20:00.000Z",
+      "group_type": {
+        "id": "bb41e20e-6344-45b7-b928-53a8eac93389",
+        "name": "email",
+        "display_name": "Email",
+        "description": "Send notifications via Email",
+        "is_active": true,
+        "created_at": "2025-03-20T10:00:00.000Z",
+        "updated_at": "2025-03-20T10:00:00.000Z"
+      },
+      "tenant_name": "Smart City Office",
+      "created_by_name": "Sunita Gupta",
+      "recipient_count": 2
+    }
+  ],
+  "recipients": [
+    {
+      "id": "a47a5a23-bb5b-4119-8faa-a21ba676626d",
+      "user_id": "user101",
+      "group_id": "02f0c7c8-69dc-4a27-aaf1-d561cb28f8fd",
+      "contact_value": "+91 9560807792",
+      "contact_type": "phone",
+      "is_active": true,
+      "added_at": "2025-03-24T12:30:00.000Z",
+      "added_by": "user001",
+      "user_name": "Rajesh Kumar",
+      "user_email": "rajesh.kumar@smartcity.gov.in",
+      "added_by_name": "Shuchi Sirpal"
+    },
+    {
+      "id": "80f3a541-911a-4312-90f3-6dfc1af343b2",
+      "user_id": "user102",
+      "group_id": "02f0c7c8-69dc-4a27-aaf1-d561cb28f8fd",
+      "contact_value": "+91 9876543210",
+      "contact_type": "phone",
+      "is_active": true,
+      "added_at": "2025-03-24T12:31:00.000Z",
+      "added_by": "user001",
+      "user_name": "Priya Sharma",
+      "user_email": "priya.sharma@smartcity.gov.in",
+      "added_by_name": "Shuchi Sirpal"
+    },
+    {
+      "id": "a58bd259-2e74-4205-822e-b209b980e748",
+      "user_id": "user103",
+      "group_id": "02f0c7c8-69dc-4a27-aaf1-d561cb28f8fd",
+      "contact_value": "+91 8765432109",
+      "contact_type": "phone",
+      "is_active": true,
+      "added_at": "2025-03-24T12:32:00.000Z",
+      "added_by": "user001",
+      "user_name": "Amit Singh",
+      "user_email": "amit.singh@smartcity.gov.in",
+      "added_by_name": "Shuchi Sirpal"
+    },
+    {
+      "id": "12cb39b2-652a-428c-8fcf-eeac7efb884c",
+      "user_id": "user104",
+      "group_id": "efad89d6-8633-45de-99e5-ba0cd6ac328e",
+      "contact_value": "+91 1234567890",
+      "contact_type": "phone",
+      "is_active": true,
+      "added_at": "2025-03-24T11:45:00.000Z",
+      "added_by": "user002",
+      "user_name": "Vikram Patel",
+      "user_email": "vikram.patel@smartcity.gov.in",
+      "added_by_name": "Rajesh Kumar"
+    },
+    {
+      "id": "4fb06209-4b5a-4cd4-a829-98c712bb4b68",
+      "user_id": "user105",
+      "group_id": "efad89d6-8633-45de-99e5-ba0cd6ac328e",
+      "contact_value": "+91 0987654321",
+      "contact_type": "phone",
+      "is_active": true,
+      "added_at": "2025-03-24T11:46:00.000Z",
+      "added_by": "user002",
+      "user_name": "Neha Agarwal",
+      "user_email": "neha.agarwal@smartcity.gov.in",
+      "added_by_name": "Rajesh Kumar"
+    },
+    {
+      "id": "09ebc600-5e71-41f8-81a1-63ca39ba4063",
+      "user_id": "user106",
+      "group_id": "efad89d6-8633-45de-99e5-ba0cd6ac328e",
+      "contact_value": "+91 1122334455",
+      "contact_type": "phone",
+      "is_active": true,
+      "added_at": "2025-03-24T11:47:00.000Z",
+      "added_by": "user002",
+      "user_name": "Rohit Verma",
+      "user_email": "rohit.verma@smartcity.gov.in",
+      "added_by_name": "Rajesh Kumar"
+    },
+    {
+      "id": "b5852538-d24f-4c47-88bc-bd837025bddf",
+      "user_id": "user107",
+      "group_id": "ff5bb4f6-36bc-4304-b0f3-0572a4736180",
+      "contact_value": "+91 9988776655",
+      "contact_type": "phone",
+      "is_active": true,
+      "added_at": "2025-03-24T10:30:00.000Z",
+      "added_by": "user003",
+      "user_name": "Kavita Joshi",
+      "user_email": "kavita.joshi@smartcity.gov.in",
+      "added_by_name": "Priya Sharma"
+    },
+    {
+      "id": "c177e253-77e7-4d54-a373-90bf9e0ac112",
+      "user_id": "user108",
+      "group_id": "ff5bb4f6-36bc-4304-b0f3-0572a4736180",
+      "contact_value": "+91 6677889900",
+      "contact_type": "phone",
+      "is_active": true,
+      "added_at": "2025-03-24T10:31:00.000Z",
+      "added_by": "user003",
+      "user_name": "Deepak Mehta",
+      "user_email": "deepak.mehta@smartcity.gov.in",
+      "added_by_name": "Priya Sharma"
+    },
+    {
+      "id": "e3ac4454-843d-4b54-becd-3f0f56cc300f",
+      "user_id": "user109",
+      "group_id": "01235844-7b51-4a4c-91bc-81bfa6956622",
+      "contact_value": "+91 6677889900",
+      "contact_type": "phone",
+      "is_active": true,
+      "added_at": "2025-03-24T09:50:00.000Z",
+      "added_by": "user004",
+      "user_name": "Anjali Reddy",
+      "user_email": "anjali.reddy@smartcity.gov.in",
+      "added_by_name": "Amit Singh"
+    },
+    {
+      "id": "ba22a519-a100-4adf-994d-a5fef60e3111",
+      "user_id": "user110",
+      "group_id": "01235844-7b51-4a4c-91bc-81bfa6956622",
+      "contact_value": "+91 1122334455",
+      "contact_type": "phone",
+      "is_active": true,
+      "added_at": "2025-03-24T09:51:00.000Z",
+      "added_by": "user004",
+      "user_name": "Manoj Yadav",
+      "user_email": "manoj.yadav@smartcity.gov.in",
+      "added_by_name": "Amit Singh"
+    },
+    {
+      "id": "17640c06-acc2-46e7-b1c4-d5c5e58c5e1c",
+      "user_id": "user111",
+      "group_id": "3f377d74-951b-4994-9455-c66fd6d7684a",
+      "contact_value": "john@example.com",
+      "contact_type": "email",
+      "is_active": true,
+      "added_at": "2025-03-23T16:30:00.000Z",
+      "added_by": "user005",
+      "user_name": "John Doe",
+      "user_email": "john@example.com",
+      "added_by_name": "Sunita Gupta"
+    },
+    {
+      "id": "1bbb0bf4-f890-4cbd-b69b-ce5d7564611d",
+      "user_id": "user112",
+      "group_id": "3f377d74-951b-4994-9455-c66fd6d7684a",
+      "contact_value": "jane@example.com",
+      "contact_type": "email",
+      "is_active": true,
+      "added_at": "2025-03-23T16:31:00.000Z",
+      "added_by": "user005",
+      "user_name": "Jane Smith",
+      "user_email": "jane@example.com",
+      "added_by_name": "Sunita Gupta"
+    }
+  ],
+  "availableContacts": [
+    {
+      "user_id": "user201",
+      "phone_number": "+91 9999999999",
+      "display_phone": "+91 9999999999",
+      "email": "contact1@example.com",
+      "user_name": "Available User 1",
+      "already_added": false
+    },
+    {
+      "user_id": "user202",
+      "phone_number": "+91 8888888888",
+      "display_phone": "+91 8888888888",
+      "email": "contact2@example.com",
+      "user_name": "Available User 2",
+      "already_added": false
+    },
+    {
+      "user_id": "user203",
+      "phone_number": "+91 7777777777",
+      "display_phone": "+91 7777777777",
+      "email": "contact3@example.com",
+      "user_name": "Available User 3",
+      "already_added": false
+    },
+    {
+      "user_id": "user204",
+      "phone_number": "+91 6666666666",
+      "display_phone": "+91 6666666666",
+      "email": "admin@example.com",
+      "user_name": "Admin User",
+      "already_added": false
+    },
+    {
+      "user_id": "user205",
+      "phone_number": "+91 5555555555",
+      "display_phone": "+91 5555555555",
+      "email": "support@example.com",
+      "user_name": "Support User",
+      "already_added": false
+    },
+    {
+      "user_id": "user206",
+      "email": "marketing@example.com",
+      "user_name": "Marketing Team",
+      "already_added": false
+    },
+    {
+      "user_id": "user207",
+      "email": "sales@example.com",
+      "user_name": "Sales Team",
+      "already_added": false
+    },
+    {
+      "user_id": "user208",
+      "email": "info@example.com",
+      "user_name": "Info Team",
+      "already_added": false
+    }
+  ]
+}

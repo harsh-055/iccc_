@@ -26,8 +26,8 @@ export class CreateUserDto {
     description: 'User last name',
   })
   @IsString()
-  @IsNotEmpty()
-  lastName: string;
+  @IsOptional()
+  lastName?: string;
 
   @ApiProperty({
     example: 'john.doe@example.com',
@@ -118,8 +118,8 @@ export class CreateUserDto {
 
   @ApiProperty({
     description:
-      'Parent username (Legacy method - not recommended). Use this OR parentId, not both.',
-    example: 'john_doe',
+      'Parent user ID (UUID) to assign to this user. Use this OR parentId, not both.',
+    example: '550e8400-e29b-41d4-a716-446655440001',
     required: false,
   })
   @IsOptional()
@@ -149,14 +149,14 @@ export class CreateUserDto {
   @IsUUID('4')
   tenantId?: string;
 
-  @ApiProperty({
-    description: 'Whether MFA is enabled for this user',
-    default: false,
-    required: false,
-  })
-  @IsBoolean()
-  @IsOptional()
-  isMfaEnabled?: boolean;
+  // @ApiProperty({
+  //   description: 'Whether MFA is enabled for this user',
+  //   default: false,
+  //   required: false,
+  // })
+  // @IsBoolean()
+  // @IsOptional()
+  // isMfaEnabled?: boolean;
 
   // Custom Role Assignment - Choose ONE approach
   @ApiProperty({

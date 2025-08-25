@@ -15,14 +15,25 @@ import { DeviceStatus } from './create-device.dto';
 export class UpdateDeviceDto {
   @ApiProperty({
     description: 'Device name',
-    example: 'Smart Bin Sensor 001',
+    example: 'Smart Bin Sensor',
     maxLength: 255,
     required: false,
   })
   @IsOptional()
   @IsString()
   @MaxLength(255)
-  name?: string;
+  deviceName?: string;
+
+  @ApiProperty({
+    description: 'Device ID',
+    example: '#DID1234',
+    maxLength: 100,
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  deviceId?: string;
 
   @ApiProperty({
     description: 'Device type ID',
@@ -34,46 +45,13 @@ export class UpdateDeviceDto {
   deviceTypeId?: string;
 
   @ApiProperty({
-    description: 'Manufacturer ID',
+    description: 'Node ID',
     example: 'uuid-string',
     required: false,
   })
   @IsOptional()
   @IsUUID()
-  manufacturerId?: string;
-
-  @ApiProperty({
-    description: 'Device serial number',
-    example: 'SN123456789',
-    maxLength: 100,
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  serialNumber?: string;
-
-  @ApiProperty({
-    description: 'Device model',
-    example: 'IoT-Bin-Sensor-v2.0',
-    maxLength: 100,
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  model?: string;
-
-  @ApiProperty({
-    description: 'Device firmware version',
-    example: 'v1.2.3',
-    maxLength: 50,
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  firmwareVersion?: string;
+  nodeId?: string;
 
   @ApiProperty({
     description: 'Device status',
@@ -86,68 +64,138 @@ export class UpdateDeviceDto {
   status?: DeviceStatus;
 
   @ApiProperty({
-    description: 'Installation date',
-    example: '2024-01-15',
-    required: false,
-  })
-  @IsOptional()
-  @IsDateString()
-  installationDate?: string;
-
-  @ApiProperty({
-    description: 'Last maintenance date',
-    example: '2024-01-15',
-    required: false,
-  })
-  @IsOptional()
-  @IsDateString()
-  lastMaintenanceDate?: string;
-
-  @ApiProperty({
-    description: 'Battery level percentage',
-    example: 85,
-    minimum: 0,
-    maximum: 100,
-    required: false,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  batteryLevel?: number;
-
-  @ApiProperty({
-    description: 'Signal strength percentage',
-    example: 90,
-    minimum: 0,
-    maximum: 100,
-    required: false,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  signalStrength?: number;
-
-  @ApiProperty({
-    description: 'Enable GPS tracking',
-    example: true,
-    required: false,
-  })
-  @IsOptional()
-  @IsBoolean()
-  enableGpsTracking?: boolean;
-
-  @ApiProperty({
-    description: 'Assigned site ID',
+    description: 'Zone ID',
     example: 'uuid-string',
     required: false,
   })
   @IsOptional()
   @IsUUID()
-  assignedSiteId?: string;
+  zoneId?: string;
+
+  @ApiProperty({
+    description: 'Ward ID',
+    example: 'uuid-string',
+    required: false,
+  })
+  @IsOptional()
+  @IsUUID()
+  wardId?: string;
+
+  @ApiProperty({
+    description: 'Site ID where device is installed',
+    example: 'uuid-string',
+    required: false,
+  })
+  @IsOptional()
+  @IsUUID()
+  siteId?: string;
+
+  @ApiProperty({
+    description: 'Device location',
+    example: 'Location 5',
+    maxLength: 255,
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  deviceLocation?: string;
+
+  @ApiProperty({
+    description: 'Manufacturer ID',
+    example: 'uuid-string',
+    required: false,
+  })
+  @IsOptional()
+  @IsUUID()
+  manufacturerId?: string;
+
+  @ApiProperty({
+    description: 'Installation date',
+    example: '2024-05-12',
+    required: false,
+  })
+  @IsOptional()
+  @IsDateString()
+  installedOn?: string;
+
+  @ApiProperty({
+    description: 'Warranty expiry date',
+    example: '2026-05-12',
+    required: false,
+  })
+  @IsOptional()
+  @IsDateString()
+  warrantyExpiryDate?: string;
+
+  @ApiProperty({
+    description: 'Health status',
+    example: 'Good',
+    enum: ['Good', 'Fair', 'Poor', 'Critical'],
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  healthStatus?: string;
+
+  @ApiProperty({
+    description: 'HTTP Port',
+    example: 8080,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  httpPort?: number;
+
+  @ApiProperty({
+    description: 'Base IP Address',
+    example: '198.168.1.1',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  baseIpAddress?: string;
+
+  @ApiProperty({
+    description: 'Start IP Address',
+    example: '198.168.1.1',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  startIpAddress?: string;
+
+  @ApiProperty({
+    description: 'End IP Address',
+    example: '198.168.1.254',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  endIpAddress?: string;
+
+  @ApiProperty({
+    description: 'Enable multicasting',
+    example: true,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  multicastingEnabled?: boolean;
+
+  @ApiProperty({
+    description: 'Image URL',
+    example: 'https://example.com/device-image.jpg',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
 
   @ApiProperty({
     description: 'Device location address',
-    example: 'Near Central Park, Main Street',
+    example: 'Smart City Office',
     required: false,
   })
   @IsOptional()
@@ -173,13 +221,4 @@ export class UpdateDeviceDto {
   @Type(() => Number)
   @IsNumber()
   longitude?: number;
-
-  @ApiProperty({
-    description: 'Device description',
-    example: 'Smart waste bin sensor with IoT capabilities',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  description?: string;
 }

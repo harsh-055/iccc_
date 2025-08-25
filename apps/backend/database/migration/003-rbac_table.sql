@@ -90,8 +90,10 @@ CREATE INDEX IF NOT EXISTS idx_user_permissions_user_id ON user_permissions(user
 CREATE INDEX IF NOT EXISTS idx_user_permissions_permission_id ON user_permissions(permission_id);
 
 -- Add trigger for updated_at on new tables
+DROP TRIGGER IF EXISTS update_permissions_updated_at ON permissions;
 CREATE TRIGGER update_permissions_updated_at BEFORE UPDATE ON permissions
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_roles_updated_at ON roles;
 CREATE TRIGGER update_roles_updated_at BEFORE UPDATE ON roles
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

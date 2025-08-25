@@ -123,9 +123,9 @@ export class VehiclesService {
           name, vehicle_type_id, license_plate_number, registration_number, fuel_type_id,
           insurance_expiry_date, last_maintenance_date, enable_gps_tracking, assigned_driver_id,
           assigned_region_id, assigned_zone_id, assigned_ward_id, status, image_url,
-          address, latitude, longitude, tenant_id, created_by
+          address, tenant_id, created_by
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
         RETURNING *`,
         [
           createVehicleDto.name,
@@ -143,8 +143,6 @@ export class VehiclesService {
           createVehicleDto.status,
           createVehicleDto.imageUrl,
           createVehicleDto.address,
-          createVehicleDto.latitude,
-          createVehicleDto.longitude,
           tenantId,
           userId,
         ],
@@ -526,18 +524,6 @@ export class VehiclesService {
         paramIndex++;
       }
 
-      if (updateVehicleDto.latitude !== undefined) {
-        updateFields.push(`latitude = $${paramIndex}`);
-        queryParams.push(updateVehicleDto.latitude);
-        paramIndex++;
-      }
-
-      if (updateVehicleDto.longitude !== undefined) {
-        updateFields.push(`longitude = $${paramIndex}`);
-        queryParams.push(updateVehicleDto.longitude);
-        paramIndex++;
-      }
-
       if (updateFields.length === 0) {
         return existingVehicle;
       }
@@ -606,6 +592,23 @@ export class VehiclesService {
       (today.getTime() - lastMaintenance.getTime()) / (1000 * 60 * 60 * 24),
     );
 
+    // Generate display ID (VD001, VD002, etc.)
+    const displayId = `VD${vehicle.id.slice(-3).toUpperCase()}`;
+
+    // Mock data for UI requirements (you can replace with real data later)
+    const lastTripOn = new Date(today.getTime() - Math.random() * 7 * 24 * 60 * 60 * 1000); // Random date within last 7 days
+    const currentLocation = vehicle.address || 'Collection Point Parking';
+    const fuelLevel = Math.floor(Math.random() * 100); // Random fuel level 0-100
+    const avgFuelConsumption = 15; // Mock average consumption
+
+    // Mock tyre conditions (you can replace with real data later)
+    const tyreConditions = [
+      { tyrePosition: 'Front Left', condition: 80, pressure: 32, unit: 'psi' },
+      { tyrePosition: 'Front Right', condition: 75, pressure: 31, unit: 'psi' },
+      { tyrePosition: 'Rear Left', condition: 85, pressure: 33, unit: 'psi' },
+      { tyrePosition: 'Rear Right', condition: 78, pressure: 30, unit: 'psi' },
+    ];
+
     return {
       id: vehicle.id,
       name: vehicle.name,
@@ -629,8 +632,6 @@ export class VehiclesService {
       status: vehicle.status,
       imageUrl: vehicle.image_url,
       address: vehicle.address,
-      latitude: vehicle.latitude,
-      longitude: vehicle.longitude,
       isActive: vehicle.is_active,
       tenantId: vehicle.tenant_id,
       createdBy: vehicle.created_by,
@@ -638,6 +639,13 @@ export class VehiclesService {
       updatedAt: vehicle.updated_at,
       daysUntilInsuranceExpiry,
       daysSinceLastMaintenance,
+      // Additional fields for UI
+      displayId,
+      lastTripOn,
+      currentLocation,
+      fuelLevel,
+      avgFuelConsumption,
+      tyreConditions,
     };
   }
 }

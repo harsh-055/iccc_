@@ -11,7 +11,7 @@ import {
   SiteResponseDto,
   PaginationDto,
   PaginatedResponseDto,
-  BaseFilterDto,
+  SiteFilterDto,
 } from '../dto';
 
 @Injectable()
@@ -98,9 +98,9 @@ export class SitesService {
         `INSERT INTO sites (
           name, site_type_id, status, region_id, zone_id, ward_id, 
           capacity_tons, current_load_tons, supervisor_id, address, 
-          latitude, longitude, image_url, tenant_id, created_by
+          image_url, tenant_id, created_by
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
         RETURNING *`,
         [
           createSiteDto.name,
@@ -113,8 +113,6 @@ export class SitesService {
           createSiteDto.currentLoadTons || 0,
           createSiteDto.supervisorId,
           createSiteDto.address,
-          createSiteDto.latitude,
-          createSiteDto.longitude,
           createSiteDto.imageUrl,
           tenantId,
           userId,
@@ -133,7 +131,7 @@ export class SitesService {
 
   async findAll(
     paginationDto: PaginationDto,
-    filterDto: BaseFilterDto,
+    filterDto: SiteFilterDto,
     tenantId: string,
   ): Promise<PaginatedResponseDto<SiteResponseDto>> {
     try {
@@ -206,6 +204,9 @@ export class SitesService {
       );
       const total = parseInt(countResult.rows[0].total);
 
+      const limitParamIndex = paramIndex;
+      const offsetParamIndex = paramIndex + 1;
+      
       // Get paginated data with joins
       const dataQuery = `
         SELECT 
@@ -224,10 +225,11 @@ export class SitesService {
         LEFT JOIN wards w ON s.ward_id = w.id
         LEFT JOIN users u ON s.supervisor_id = u.id
         LEFT JOIN (
-          SELECT site_id, COUNT(*) as count 
-          FROM devices 
-          WHERE is_active = true 
-          GROUP BY site_id
+          SELECT n.site_id, COUNT(*) as count 
+          FROM devices d
+          JOIN nodes n ON d.node_id = n.id
+          WHERE d.is_active = true 
+          GROUP BY n.site_id
         ) devices_count ON s.id = devices_count.site_id
         LEFT JOIN (
           SELECT site_id, COUNT(*) as count 
@@ -236,7 +238,7 @@ export class SitesService {
         ) workforce_count ON s.id = workforce_count.site_id
         ${whereClause}
         ORDER BY s.${sortBy} ${sortOrder.toUpperCase()}
-        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+        LIMIT $${limitParamIndex} OFFSET $${offsetParamIndex}
       `;
 
       const dataResult = await this.databaseService.query(dataQuery, [
@@ -281,10 +283,11 @@ export class SitesService {
         LEFT JOIN wards w ON s.ward_id = w.id
         LEFT JOIN users u ON s.supervisor_id = u.id
         LEFT JOIN (
-          SELECT site_id, COUNT(*) as count 
-          FROM devices 
-          WHERE is_active = true 
-          GROUP BY site_id
+          SELECT n.site_id, COUNT(*) as count 
+          FROM devices d
+          JOIN nodes n ON d.node_id = n.id
+          WHERE d.is_active = true 
+          GROUP BY n.site_id
         ) devices_count ON s.id = devices_count.site_id
         LEFT JOIN (
           SELECT site_id, COUNT(*) as count 
@@ -453,18 +456,6 @@ export class SitesService {
         paramIndex++;
       }
 
-      if (updateSiteDto.latitude !== undefined) {
-        updateFields.push(`latitude = $${paramIndex}`);
-        queryParams.push(updateSiteDto.latitude);
-        paramIndex++;
-      }
-
-      if (updateSiteDto.longitude !== undefined) {
-        updateFields.push(`longitude = $${paramIndex}`);
-        queryParams.push(updateSiteDto.longitude);
-        paramIndex++;
-      }
-
       if (updateSiteDto.imageUrl !== undefined) {
         updateFields.push(`image_url = $${paramIndex}`);
         queryParams.push(updateSiteDto.imageUrl);
@@ -555,8 +546,6 @@ export class SitesService {
       supervisorId: site.supervisor_id,
       supervisorName: site.supervisor_name,
       address: site.address,
-      latitude: site.latitude,
-      longitude: site.longitude,
       imageUrl: site.image_url,
       isActive: site.is_active,
       tenantId: site.tenant_id,

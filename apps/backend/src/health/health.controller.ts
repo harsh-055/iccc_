@@ -5,7 +5,7 @@ import {
   HealthCheck,
 } from '@nestjs/terminus';
 import { DatabaseService } from '../../database/database.service';
-// import { RedisHealthService } from './redis-health.service';
+import { RedisHealthService } from './redis-health.service';
 
 @Controller('health')
 export class HealthController {
@@ -13,7 +13,7 @@ export class HealthController {
     private health: HealthCheckService,
     private http: HttpHealthIndicator,
     private databaseService: DatabaseService,
-    // private redisHealthService: RedisHealthService,
+    private redisHealthService: RedisHealthService,
   ) {}
 
   @Get()
@@ -50,13 +50,13 @@ export class HealthController {
     }
   }
 
-  // @Get('redis')
-  // async checkRedisHealth() {
-  //   return this.redisHealthService.checkHealth();
-  // }
+  @Get('redis')
+  async checkRedisHealth() {
+    return this.redisHealthService.checkHealth();
+  }
 
-  // @Get('redis/detailed')
-  // async getRedisDetailedInfo() {
-  //   return this.redisHealthService.getDetailedInfo();
-  // }
+  @Get('redis/detailed')
+  async getRedisDetailedInfo() {
+    return this.redisHealthService.getDetailedInfo();
+  }
 }

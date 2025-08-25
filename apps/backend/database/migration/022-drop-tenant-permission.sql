@@ -12,7 +12,25 @@ DROP INDEX IF EXISTS idx_permissions_system;
 
 -- Update unique constraint on user_permissions to remove tenant_id
 ALTER TABLE user_permissions DROP CONSTRAINT IF EXISTS user_permissions_user_id_permission_id_tenant_id_key;
-ALTER TABLE user_permissions ADD CONSTRAINT user_permissions_user_id_permission_id_key UNIQUE (user_id, permission_id);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints 
+        WHERE constraint_name = 'user_permissions_user_id_permission_id_key' 
+        AND table_name = 'user_permissions'
+    ) THEN
+        ALTER TABLE user_permissions ADD CONSTRAINT user_permissions_user_id_permission_id_key UNIQUE (user_id, permission_id);
+    END IF;
+END $$;
 
 -- Update unique constraint on permissions to be resource + action only
-ALTER TABLE permissions ADD CONSTRAINT unique_permission_resource_action UNIQUE (resource, action);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints 
+        WHERE constraint_name = 'unique_permission_resource_action' 
+        AND table_name = 'permissions'
+    ) THEN
+        ALTER TABLE permissions ADD CONSTRAINT unique_permission_resource_action UNIQUE (resource, action);
+    END IF;
+END $$;

@@ -1,0 +1,1721 @@
+{
+  "states": [
+    {
+      "id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "name": "Delhi",
+      "code": "DL",
+      "coordinates": {
+        "latitude": 28.6139,
+        "longitude": 77.209
+      },
+      "bounds": {
+        "north": 28.8836,
+        "south": 28.4044,
+        "east": 77.3417,
+        "west": 76.8389
+      },
+      "districts": [
+        {
+          "id": "98f8a539-f23f-46f9-a205-f6619827dc70",
+          "name": "New Delhi",
+          "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+          "coordinates": {
+            "latitude": 28.6139,
+            "longitude": 77.209
+          },
+          "bounds": {
+            "north": 28.65,
+            "south": 28.5778,
+            "east": 77.25,
+            "west": 77.168
+          },
+          "population": 249998,
+          "area_km2": 42.7,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        },
+        {
+          "id": "a3e5bb87-9091-4955-bbf5-314eb7839de8",
+          "name": "Central Delhi",
+          "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+          "coordinates": {
+            "latitude": 28.66,
+            "longitude": 77.23
+          },
+          "bounds": {
+            "north": 28.69,
+            "south": 28.63,
+            "east": 77.26,
+            "west": 77.2
+          },
+          "population": 582320,
+          "area_km2": 25,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        },
+        {
+          "id": "d2e1c381-8347-4ddb-ba16-6f7a3165c166",
+          "name": "South Delhi",
+          "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+          "coordinates": {
+            "latitude": 28.5244,
+            "longitude": 77.2066
+          },
+          "bounds": {
+            "north": 28.58,
+            "south": 28.47,
+            "east": 77.28,
+            "west": 77.13
+          },
+          "population": 2258367,
+          "area_km2": 250,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        }
+      ],
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+      "name": "Haryana",
+      "code": "HR",
+      "coordinates": {
+        "latitude": 29.0588,
+        "longitude": 76.0856
+      },
+      "bounds": {
+        "north": 30.9,
+        "south": 27.6,
+        "east": 77.6,
+        "west": 74.5
+      },
+      "districts": [
+        {
+          "id": "37d40982-7335-45dc-b572-520ddefefb62",
+          "name": "Gurugram",
+          "state_id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+          "coordinates": {
+            "latitude": 28.4595,
+            "longitude": 77.0266
+          },
+          "bounds": {
+            "north": 28.55,
+            "south": 28.35,
+            "east": 77.15,
+            "west": 76.9
+          },
+          "population": 1514432,
+          "area_km2": 1253,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        },
+        {
+          "id": "948a9275-b9f9-449e-8b0c-b36156b54242",
+          "name": "Faridabad",
+          "state_id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+          "coordinates": {
+            "latitude": 28.4089,
+            "longitude": 77.3178
+          },
+          "bounds": {
+            "north": 28.5,
+            "south": 28.3,
+            "east": 77.4,
+            "west": 77.2
+          },
+          "population": 1809733,
+          "area_km2": 2151,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        }
+      ],
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+      "name": "Maharashtra",
+      "code": "MH",
+      "coordinates": {
+        "latitude": 19.7515,
+        "longitude": 75.7139
+      },
+      "bounds": {
+        "north": 22,
+        "south": 15.6,
+        "east": 80.9,
+        "west": 72.6
+      },
+      "districts": [
+        {
+          "id": "cfc00da5-239a-43b9-ae31-5df9ed4f0036",
+          "name": "Mumbai",
+          "state_id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+          "coordinates": {
+            "latitude": 19.076,
+            "longitude": 72.8777
+          },
+          "bounds": {
+            "north": 19.28,
+            "south": 18.89,
+            "east": 72.98,
+            "west": 72.77
+          },
+          "population": 12442373,
+          "area_km2": 603.4,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        },
+        {
+          "id": "b02369e2-9bcb-438d-a31f-d73d58b761dc",
+          "name": "Pune",
+          "state_id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+          "coordinates": {
+            "latitude": 18.5204,
+            "longitude": 73.8567
+          },
+          "bounds": {
+            "north": 18.65,
+            "south": 18.4,
+            "east": 73.98,
+            "west": 73.73
+          },
+          "population": 3124458,
+          "area_km2": 331.26,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        },
+        {
+          "id": "e06451d6-a123-4d76-a5b9-ff623737fd1d",
+          "name": "Nagpur",
+          "state_id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+          "coordinates": {
+            "latitude": 21.1458,
+            "longitude": 79.0882
+          },
+          "bounds": {
+            "north": 21.25,
+            "south": 21.05,
+            "east": 79.2,
+            "west": 78.98
+          },
+          "population": 2405421,
+          "area_km2": 217.56,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        }
+      ],
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "6b24002f-12a1-44e2-a1d6-01abf9c0e0b5",
+      "name": "Karnataka",
+      "code": "KA",
+      "coordinates": {
+        "latitude": 15.3173,
+        "longitude": 75.7139
+      },
+      "bounds": {
+        "north": 18.4,
+        "south": 11.3,
+        "east": 78.6,
+        "west": 74
+      },
+      "districts": [
+        {
+          "id": "1ea1da1f-59b1-4d04-86c6-c3950be6d321",
+          "name": "Bangalore Urban",
+          "state_id": "6b24002f-12a1-44e2-a1d6-01abf9c0e0b5",
+          "coordinates": {
+            "latitude": 12.9716,
+            "longitude": 77.5946
+          },
+          "bounds": {
+            "north": 13.14,
+            "south": 12.83,
+            "east": 77.78,
+            "west": 77.46
+          },
+          "population": 9621551,
+          "area_km2": 2196,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        },
+        {
+          "id": "e46b2e2c-2ba8-4c56-bc8e-46a38974f64a",
+          "name": "Mysore",
+          "state_id": "6b24002f-12a1-44e2-a1d6-01abf9c0e0b5",
+          "coordinates": {
+            "latitude": 12.2958,
+            "longitude": 76.6394
+          },
+          "bounds": {
+            "north": 12.4,
+            "south": 12.2,
+            "east": 76.75,
+            "west": 76.55
+          },
+          "population": 887446,
+          "area_km2": 128.42,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        }
+      ],
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "dea325a9-9f0e-4ad8-b978-7f0b46838fb1",
+      "name": "Tamil Nadu",
+      "code": "TN",
+      "coordinates": {
+        "latitude": 11.1271,
+        "longitude": 78.6569
+      },
+      "bounds": {
+        "north": 13.5,
+        "south": 8,
+        "east": 80.3,
+        "west": 76.2
+      },
+      "districts": [
+        {
+          "id": "2fb28b23-d808-4860-9670-09a5be3a9578",
+          "name": "Chennai",
+          "state_id": "dea325a9-9f0e-4ad8-b978-7f0b46838fb1",
+          "coordinates": {
+            "latitude": 13.0827,
+            "longitude": 80.2707
+          },
+          "bounds": {
+            "north": 13.26,
+            "south": 12.83,
+            "east": 80.32,
+            "west": 80.12
+          },
+          "population": 4646732,
+          "area_km2": 426,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        },
+        {
+          "id": "4d4e5abf-b77c-40f9-9faa-2caaa50e31e7",
+          "name": "Coimbatore",
+          "state_id": "dea325a9-9f0e-4ad8-b978-7f0b46838fb1",
+          "coordinates": {
+            "latitude": 11.0168,
+            "longitude": 76.9558
+          },
+          "bounds": {
+            "north": 11.1,
+            "south": 10.93,
+            "east": 77.05,
+            "west": 76.86
+          },
+          "population": 1061447,
+          "area_km2": 246.75,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        }
+      ],
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "f7fb02c6-dfda-4fe2-af3f-528dca70e1e4",
+      "name": "West Bengal",
+      "code": "WB",
+      "coordinates": {
+        "latitude": 22.9868,
+        "longitude": 87.855
+      },
+      "bounds": {
+        "north": 27.1,
+        "south": 21.5,
+        "east": 89.9,
+        "west": 85.8
+      },
+      "districts": [
+        {
+          "id": "ae2345f7-5ab5-4010-9f80-d872d95cbb1e",
+          "name": "Kolkata",
+          "state_id": "f7fb02c6-dfda-4fe2-af3f-528dca70e1e4",
+          "coordinates": {
+            "latitude": 22.5726,
+            "longitude": 88.3639
+          },
+          "bounds": {
+            "north": 22.7,
+            "south": 22.4,
+            "east": 88.5,
+            "west": 88.2
+          },
+          "population": 4496694,
+          "area_km2": 205,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        }
+      ],
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "b3b9d9a8-472f-4ece-8419-833eabb7730a",
+      "name": "Gujarat",
+      "code": "GJ",
+      "coordinates": {
+        "latitude": 22.2587,
+        "longitude": 71.1924
+      },
+      "bounds": {
+        "north": 24.7,
+        "south": 20.1,
+        "east": 74.5,
+        "west": 68.2
+      },
+      "districts": [
+        {
+          "id": "466a22a8-690d-4c03-946c-18c28d8174d5",
+          "name": "Ahmedabad",
+          "state_id": "b3b9d9a8-472f-4ece-8419-833eabb7730a",
+          "coordinates": {
+            "latitude": 23.0225,
+            "longitude": 72.5714
+          },
+          "bounds": {
+            "north": 23.15,
+            "south": 22.9,
+            "east": 72.7,
+            "west": 72.45
+          },
+          "population": 5633927,
+          "area_km2": 464,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        },
+        {
+          "id": "a1b5250a-c139-4918-823b-8472ba4c360b",
+          "name": "Surat",
+          "state_id": "b3b9d9a8-472f-4ece-8419-833eabb7730a",
+          "coordinates": {
+            "latitude": 21.1702,
+            "longitude": 72.8311
+          },
+          "bounds": {
+            "north": 21.28,
+            "south": 21.06,
+            "east": 72.95,
+            "west": 72.71
+          },
+          "population": 4467797,
+          "area_km2": 326.5,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        }
+      ],
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "954321e5-e60c-49c1-9ae4-750c5a7b42b6",
+      "name": "Rajasthan",
+      "code": "RJ",
+      "coordinates": {
+        "latitude": 27.0238,
+        "longitude": 74.2179
+      },
+      "bounds": {
+        "north": 30.2,
+        "south": 23,
+        "east": 78.2,
+        "west": 69.5
+      },
+      "districts": [
+        {
+          "id": "81e83a65-2262-424e-abec-dccfdd64e3e6",
+          "name": "Jaipur",
+          "state_id": "954321e5-e60c-49c1-9ae4-750c5a7b42b6",
+          "coordinates": {
+            "latitude": 26.9124,
+            "longitude": 75.7873
+          },
+          "bounds": {
+            "north": 27.05,
+            "south": 26.77,
+            "east": 75.95,
+            "west": 75.62
+          },
+          "population": 3073350,
+          "area_km2": 467,
+          "created_at": "2025-08-25T07:10:22.752Z",
+          "updated_at": "2025-08-25T07:10:22.752Z"
+        }
+      ],
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    }
+  ],
+  "districts": [],
+  "cityAssets": [
+    {
+      "id": "a4cbc93d-f022-4667-ab21-025506e33428",
+      "name": "Red Fort",
+      "type": "monuments",
+      "coordinates": {
+        "latitude": 28.6562,
+        "longitude": 77.241
+      },
+      "address": "Netaji Subhash Marg, Lal Qila, Chandni Chowk, New Delhi, Delhi 110006",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "is_active": true,
+      "metadata": {
+        "heritage_site": true,
+        "unesco_world_heritage": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "abdc6270-d0f6-4a68-8394-f36f9ecb718c",
+      "name": "India Gate",
+      "type": "monuments",
+      "coordinates": {
+        "latitude": 28.6129,
+        "longitude": 77.2295
+      },
+      "address": "Rajpath, India Gate, New Delhi, Delhi 110001",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "is_active": true,
+      "metadata": {
+        "heritage_site": true,
+        "war_memorial": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "ed1f4447-b87a-40bb-a008-8b2eb2f0ba5d",
+      "name": "Lotus Temple",
+      "type": "monuments",
+      "coordinates": {
+        "latitude": 28.5535,
+        "longitude": 77.2588
+      },
+      "address": "Lotus Temple Rd, Bahapur, Shambhu Dayal Bagh, Kalkaji, New Delhi, Delhi 110019",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "is_active": true,
+      "metadata": {
+        "heritage_site": true,
+        "religious_site": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "24d2713f-979c-4c1f-b608-14c544e8a4db",
+      "name": "AIIMS Delhi",
+      "type": "health-centre",
+      "coordinates": {
+        "latitude": 28.5672,
+        "longitude": 77.21
+      },
+      "address": "Sri Aurobindo Marg, Ansari Nagar, New Delhi, Delhi 110029",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "is_active": true,
+      "metadata": {
+        "type": "hospital",
+        "beds": 2698,
+        "emergency": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "5b31434a-3088-4b1e-b343-1fd799225701",
+      "name": "Delhi Public School, R.K. Puram",
+      "type": "public-schools",
+      "coordinates": {
+        "latitude": 28.562,
+        "longitude": 77.1762
+      },
+      "address": "Kaifi Azmi Marg, Sector 12, R.K. Puram, New Delhi, Delhi 110022",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "is_active": true,
+      "metadata": {
+        "students": 9500,
+        "grades": "K-12"
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "edfc0efe-0242-4c95-ace1-9f9ca85d6303",
+      "name": "Indira Gandhi International Airport",
+      "type": "airport",
+      "coordinates": {
+        "latitude": 28.5562,
+        "longitude": 77.1
+      },
+      "address": "New Delhi, Delhi 110037",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "is_active": true,
+      "metadata": {
+        "iata_code": "DEL",
+        "terminals": 3,
+        "international": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "daab4155-5dbf-4288-a052-6fc2a0929e40",
+      "name": "Gateway of India",
+      "type": "monuments",
+      "coordinates": {
+        "latitude": 18.922,
+        "longitude": 72.8347
+      },
+      "address": "Apollo Bandar, Colaba, Mumbai, Maharashtra 400001",
+      "state_id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+      "is_active": true,
+      "metadata": {
+        "heritage_site": true,
+        "year_built": 1924
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "1012f502-0fcc-48f6-9243-e411b2fb66d6",
+      "name": "Chhatrapati Shivaji Maharaj Terminus",
+      "type": "monuments",
+      "coordinates": {
+        "latitude": 18.9398,
+        "longitude": 72.8355
+      },
+      "address": "Fort, Mumbai, Maharashtra 400001",
+      "state_id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+      "is_active": true,
+      "metadata": {
+        "heritage_site": true,
+        "unesco_world_heritage": true,
+        "railway_station": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "55255e67-1a81-4271-93e6-4a1f4503a069",
+      "name": "Reserve Bank of India - Mumbai",
+      "type": "banks",
+      "coordinates": {
+        "latitude": 18.9322,
+        "longitude": 72.8358
+      },
+      "address": "Shahid Bhagat Singh Marg, Fort, Mumbai, Maharashtra 400001",
+      "state_id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+      "is_active": true,
+      "metadata": {
+        "type": "central_bank",
+        "headquarters": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "9ca0cd0e-13b6-4dee-bace-da546624b394",
+      "name": "Mumbai International Airport",
+      "type": "airport",
+      "coordinates": {
+        "latitude": 19.0896,
+        "longitude": 72.8656
+      },
+      "address": "Chhatrapati Shivaji International Airport, Mumbai, Maharashtra 400099",
+      "state_id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+      "is_active": true,
+      "metadata": {
+        "iata_code": "BOM",
+        "terminals": 2,
+        "international": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "b4db69ee-736b-4a2f-8628-5ec2d26dc317",
+      "name": "Bangalore Palace",
+      "type": "monuments",
+      "coordinates": {
+        "latitude": 12.9984,
+        "longitude": 77.5926
+      },
+      "address": "Vasanth Nagar, Bengaluru, Karnataka 560052",
+      "state_id": "6b24002f-12a1-44e2-a1d6-01abf9c0e0b5",
+      "is_active": true,
+      "metadata": {
+        "heritage_site": true,
+        "year_built": 1878
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "9ea198b2-8422-463f-b48c-3d50ae0b9f53",
+      "name": "Lalbagh Botanical Garden",
+      "type": "miscellaneous",
+      "coordinates": {
+        "latitude": 12.9507,
+        "longitude": 77.5848
+      },
+      "address": "Mavalli, Bengaluru, Karnataka 560004",
+      "state_id": "6b24002f-12a1-44e2-a1d6-01abf9c0e0b5",
+      "is_active": true,
+      "metadata": {
+        "type": "botanical_garden",
+        "area_acres": 240
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "ac2ca3dd-b1d3-4d78-adb5-67e33c41219b",
+      "name": "IISC Bangalore",
+      "type": "schools",
+      "coordinates": {
+        "latitude": 13.0219,
+        "longitude": 77.5671
+      },
+      "address": "CV Raman Rd, Bengaluru, Karnataka 560012",
+      "state_id": "6b24002f-12a1-44e2-a1d6-01abf9c0e0b5",
+      "is_active": true,
+      "metadata": {
+        "type": "university",
+        "research_institute": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "d207b97e-8a81-45f6-be8b-7fac4e328b10",
+      "name": "Marina Beach",
+      "type": "miscellaneous",
+      "coordinates": {
+        "latitude": 13.05,
+        "longitude": 80.2824
+      },
+      "address": "Marina Beach, Chennai, Tamil Nadu",
+      "state_id": "dea325a9-9f0e-4ad8-b978-7f0b46838fb1",
+      "is_active": true,
+      "metadata": {
+        "beach": true,
+        "length_km": 13,
+        "tourist_spot": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "148827d4-3762-4473-913c-48dbb8a8dc40",
+      "name": "Fort St. George",
+      "type": "monuments",
+      "coordinates": {
+        "latitude": 13.0796,
+        "longitude": 80.2875
+      },
+      "address": "Rajaji Salai, Near Secretariat, Chennai, Tamil Nadu 600001",
+      "state_id": "dea325a9-9f0e-4ad8-b978-7f0b46838fb1",
+      "is_active": true,
+      "metadata": {
+        "heritage_site": true,
+        "year_built": 1644
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "6fa4b336-f918-4949-921f-2170f7b086ea",
+      "name": "Victoria Memorial",
+      "type": "monuments",
+      "coordinates": {
+        "latitude": 22.5448,
+        "longitude": 88.3426
+      },
+      "address": "1, Queens Way, Maidan, Kolkata, West Bengal 700071",
+      "state_id": "f7fb02c6-dfda-4fe2-af3f-528dca70e1e4",
+      "is_active": true,
+      "metadata": {
+        "heritage_site": true,
+        "museum": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "72e45877-7f44-4017-adfb-8fa3b1648c5b",
+      "name": "Howrah Bridge",
+      "type": "miscellaneous",
+      "coordinates": {
+        "latitude": 22.5851,
+        "longitude": 88.3468
+      },
+      "address": "Hooghly River, Kolkata, West Bengal 700001",
+      "state_id": "f7fb02c6-dfda-4fe2-af3f-528dca70e1e4",
+      "is_active": true,
+      "metadata": {
+        "bridge": true,
+        "heritage_site": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "7afdd6ba-9333-4186-8ae3-f2a2d54327ff",
+      "name": "Cyber Hub",
+      "type": "miscellaneous",
+      "coordinates": {
+        "latitude": 28.4942,
+        "longitude": 77.0885
+      },
+      "address": "DLF Cyber City, Gurugram, Haryana 122002",
+      "state_id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+      "is_active": true,
+      "metadata": {
+        "type": "commercial_hub",
+        "restaurants": true,
+        "entertainment": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "c2db1c9b-e3a9-43f1-a8d2-a201c11d65ab",
+      "name": "Kingdom of Dreams",
+      "type": "miscellaneous",
+      "coordinates": {
+        "latitude": 28.4677,
+        "longitude": 77.0693
+      },
+      "address": "Auditorium Complex, Sector 29, Gurugram, Haryana 122002",
+      "state_id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+      "is_active": true,
+      "metadata": {
+        "type": "entertainment_venue",
+        "theater": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "d232ea10-769e-4b1b-9878-81b12ec7f4b8",
+      "name": "Medanta Hospital",
+      "type": "health-centre",
+      "coordinates": {
+        "latitude": 28.4389,
+        "longitude": 77.0412
+      },
+      "address": "CH Baktawar Singh Road, Sector 38, Gurugram, Haryana 122001",
+      "state_id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+      "is_active": true,
+      "metadata": {
+        "type": "hospital",
+        "beds": 1250,
+        "emergency": true
+      },
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    }
+  ],
+  "devices": [
+    {
+      "id": "04370af6-74b0-42c5-97c6-266ce37a78c2",
+      "device_id": "CAM-DL-001",
+      "type": "cameras",
+      "name": "Red Fort Main Gate Camera",
+      "coordinates": {
+        "latitude": 28.6562,
+        "longitude": 77.241
+      },
+      "status": "active",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "specifications": {
+        "resolution": "4K",
+        "night_vision": true,
+        "ai_enabled": true
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "be6ea57a-de04-440f-964d-c23ea020ae8c",
+      "device_id": "CAM-DL-002",
+      "type": "cameras",
+      "name": "India Gate Circle Camera",
+      "coordinates": {
+        "latitude": 28.6129,
+        "longitude": 77.2295
+      },
+      "status": "active",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "specifications": {
+        "resolution": "4K",
+        "night_vision": true,
+        "ptz": true
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "00d4766f-6aba-45a3-994c-93eb142ac14a",
+      "device_id": "CAM-DL-003",
+      "type": "cameras",
+      "name": "Connaught Place Camera",
+      "coordinates": {
+        "latitude": 28.6304,
+        "longitude": 77.2177
+      },
+      "status": "active",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "specifications": {
+        "resolution": "1080p",
+        "night_vision": true
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "d5ccaf27-e248-4289-a111-5893905ecb5c",
+      "device_id": "CAM-DL-004",
+      "type": "cameras",
+      "name": "Rajpath Camera",
+      "coordinates": {
+        "latitude": 28.6143,
+        "longitude": 77.219
+      },
+      "status": "active",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "specifications": {
+        "resolution": "4K",
+        "night_vision": true
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "0529025e-89b0-4485-8af9-803bdf2c6f7b",
+      "device_id": "CAM-MH-001",
+      "type": "cameras",
+      "name": "Gateway of India Camera",
+      "coordinates": {
+        "latitude": 18.922,
+        "longitude": 72.8347
+      },
+      "status": "active",
+      "state_id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+      "specifications": {
+        "resolution": "4K",
+        "night_vision": true
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "9be4d180-5835-4db4-a5ab-3b55ef851eeb",
+      "device_id": "CAM-MH-002",
+      "type": "cameras",
+      "name": "Marine Drive Camera",
+      "coordinates": {
+        "latitude": 18.9432,
+        "longitude": 72.8235
+      },
+      "status": "active",
+      "state_id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+      "specifications": {
+        "resolution": "1080p",
+        "night_vision": true
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "51f95886-b039-4818-a711-7f418d10a349",
+      "device_id": "CAM-MH-003",
+      "type": "cameras",
+      "name": "CST Station Camera",
+      "coordinates": {
+        "latitude": 18.9398,
+        "longitude": 72.8355
+      },
+      "status": "active",
+      "state_id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+      "specifications": {
+        "resolution": "4K",
+        "night_vision": true,
+        "ai_enabled": true
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "d08beeef-b75f-45d0-8e04-74d27107631f",
+      "device_id": "CAM-KA-001",
+      "type": "cameras",
+      "name": "MG Road Camera",
+      "coordinates": {
+        "latitude": 12.9716,
+        "longitude": 77.6195
+      },
+      "status": "active",
+      "state_id": "6b24002f-12a1-44e2-a1d6-01abf9c0e0b5",
+      "specifications": {
+        "resolution": "4K",
+        "night_vision": true
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "655332f5-4050-4cba-83fb-8468fd2303ff",
+      "device_id": "CAM-KA-002",
+      "type": "cameras",
+      "name": "Brigade Road Camera",
+      "coordinates": {
+        "latitude": 12.9719,
+        "longitude": 77.6065
+      },
+      "status": "active",
+      "state_id": "6b24002f-12a1-44e2-a1d6-01abf9c0e0b5",
+      "specifications": {
+        "resolution": "1080p",
+        "night_vision": true
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "d8b85baf-b52c-4399-a1eb-3105fa340fc3",
+      "device_id": "CAM-HR-001",
+      "type": "cameras",
+      "name": "Cyber Hub Main Camera",
+      "coordinates": {
+        "latitude": 28.4942,
+        "longitude": 77.0885
+      },
+      "status": "active",
+      "state_id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+      "specifications": {
+        "resolution": "4K",
+        "night_vision": true,
+        "ai_enabled": true
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "ccfbe75e-d9a7-4732-aeff-01b114fd08ae",
+      "device_id": "CAM-HR-002",
+      "type": "cameras",
+      "name": "Golf Course Road Camera",
+      "coordinates": {
+        "latitude": 28.4716,
+        "longitude": 77.0833
+      },
+      "status": "active",
+      "state_id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+      "specifications": {
+        "resolution": "4K",
+        "night_vision": true
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "542307dc-e4a8-4ce9-ac28-f3637b0d357c",
+      "device_id": "CAM-HR-003",
+      "type": "cameras",
+      "name": "MG Road Metro Station Camera",
+      "coordinates": {
+        "latitude": 28.4792,
+        "longitude": 77.0798
+      },
+      "status": "active",
+      "state_id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+      "specifications": {
+        "resolution": "1080p",
+        "night_vision": true
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "94545398-544e-4fe4-983c-7729ad34d142",
+      "device_id": "SENS-DL-001",
+      "type": "sensors",
+      "name": "Air Quality Sensor - Connaught Place",
+      "coordinates": {
+        "latitude": 28.6315,
+        "longitude": 77.2167
+      },
+      "status": "active",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "specifications": {
+        "type": "air_quality",
+        "parameters": [
+          "PM2.5",
+          "PM10",
+          "CO2",
+          "NO2"
+        ]
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "27cee335-71b9-4f74-b1fd-968dbf286231",
+      "device_id": "SENS-DL-002",
+      "type": "sensors",
+      "name": "Air Quality Sensor - Anand Vihar",
+      "coordinates": {
+        "latitude": 28.6472,
+        "longitude": 77.316
+      },
+      "status": "active",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "specifications": {
+        "type": "air_quality",
+        "parameters": [
+          "PM2.5",
+          "PM10",
+          "CO2",
+          "NO2"
+        ]
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "3d602dc5-82c4-4e4f-a715-fc3196d5339f",
+      "device_id": "SENS-HR-001",
+      "type": "sensors",
+      "name": "Traffic Sensor - NH8",
+      "coordinates": {
+        "latitude": 28.459,
+        "longitude": 77.0726
+      },
+      "status": "active",
+      "state_id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+      "specifications": {
+        "type": "traffic",
+        "parameters": [
+          "vehicle_count",
+          "speed",
+          "congestion"
+        ]
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "b0f47002-5736-4607-accd-3c6f196d98e7",
+      "device_id": "SENS-MH-001",
+      "type": "sensors",
+      "name": "Flood Sensor - Dadar",
+      "coordinates": {
+        "latitude": 19.0178,
+        "longitude": 72.8478
+      },
+      "status": "active",
+      "state_id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+      "specifications": {
+        "type": "water_level",
+        "parameters": [
+          "level",
+          "flow_rate"
+        ]
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "416ecb03-6599-4f5e-b20f-020d2950b98a",
+      "device_id": "DMR-DL-001",
+      "type": "dmr-handsets",
+      "name": "Police Unit Alpha-1",
+      "coordinates": {
+        "latitude": 28.6139,
+        "longitude": 77.209
+      },
+      "status": "active",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "specifications": {
+        "model": "Motorola DP4801e",
+        "range_km": 8
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "9cbfe5c3-94dc-4d3a-8fd4-d512fa2288c4",
+      "device_id": "DMR-HR-001",
+      "type": "dmr-handsets",
+      "name": "Traffic Police Unit T-5",
+      "coordinates": {
+        "latitude": 28.4595,
+        "longitude": 77.0266
+      },
+      "status": "active",
+      "state_id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+      "specifications": {
+        "model": "Hytera PD985",
+        "range_km": 10
+      },
+      "last_seen": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    }
+  ],
+  "vehicles": [
+    {
+      "id": "bbf58992-9a09-4c42-adee-c0a4db4f80fb",
+      "vehicle_number": "DL-01-AB-1234",
+      "type": "police_car",
+      "coordinates": {
+        "latitude": 28.6129,
+        "longitude": 77.2295
+      },
+      "route_name": "India Gate Patrol",
+      "driver_name": "Inspector Raj Kumar",
+      "status": "active",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "last_updated": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "a2ff2769-9dd0-4a74-997e-a75bfa1bf8a5",
+      "vehicle_number": "DL-03-CD-5678",
+      "type": "ambulance",
+      "coordinates": {
+        "latitude": 28.5672,
+        "longitude": 77.21
+      },
+      "route_name": "AIIMS Emergency Route",
+      "driver_name": "Suresh Sharma",
+      "status": "active",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "last_updated": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "7bd57d01-ed86-45da-8079-24e00d7c7b5b",
+      "vehicle_number": "DL-05-EF-9012",
+      "type": "fire_truck",
+      "coordinates": {
+        "latitude": 28.6304,
+        "longitude": 77.2177
+      },
+      "route_name": "Central Delhi Fire Service",
+      "driver_name": "Ramesh Yadav",
+      "status": "active",
+      "state_id": "8f28e15a-3d88-42c0-9662-085a9d8a40a9",
+      "last_updated": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "de0314ee-6b6b-4fcf-b0a1-f113cb19e32a",
+      "vehicle_number": "HR-26-AA-3456",
+      "type": "police_car",
+      "coordinates": {
+        "latitude": 28.4595,
+        "longitude": 77.0266
+      },
+      "route_name": "Cyber City Patrol",
+      "driver_name": "SI Anil Kumar",
+      "status": "active",
+      "state_id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+      "last_updated": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "4d6a5508-ca9b-4291-b8f8-d17d045c6054",
+      "vehicle_number": "HR-26-BB-7890",
+      "type": "pickup_truck",
+      "coordinates": {
+        "latitude": 28.4716,
+        "longitude": 77.0833
+      },
+      "route_name": "Golf Course Road Maintenance",
+      "driver_name": "Vijay Singh",
+      "status": "active",
+      "state_id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+      "last_updated": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "46486b0f-c34a-4b0b-a929-ed4d392f21d6",
+      "vehicle_number": "HR-26-CC-2345",
+      "type": "van",
+      "coordinates": {
+        "latitude": 28.4942,
+        "longitude": 77.0885
+      },
+      "route_name": "DLF Phase 2 Route",
+      "driver_name": "Mukesh Kumar",
+      "status": "active",
+      "state_id": "29935dae-358f-4211-a2fb-e9b735861ecc",
+      "last_updated": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "b08b4aef-b123-4816-860a-55280ceb7dd9",
+      "vehicle_number": "MH-01-AB-4567",
+      "type": "police_car",
+      "coordinates": {
+        "latitude": 18.922,
+        "longitude": 72.8347
+      },
+      "route_name": "Gateway Patrol",
+      "driver_name": "Constable Patil",
+      "status": "active",
+      "state_id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+      "last_updated": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "4dd911c3-46d7-46ff-a2e3-348b6bdaf487",
+      "vehicle_number": "MH-02-CD-8901",
+      "type": "ambulance",
+      "coordinates": {
+        "latitude": 18.9432,
+        "longitude": 72.8235
+      },
+      "route_name": "Marine Drive Emergency",
+      "driver_name": "Sachin Deshmukh",
+      "status": "active",
+      "state_id": "09f845a2-b796-4a95-90a8-9ac10e2c3cc8",
+      "last_updated": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "18f002bf-9421-45be-82d5-78043fc9951c",
+      "vehicle_number": "KA-01-EF-2345",
+      "type": "police_car",
+      "coordinates": {
+        "latitude": 12.9716,
+        "longitude": 77.5946
+      },
+      "route_name": "MG Road Patrol",
+      "driver_name": "SI Reddy",
+      "status": "active",
+      "state_id": "6b24002f-12a1-44e2-a1d6-01abf9c0e0b5",
+      "last_updated": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "4d173b98-fdae-4455-94c5-7c86a5ac3211",
+      "vehicle_number": "KA-03-GH-6789",
+      "type": "truck",
+      "coordinates": {
+        "latitude": 12.9507,
+        "longitude": 77.5848
+      },
+      "route_name": "Lalbagh Maintenance",
+      "driver_name": "Krishna Murthy",
+      "status": "active",
+      "state_id": "6b24002f-12a1-44e2-a1d6-01abf9c0e0b5",
+      "last_updated": "2025-08-25T07:10:22.752Z",
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    }
+  ],
+  "mapLayers": [
+    {
+      "id": "1fe931b4-3fcd-4d17-b703-7efd4d347b20",
+      "name": "Administrative Boundary",
+      "type": "administrative-boundary",
+      "is_visible": true,
+      "is_active": true,
+      "opacity": 0.8,
+      "z_index": 1,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "133ae7e8-bd79-46a3-bb74-c2f5dbc30b20",
+      "name": "State Boundary",
+      "type": "state-boundary",
+      "is_visible": true,
+      "is_active": true,
+      "opacity": 0.7,
+      "z_index": 2,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "e164f213-9e2a-4f49-b94f-88197d8f215e",
+      "name": "District Boundary",
+      "type": "district-boundary",
+      "is_visible": false,
+      "is_active": true,
+      "opacity": 0.6,
+      "z_index": 3,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "36f777c8-6d3f-45e0-ae77-41d7893d2bfe",
+      "name": "City Assets",
+      "type": "city-assets",
+      "is_visible": true,
+      "is_active": true,
+      "opacity": 1,
+      "z_index": 10,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "aee2b650-2859-493d-affe-065e7d17fac8",
+      "name": "Cameras",
+      "type": "devices",
+      "is_visible": true,
+      "is_active": true,
+      "opacity": 1,
+      "z_index": 11,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "5d6f2fc8-7cc1-475d-9d3e-f20ec0953dec",
+      "name": "Vehicles",
+      "type": "vehicles",
+      "is_visible": true,
+      "is_active": true,
+      "opacity": 1,
+      "z_index": 12,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "464c60c8-b3c8-492d-b9ce-b30b98dc36dd",
+      "name": "Roads & Rails",
+      "type": "road-rails",
+      "is_visible": false,
+      "is_active": true,
+      "opacity": 0.9,
+      "z_index": 4,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    }
+  ],
+  "customMaps": [
+    {
+      "id": "2db2b0e9-63a2-4053-96c4-11fe503dd881",
+      "name": "Default India Map",
+      "description": "Default view of India with major cities",
+      "center_coordinates": {
+        "latitude": 20.5937,
+        "longitude": 78.9629
+      },
+      "zoom_level": 5,
+      "bounds": {
+        "north": 37,
+        "south": 8,
+        "east": 97,
+        "west": 68
+      },
+      "active_layers": [
+        "administrative-boundary",
+        "state-boundary"
+      ],
+      "is_default": true,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "7f27a3b7-36a9-4ebf-83a0-fa9b11195004",
+      "name": "Delhi NCR View",
+      "description": "Detailed view of Delhi NCR region",
+      "center_coordinates": {
+        "latitude": 28.6139,
+        "longitude": 77.209
+      },
+      "zoom_level": 10,
+      "bounds": {
+        "north": 28.8836,
+        "south": 28.3044,
+        "east": 77.4417,
+        "west": 76.8389
+      },
+      "active_layers": [
+        "devices",
+        "vehicles",
+        "city-assets"
+      ],
+      "is_default": false,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "166f4654-6370-4110-a9d3-35ecc15930c7",
+      "name": "Gurugram Smart City",
+      "description": "Gurugram city surveillance and monitoring",
+      "center_coordinates": {
+        "latitude": 28.4595,
+        "longitude": 77.0266
+      },
+      "zoom_level": 12,
+      "bounds": {
+        "north": 28.55,
+        "south": 28.35,
+        "east": 77.15,
+        "west": 76.9
+      },
+      "active_layers": [
+        "devices",
+        "vehicles",
+        "city-assets",
+        "district-boundary"
+      ],
+      "is_default": false,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "546fa7a7-a827-4f55-8d54-e84aafa01243",
+      "name": "Mumbai Metropolitan",
+      "description": "Mumbai city and suburban monitoring",
+      "center_coordinates": {
+        "latitude": 19.076,
+        "longitude": 72.8777
+      },
+      "zoom_level": 11,
+      "bounds": {
+        "north": 19.28,
+        "south": 18.89,
+        "east": 73.08,
+        "west": 72.77
+      },
+      "active_layers": [
+        "devices",
+        "vehicles",
+        "city-assets"
+      ],
+      "is_default": false,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    }
+  ],
+  "liveIncidents": [
+    {
+      "id": "8893c5ad-1c54-4307-aeb2-53816f229762",
+      "type": "blacklist-face",
+      "title": "Blacklist Face Detected",
+      "description": "Suspicious person detected at Parking Lot, Majestic Metro Station",
+      "coordinates": {
+        "latitude": 28.6562,
+        "longitude": 77.241
+      },
+      "camera_id": "CAM-DL-001",
+      "location": "Red Fort, Delhi",
+      "status": "active",
+      "severity": "high",
+      "detected_at": "2025-08-25T07:05:22.753Z",
+      "updated_at": "2025-08-25T07:08:22.753Z",
+      "thumbnail": "https://example.com/incident1.jpg"
+    },
+    {
+      "id": "e1787506-bd77-4240-9a29-53a1d515f2e2",
+      "type": "waterlogging",
+      "title": "Waterlogging Reported",
+      "description": "Heavy waterlogging detected at underpass",
+      "coordinates": {
+        "latitude": 28.4792,
+        "longitude": 77.0798
+      },
+      "camera_id": "CAM-HR-003",
+      "location": "MG Road Metro Station, Gurugram",
+      "status": "active",
+      "severity": "medium",
+      "detected_at": "2025-08-25T07:00:22.753Z",
+      "updated_at": "2025-08-25T07:07:22.753Z",
+      "thumbnail": "https://example.com/incident2.jpg"
+    },
+    {
+      "id": "48fe857b-ddc9-4bcc-beba-a204a384149b",
+      "type": "street-light-failure",
+      "title": "Street Light Failure",
+      "description": "Multiple street lights not working",
+      "coordinates": {
+        "latitude": 18.9432,
+        "longitude": 72.8235
+      },
+      "camera_id": "CAM-MH-002",
+      "location": "Marine Drive, Mumbai",
+      "status": "monitoring",
+      "severity": "low",
+      "detected_at": "2025-08-25T06:40:22.753Z",
+      "updated_at": "2025-08-25T06:55:22.753Z"
+    },
+    {
+      "id": "3ccb320f-e900-413c-88b0-0e790e0d229a",
+      "type": "overcrowding",
+      "title": "Overcrowding Alert",
+      "description": "Heavy crowd detected at metro station",
+      "coordinates": {
+        "latitude": 28.6304,
+        "longitude": 77.2177
+      },
+      "camera_id": "CAM-DL-003",
+      "location": "Connaught Place, Delhi",
+      "status": "active",
+      "severity": "high",
+      "detected_at": "2025-08-25T07:02:22.753Z",
+      "updated_at": "2025-08-25T07:09:22.753Z"
+    },
+    {
+      "id": "f013fab4-361d-484b-b3fc-77826903394e",
+      "type": "traffic-jam",
+      "title": "Heavy Traffic Congestion",
+      "description": "Severe traffic jam on NH8",
+      "coordinates": {
+        "latitude": 28.459,
+        "longitude": 77.0726
+      },
+      "location": "NH8 Highway, Gurugram",
+      "status": "active",
+      "severity": "critical",
+      "detected_at": "2025-08-25T06:55:22.753Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "2201efff-28e5-4146-bf4a-696c110a63b5",
+      "type": "illegal-parking",
+      "title": "Illegal Parking Detected",
+      "description": "Vehicle parked in no-parking zone",
+      "coordinates": {
+        "latitude": 12.9716,
+        "longitude": 77.6195
+      },
+      "camera_id": "CAM-KA-001",
+      "location": "MG Road, Bangalore",
+      "status": "resolved",
+      "severity": "low",
+      "detected_at": "2025-08-25T06:25:22.753Z",
+      "updated_at": "2025-08-25T06:50:22.753Z"
+    }
+  ],
+  "pathRoutes": [
+    {
+      "id": "8ebe3a63-369f-46e2-a423-380b413bf2b2",
+      "name": "NH 48 Route",
+      "type": "regular",
+      "waypoints": [
+        {
+          "latitude": 28.4595,
+          "longitude": 77.0266
+        },
+        {
+          "latitude": 28.4816,
+          "longitude": 77.1033
+        },
+        {
+          "latitude": 28.5039,
+          "longitude": 77.0802
+        },
+        {
+          "latitude": 28.4595,
+          "longitude": 77.0266
+        }
+      ],
+      "distance_km": 23,
+      "estimated_time_mins": 28,
+      "vehicle_id": "HR-26-AA-3456",
+      "is_active": true,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "05c826e8-813a-456a-a401-bbe72e7873d5",
+      "name": "Rani Avantibai Road",
+      "type": "patrol",
+      "waypoints": [
+        {
+          "latitude": 28.4837,
+          "longitude": 77.1033
+        },
+        {
+          "latitude": 28.4923,
+          "longitude": 77.0928
+        },
+        {
+          "latitude": 28.5039,
+          "longitude": 77.0802
+        },
+        {
+          "latitude": 28.4837,
+          "longitude": 77.1033
+        }
+      ],
+      "distance_km": 16,
+      "estimated_time_mins": 18,
+      "vehicle_id": "HR-26-BB-7890",
+      "is_active": true,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    },
+    {
+      "id": "0a5f51c5-a507-49c4-9e51-cbc1ee69e446",
+      "name": "NH 148A",
+      "type": "emergency",
+      "waypoints": [
+        {
+          "latitude": 28.5039,
+          "longitude": 77.0802
+        },
+        {
+          "latitude": 28.5278,
+          "longitude": 77.098
+        },
+        {
+          "latitude": 28.5499,
+          "longitude": 77.0726
+        },
+        {
+          "latitude": 28.5039,
+          "longitude": 77.0802
+        }
+      ],
+      "distance_km": 30,
+      "estimated_time_mins": 24,
+      "is_active": true,
+      "created_at": "2025-08-25T07:10:22.752Z",
+      "updated_at": "2025-08-25T07:10:22.752Z"
+    }
+  ]
+}

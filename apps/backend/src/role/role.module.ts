@@ -1,20 +1,11 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { RoleController } from './role.controller';
 import { RoleService } from './role.service';
-import { DefaultRolesService } from '../role/service/default-role.service';
-import { PermissionModule } from '../permissions/permission.module';
+import { DefaultRolesService } from './service/default-role.service';
 import { RbacModule } from '../rbac/rbac.module';
-import { UtilsModule } from 'src/utils/utils.module';
-import { SharedAuthModule } from '../shared/auth.module';
-// PrismaService is now globally available through PrismaModule
 
 @Module({
-  imports: [
-    forwardRef(() => PermissionModule),
-    forwardRef(() => RbacModule),
-    UtilsModule,
-    SharedAuthModule,
-  ],
+  imports: [forwardRef(() => RbacModule)],
   controllers: [RoleController],
   providers: [RoleService, DefaultRolesService],
   exports: [RoleService, DefaultRolesService],

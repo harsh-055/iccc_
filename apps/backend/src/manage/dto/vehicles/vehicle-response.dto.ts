@@ -27,7 +27,7 @@ export class VehicleResponseDto {
   vehicleTypeName: string;
 
   @ApiProperty({
-    description: 'License plate number',
+    description: 'License plate number (Vehicle ID for display)',
     example: 'OD08 JPEG 4356',
   })
   licensePlateNumber: string;
@@ -130,22 +130,10 @@ export class VehicleResponseDto {
   imageUrl: string | null;
 
   @ApiProperty({
-    description: 'Vehicle address',
-    example: 'Vehicle parking location',
+    description: 'Vehicle address/current location',
+    example: 'Collection Point Parking',
   })
   address: string | null;
-
-  @ApiProperty({
-    description: 'Latitude coordinate',
-    example: 12.9716,
-  })
-  latitude: number | null;
-
-  @ApiProperty({
-    description: 'Longitude coordinate',
-    example: 77.5946,
-  })
-  longitude: number | null;
 
   @ApiProperty({
     description: 'Whether the vehicle is active',
@@ -188,4 +176,53 @@ export class VehicleResponseDto {
     example: 30,
   })
   daysSinceLastMaintenance?: number;
+
+  // Additional fields for UI requirements
+  @ApiProperty({
+    description: 'Last trip date and time',
+    example: '2025-03-25T12:00:00.000Z',
+  })
+  lastTripOn?: Date;
+
+  @ApiProperty({
+    description: 'Current location of the vehicle',
+    example: 'Collection Point Parking',
+  })
+  currentLocation?: string;
+
+  @ApiProperty({
+    description: 'Fuel level percentage (0-100)',
+    example: 50,
+  })
+  fuelLevel?: number;
+
+  @ApiProperty({
+    description: 'Average fuel consumption in litres',
+    example: 15,
+  })
+  avgFuelConsumption?: number;
+
+  @ApiProperty({
+    description: 'Tyre condition information',
+    example: [
+      {
+        tyrePosition: 'Front Left',
+        condition: 80,
+        pressure: 32,
+        unit: 'psi'
+      }
+    ],
+  })
+  tyreConditions?: Array<{
+    tyrePosition: string;
+    condition: number;
+    pressure: number;
+    unit: string;
+  }>;
+
+  @ApiProperty({
+    description: 'Vehicle ID for display purposes',
+    example: 'VD001',
+  })
+  displayId?: string;
 }

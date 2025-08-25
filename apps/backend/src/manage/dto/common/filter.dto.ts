@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsBoolean, IsUUID } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsOptional, IsBoolean, IsUUID, IsString } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
 
 export class BaseFilterDto {
   @ApiProperty({
@@ -19,7 +19,11 @@ export class BaseFilterDto {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @Transform(({ value }) => {
+    if (value === '' || value === 'undefined' || value === 'null' || value === 'uuid-string') return undefined;
+    return value;
+  })
+  @IsUUID('4', { message: 'tenantId must be a valid UUID' })
   tenantId?: string;
 
   @ApiProperty({
@@ -28,7 +32,11 @@ export class BaseFilterDto {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @Transform(({ value }) => {
+    if (value === '' || value === 'undefined' || value === 'null') return undefined;
+    return value;
+  })
+  @IsUUID('4', { message: 'regionId must be a valid UUID' })
   regionId?: string;
 
   @ApiProperty({
@@ -37,7 +45,11 @@ export class BaseFilterDto {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @Transform(({ value }) => {
+    if (value === '' || value === 'undefined' || value === 'null') return undefined;
+    return value;
+  })
+  @IsUUID('4', { message: 'zoneId must be a valid UUID' })
   zoneId?: string;
 
   @ApiProperty({
@@ -46,7 +58,11 @@ export class BaseFilterDto {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @Transform(({ value }) => {
+    if (value === '' || value === 'undefined' || value === 'null') return undefined;
+    return value;
+  })
+  @IsUUID('4', { message: 'wardId must be a valid UUID' })
   wardId?: string;
 
   @ApiProperty({
@@ -55,7 +71,11 @@ export class BaseFilterDto {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @Transform(({ value }) => {
+    if (value === '' || value === 'undefined' || value === 'null') return undefined;
+    return value;
+  })
+  @IsUUID('4', { message: 'workforceTypeId must be a valid UUID' })
   workforceTypeId?: string;
 
   @ApiProperty({
@@ -64,7 +84,11 @@ export class BaseFilterDto {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @Transform(({ value }) => {
+    if (value === '' || value === 'undefined' || value === 'null') return undefined;
+    return value;
+  })
+  @IsUUID('4', { message: 'assignedSiteId must be a valid UUID' })
   assignedSiteId?: string;
 
   @ApiProperty({
@@ -73,7 +97,11 @@ export class BaseFilterDto {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @Transform(({ value }) => {
+    if (value === '' || value === 'undefined' || value === 'null') return undefined;
+    return value;
+  })
+  @IsUUID('4', { message: 'assignedRegionId must be a valid UUID' })
   assignedRegionId?: string;
 
   @ApiProperty({
@@ -82,7 +110,11 @@ export class BaseFilterDto {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @Transform(({ value }) => {
+    if (value === '' || value === 'undefined' || value === 'null') return undefined;
+    return value;
+  })
+  @IsUUID('4', { message: 'assignedZoneId must be a valid UUID' })
   assignedZoneId?: string;
 
   @ApiProperty({
@@ -91,7 +123,11 @@ export class BaseFilterDto {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @Transform(({ value }) => {
+    if (value === '' || value === 'undefined' || value === 'null') return undefined;
+    return value;
+  })
+  @IsUUID('4', { message: 'assignedWardId must be a valid UUID' })
   assignedWardId?: string;
 
   @ApiProperty({
@@ -116,6 +152,10 @@ export class BaseFilterDto {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @Transform(({ value }) => {
+    if (value === '' || value === 'undefined' || value === 'null') return undefined;
+    return value;
+  })
+  @IsUUID('4', { message: 'createdBy must be a valid UUID' })
   createdBy?: string;
 }

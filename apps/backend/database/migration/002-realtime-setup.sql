@@ -64,10 +64,11 @@ CREATE OR REPLACE FUNCTION add_realtime_trigger(table_name text)
 RETURNS void AS $$
 BEGIN
   EXECUTE format('
+    DROP TRIGGER IF EXISTS %I_notify_trigger ON %I;
     CREATE TRIGGER %I_notify_trigger
     AFTER INSERT OR UPDATE OR DELETE ON %I
     FOR EACH ROW EXECUTE FUNCTION notify_data_change();
-  ', table_name, table_name);
+  ', table_name, table_name, table_name, table_name);
 END;
 $$ LANGUAGE plpgsql;
 

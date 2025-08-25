@@ -11,6 +11,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { DatabaseService } from '../../database/database.service';
 import { RbacService } from '../rbac/rbac.service';
+import { SYSTEM_ROLES } from '../common/constants/system-roles';
 
 @Injectable()
 export class RoleService {
@@ -136,7 +137,7 @@ export class RoleService {
                json_agg(
                  DISTINCT jsonb_build_object(
                    'id', u.id,
-                   'name', u.name,
+                    'name', CONCAT_WS(' ', u.first_name, u.last_name),
                    'email', u.email
                  )
                ) FILTER (WHERE u.id IS NOT NULL), 
@@ -147,7 +148,8 @@ export class RoleService {
       LEFT JOIN permissions p ON rp.permission_id = p.id
       LEFT JOIN user_roles ur ON r.id = ur.role_id
       LEFT JOIN users u ON ur.user_id = u.id
-      GROUP BY r.id
+      WHERE r.is_active = true
+      GROUP BY r.id, r.name, r.description, r.is_system, r.tenant_id, r.created_by, r.created_at, r.updated_at, r.is_active
       ORDER BY r.name ASC
     `);
 
@@ -184,7 +186,7 @@ export class RoleService {
                json_agg(
                  DISTINCT jsonb_build_object(
                    'id', u.id,
-                   'name', u.name,
+                    'name', CONCAT_WS(' ', u.first_name, u.last_name),
                    'email', u.email
                  )
                ) FILTER (WHERE u.id IS NOT NULL), 
@@ -212,10 +214,25 @@ export class RoleService {
 
   async findBasic() {
     const basicRolesResult = await this.database.query(`
-      SELECT id, name FROM roles ORDER BY name ASC
+      SELECT id, name FROM roles 
+      WHERE is_active = true
+      ORDER BY name ASC
     `);
 
     return basicRolesResult.rows;
+  }
+
+  async getRolesForDropdown(tenantId: string) {
+    const rolesResult = await this.database.query(`
+      SELECT id, name, description 
+      FROM roles 
+      WHERE tenant_id = $1 AND is_active = true
+      ORDER BY 
+        CASE WHEN is_system = true THEN 0 ELSE 1 END,
+        name ASC
+    `, [tenantId]);
+
+    return rolesResult.rows;
   }
 
   async findByTenant(tenantId: string) {
@@ -252,7 +269,7 @@ export class RoleService {
                json_agg(
                  DISTINCT jsonb_build_object(
                    'id', u.id,
-                   'name', u.name,
+                    'name', CONCAT_WS(' ', u.first_name, u.last_name),
                    'email', u.email,
                    'is_active', u.is_active
                  )
@@ -266,7 +283,9 @@ export class RoleService {
       LEFT JOIN users u ON ur.user_id = u.id
       WHERE r.tenant_id = $1
       GROUP BY r.id
-      ORDER BY r.name ASC
+      ORDER BY 
+        CASE WHEN r.is_system = true THEN 0 ELSE 1 END,
+        r.name ASC
     `,
       [tenantId],
     );
@@ -302,7 +321,7 @@ export class RoleService {
                json_agg(
                  DISTINCT jsonb_build_object(
                    'id', u.id,
-                   'name', u.name,
+                   'name', CONCAT(u.first_name, ' ', u.last_name),
                    'email', u.email,
                    'is_active', u.is_active
                  )
@@ -631,7 +650,7 @@ export class RoleService {
 
     // Return summary of assignments
     const assignedUsersResult = await this.database.query(
-      `SELECT id, name, email FROM users WHERE id = ANY($1::uuid[])`,
+      `SELECT id, CONCAT(first_name, ' ', last_name) as name, email FROM users WHERE id = ANY($1::uuid[])`,
       [userIds],
     );
 
@@ -656,7 +675,7 @@ export class RoleService {
     // Get users with this role
     const usersResult = await this.database.query(
       `
-      SELECT u.id, u.email, u.name
+      SELECT u.id, u.email, CONCAT(u.first_name, ' ', u.last_name) as name
       FROM user_roles ur
       JOIN users u ON ur.user_id = u.id
       WHERE ur.role_id = $1
@@ -717,7 +736,7 @@ export class RoleService {
   /**
    * Create a tenant admin with all tenant permissions (simplified from SuperAdmin)
    */
-  async createTenantAdmin(
+async createTenantAdmin(
     tenantId: string,
     userData: {
       name: string;
@@ -756,17 +775,17 @@ export class RoleService {
       // First, ensure tenant has all permissions
       await this.seedTenantPermissions(tenantId);
 
-      // Get or create tenant Admin role
+      // Get or create tenant Administrator role
       let tenantAdminRole = await this.database.query(
         `SELECT * FROM roles WHERE name = $1 AND tenant_id = $2`,
-        ['Admin', tenantId],
+        [SYSTEM_ROLES.ADMIN, tenantId],
       );
 
       if (tenantAdminRole.rows.length === 0) {
         const createRoleResult = await this.database.query(
           `INSERT INTO roles (name, description, tenant_id, is_system, created_at, updated_at) 
            VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING *`,
-          ['Admin', `Administrator for ${tenant.name}`, tenantId, false],
+          [SYSTEM_ROLES.ADMIN, `Administrator for ${tenant.name}`, tenantId, false],
         );
         tenantAdminRole = createRoleResult;
       }
@@ -853,7 +872,7 @@ export class RoleService {
       const tenantPermissions = allPermissionsResult.rows;
 
       // Create tenant-specific roles
-      const systemRoles = ['Admin', 'User']; // Simplified from original complex hierarchy
+      const systemRoles = [SYSTEM_ROLES.ADMIN, SYSTEM_ROLES.USER_ADMIN]; // Multi-level hierarchy
       const tenantRoles = [];
 
       for (const roleName of systemRoles) {
@@ -865,9 +884,9 @@ export class RoleService {
         if (tenantRoleResult.rows.length === 0) {
           // Create tenant role
           const description =
-            roleName === 'Admin'
+            roleName === SYSTEM_ROLES.ADMIN
               ? `Administrator for ${tenant.name}`
-              : `User for ${tenant.name}`;
+              : `User Admin for ${tenant.name}`;
 
           const createRoleResult = await this.database.query(
             `INSERT INTO roles (name, description, tenant_id, is_system, created_at, updated_at) 
@@ -878,9 +897,20 @@ export class RoleService {
           const tenantRole = createRoleResult.rows[0];
 
           // Assign appropriate permissions to role
-          if (roleName === 'Admin') {
-            // Admin gets all permissions
-            for (const permission of tenantPermissions) {
+          if (roleName === SYSTEM_ROLES.ADMIN) {
+            // Administrator gets company-level permissions (no cross-tenant access)
+            const adminPermissions = tenantPermissions.filter((permission) => {
+              const resource = permission.resource.toLowerCase();
+              const permissionName = permission.name.toLowerCase();
+
+              return (
+                !permissionName.includes('cross-tenant') &&
+                !permissionName.includes('system-wide') &&
+                !resource.includes('system')
+              );
+            });
+
+            for (const permission of adminPermissions) {
               const existingRolePermissionResult = await this.database.query(
                 `SELECT * FROM role_permissions WHERE role_id = $1 AND permission_id = $2`,
                 [tenantRole.id, permission.id],
@@ -894,21 +924,26 @@ export class RoleService {
                 );
               }
             }
-          } else if (roleName === 'User') {
-            // User gets only self-service and view permissions
-            const userPermissions = tenantPermissions.filter((permission) => {
+          } else if (roleName === SYSTEM_ROLES.USER_ADMIN) {
+            // User Admin gets user management and limited permissions
+            const userAdminPermissions = tenantPermissions.filter((permission) => {
               const action = permission.action.toLowerCase();
+              const resource = permission.resource.toLowerCase();
               const permissionName = permission.name.toLowerCase();
 
               return (
                 action.includes('read') ||
                 action.includes('view') ||
+                action.includes('create') && resource.includes('user') ||
+                action.includes('update') && resource.includes('user') ||
+                action.includes('delete') && resource.includes('user') ||
                 permissionName.includes('own') ||
-                permissionName.includes('assigned')
+                permissionName.includes('assigned') ||
+                permissionName.includes('user')
               );
             });
 
-            for (const permission of userPermissions) {
+            for (const permission of userAdminPermissions) {
               const existingRolePermissionResult = await this.database.query(
                 `SELECT * FROM role_permissions WHERE role_id = $1 AND permission_id = $2`,
                 [tenantRole.id, permission.id],
@@ -934,7 +969,8 @@ export class RoleService {
         tenantId,
         permissionsCreated: tenantPermissions.length,
         rolesCreated: tenantRoles.length,
-        adminRole: tenantRoles.find((r) => r.name === 'Admin'),
+        adminRole: tenantRoles.find((r) => r.name === SYSTEM_ROLES.ADMIN),
+        userAdminRole: tenantRoles.find((r) => r.name === SYSTEM_ROLES.USER_ADMIN),
         tenant: tenant.name,
       };
     } catch (error) {
@@ -982,21 +1018,59 @@ export class RoleService {
       `SELECT * FROM permissions ORDER BY resource ASC, action ASC`,
     );
 
-    // Filter permissions based on role type (Admin gets all, User gets limited)
-    const availablePermissions =
-      role.name === 'Admin'
-        ? allTenantPermissionsResult.rows
-        : allTenantPermissionsResult.rows.filter((permission) => {
-            const action = permission.action.toLowerCase();
-            const permissionName = permission.name.toLowerCase();
+    // Filter permissions based on role type and hierarchy
+    let availablePermissions = allTenantPermissionsResult.rows;
 
-            return (
-              action.includes('read') ||
-              action.includes('view') ||
-              permissionName.includes('own') ||
-              permissionName.includes('assigned')
-            );
-          });
+    if (role.name === SYSTEM_ROLES.SUPER_ADMIN) {
+      // Super Administrator gets all permissions
+      availablePermissions = allTenantPermissionsResult.rows;
+    } else if (role.name === SYSTEM_ROLES.ADMIN) {
+      // Administrator gets company-level permissions (no cross-tenant access)
+      availablePermissions = allTenantPermissionsResult.rows.filter((permission) => {
+        const resource = permission.resource.toLowerCase();
+        const permissionName = permission.name.toLowerCase();
+
+        return (
+          !permissionName.includes('cross-tenant') &&
+          !permissionName.includes('system-wide') &&
+          !resource.includes('system')
+        );
+      });
+    } else if (role.name === SYSTEM_ROLES.USER_ADMIN) {
+      // User Admin gets user management and limited permissions
+      availablePermissions = allTenantPermissionsResult.rows.filter((permission) => {
+        const action = permission.action.toLowerCase();
+        const resource = permission.resource.toLowerCase();
+        const permissionName = permission.name.toLowerCase();
+
+        return (
+          action.includes('read') ||
+          action.includes('view') ||
+          action.includes('create') && resource.includes('user') ||
+          action.includes('update') && resource.includes('user') ||
+          action.includes('delete') && resource.includes('user') ||
+          permissionName.includes('own') ||
+          permissionName.includes('assigned') ||
+          permissionName.includes('user')
+        );
+      });
+    } else {
+      // Custom roles get limited permissions based on their creation context
+      availablePermissions = allTenantPermissionsResult.rows.filter((permission) => {
+        const action = permission.action.toLowerCase();
+        const resource = permission.resource.toLowerCase();
+        const permissionName = permission.name.toLowerCase();
+
+        return (
+          action.includes('read') ||
+          action.includes('view') ||
+          action.includes('create') ||
+          action.includes('update') ||
+          !permissionName.includes('system') &&
+          !permissionName.includes('cross-tenant')
+        );
+      });
+    }
 
     // Get permissions assigned to this role
     const rolePermissionsResult = await this.database.query(

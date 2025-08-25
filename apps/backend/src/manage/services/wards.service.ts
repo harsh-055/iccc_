@@ -11,7 +11,7 @@ import {
   WardResponseDto,
   PaginationDto,
   PaginatedResponseDto,
-  BaseFilterDto,
+  WardFilterDto,
 } from '../dto';
 
 @Injectable()
@@ -49,13 +49,14 @@ export class WardsService {
       }
 
       const result = await this.databaseService.query(
-        `INSERT INTO wards (name, description, zone_id, is_active, tenant_id, created_by)
-         VALUES ($1, $2, $3, $4, $5, $6)
+        `INSERT INTO wards (name, description, zone_id, ward_no, is_active, tenant_id, created_by)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
          RETURNING *`,
         [
           createWardDto.name,
           createWardDto.description,
           createWardDto.zoneId,
+          createWardDto.wardNo,
           createWardDto.isActive ?? true,
           tenantId,
           userId,
@@ -74,7 +75,7 @@ export class WardsService {
 
   async findAll(
     paginationDto: PaginationDto,
-    filterDto: BaseFilterDto,
+    filterDto: WardFilterDto,
     tenantId: string,
   ): Promise<PaginatedResponseDto<WardResponseDto>> {
     try {
@@ -136,6 +137,9 @@ export class WardsService {
       );
       const total = parseInt(countResult.rows[0].total);
 
+      const limitParamIndex = paramIndex;
+      const offsetParamIndex = paramIndex + 1;
+      
       // Get paginated data with counts
       const dataQuery = `
         SELECT 
@@ -169,7 +173,7 @@ export class WardsService {
         ) workforce_count ON w.id = workforce_count.ward_id
         ${whereClause}
         ORDER BY w.${sortBy} ${sortOrder.toUpperCase()}
-        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+        LIMIT $${limitParamIndex} OFFSET $${offsetParamIndex}
       `;
 
       const dataResult = await this.databaseService.query(dataQuery, [
@@ -389,6 +393,7 @@ export class WardsService {
     return {
       id: ward.id,
       name: ward.name,
+      wardNo: ward.ward_no,
       description: ward.description,
       zoneId: ward.zone_id,
       zoneName: ward.zone_name,

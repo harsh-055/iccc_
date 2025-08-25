@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS nodes (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    site_id UUID REFERENCES sites(id),
+    -- site_id UUID REFERENCES sites(id), -- Commented out since sites table was dropped
     is_active BOOLEAN DEFAULT true,
     tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
     created_by UUID REFERENCES users(id),
@@ -222,7 +222,7 @@ CREATE TABLE IF NOT EXISTS inventory_items (
     unassigned_units INTEGER DEFAULT 0,
     low_stock_alert_zones TEXT[], -- Array of zone names for low stock alerts
     unit_of_measure VARCHAR(50),
-    storage_location_id UUID REFERENCES sites(id),
+    -- storage_location_id UUID REFERENCES sites(id), -- Commented out since sites table was dropped
     manufacturer_id UUID REFERENCES manufacturers(id),
     purchase_date DATE,
     expiry_date DATE,
@@ -317,15 +317,15 @@ CREATE TABLE IF NOT EXISTS workforce_equipment (
     UNIQUE(workforce_id, inventory_item_id)
 );
 
--- Workforce Site Assignment (Many-to-Many)
-CREATE TABLE IF NOT EXISTS workforce_sites (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    workforce_id UUID NOT NULL REFERENCES workforce(id) ON DELETE CASCADE,
-    site_id UUID NOT NULL REFERENCES sites(id) ON DELETE CASCADE,
-    assigned_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    assigned_by UUID REFERENCES users(id),
-    UNIQUE(workforce_id, site_id)
-);
+-- Workforce Site Assignment (Many-to-Many) - Commented out since sites table was dropped
+-- CREATE TABLE IF NOT EXISTS workforce_sites (
+--     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+--     workforce_id UUID NOT NULL REFERENCES workforce(id) ON DELETE CASCADE,
+--     site_id UUID NOT NULL REFERENCES sites(id) ON DELETE CASCADE,
+--     assigned_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+--     assigned_by UUID REFERENCES users(id),
+--     UNIQUE(workforce_id, site_id)
+-- );
 
 -- =====================================================
 -- 7. INDEXES FOR PERFORMANCE
@@ -378,7 +378,7 @@ CREATE INDEX IF NOT EXISTS idx_inventory_items_storage_location_id ON inventory_
 CREATE INDEX IF NOT EXISTS idx_inventory_items_tenant_id ON inventory_items(tenant_id);
 
 -- Workforce indexes
-CREATE INDEX IF NOT EXISTS idx_workforce_work_type_id ON workforce(work_type_id);
+-- CREATE INDEX IF NOT EXISTS idx_workforce_work_type_id ON workforce(work_type_id); -- Commented out due to column issue
 CREATE INDEX IF NOT EXISTS idx_workforce_status ON workforce(status);
 CREATE INDEX IF NOT EXISTS idx_workforce_region_id ON workforce(region_id);
 CREATE INDEX IF NOT EXISTS idx_workforce_zone_id ON workforce(zone_id);
@@ -393,56 +393,66 @@ CREATE INDEX IF NOT EXISTS idx_workforce_tenant_id ON workforce(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_workforce_equipment_workforce_id ON workforce_equipment(workforce_id);
 CREATE INDEX IF NOT EXISTS idx_workforce_equipment_inventory_item_id ON workforce_equipment(inventory_item_id);
 
--- Workforce sites indexes
-CREATE INDEX IF NOT EXISTS idx_workforce_sites_workforce_id ON workforce_sites(workforce_id);
-CREATE INDEX IF NOT EXISTS idx_workforce_sites_site_id ON workforce_sites(site_id);
-CREATE INDEX IF NOT EXISTS idx_workforce_sites_assigned_by ON workforce_sites(assigned_by);
+-- Workforce sites indexes - Commented out since workforce_sites table was dropped
+-- CREATE INDEX IF NOT EXISTS idx_workforce_sites_workforce_id ON workforce_sites(workforce_id);
+-- CREATE INDEX IF NOT EXISTS idx_workforce_sites_site_id ON workforce_sites(site_id);
+-- CREATE INDEX IF NOT EXISTS idx_workforce_sites_assigned_by ON workforce_sites(assigned_by);
 
 -- =====================================================
 -- 8. TRIGGERS FOR UPDATED_AT
 -- =====================================================
 
 -- Add updated_at triggers for all tables
+DROP TRIGGER IF EXISTS update_regions_updated_at ON regions;
 CREATE TRIGGER update_regions_updated_at 
     BEFORE UPDATE ON regions 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_zones_updated_at ON zones;
 CREATE TRIGGER update_zones_updated_at 
     BEFORE UPDATE ON zones 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_wards_updated_at ON wards;
 CREATE TRIGGER update_wards_updated_at 
     BEFORE UPDATE ON wards 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_sites_updated_at 
-    BEFORE UPDATE ON sites 
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- CREATE TRIGGER update_sites_updated_at 
+--     BEFORE UPDATE ON sites 
+--     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_vehicles_updated_at ON vehicles;
 CREATE TRIGGER update_vehicles_updated_at 
     BEFORE UPDATE ON vehicles 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_devices_updated_at ON devices;
 CREATE TRIGGER update_devices_updated_at 
     BEFORE UPDATE ON devices 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_inventory_items_updated_at ON inventory_items;
 CREATE TRIGGER update_inventory_items_updated_at 
     BEFORE UPDATE ON inventory_items 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_workforce_updated_at ON workforce;
 CREATE TRIGGER update_workforce_updated_at 
     BEFORE UPDATE ON workforce 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_nodes_updated_at ON nodes;
 CREATE TRIGGER update_nodes_updated_at 
     BEFORE UPDATE ON nodes 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_routes_updated_at ON routes;
 CREATE TRIGGER update_routes_updated_at 
     BEFORE UPDATE ON routes 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_shifts_updated_at ON shifts;
 CREATE TRIGGER update_shifts_updated_at 
     BEFORE UPDATE ON shifts 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -455,12 +465,12 @@ CREATE TRIGGER update_shifts_updated_at
 SELECT add_realtime_trigger('regions');
 SELECT add_realtime_trigger('zones');
 SELECT add_realtime_trigger('wards');
-SELECT add_realtime_trigger('sites');
+-- SELECT add_realtime_trigger('sites'); -- Commented out since sites table was dropped
 SELECT add_realtime_trigger('vehicles');
 SELECT add_realtime_trigger('devices');
 SELECT add_realtime_trigger('inventory_items');
 SELECT add_realtime_trigger('workforce');
-SELECT add_realtime_trigger('workforce_sites');
+-- SELECT add_realtime_trigger('workforce_sites'); -- Commented out since workforce_sites table was dropped
 SELECT add_realtime_trigger('device_alerts');
 
 -- =====================================================

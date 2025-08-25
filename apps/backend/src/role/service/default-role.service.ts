@@ -1,5 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { DatabaseService } from '../../../database/database.service';
+import { SYSTEM_ROLES } from '../../common/constants/system-roles';
 
 @Injectable()
 export class DefaultRolesService implements OnModuleInit {
@@ -158,11 +159,59 @@ export class DefaultRolesService implements OnModuleInit {
 
   // Helper to check if user is super admin
   async isSuperAdmin(userId: string): Promise<boolean> {
-    return this.hasRole(userId, 'SUPER_ADMIN');
+    return this.hasRole(userId, SYSTEM_ROLES.SUPER_ADMIN);
   }
 
   // Helper to check if user is admin
   async isAdmin(userId: string): Promise<boolean> {
-    return this.hasRole(userId, 'ADMIN');
+    return this.hasRole(userId, SYSTEM_ROLES.ADMIN);
+  }
+
+  // Seed read-only permissions to a specific role
+  async seedReadOnlyPermissionsToRole(roleName: string) {
+    try {
+      // Get the role
+      const role = await this.getRoleByName(roleName);
+      if (!role) {
+        throw new Error(`Role ${roleName} not found`);
+      }
+
+      // Get read-only and self-service permissions
+      const readOnlyPermissionsResult = await this.database.query(`
+        SELECT * FROM permissions 
+        WHERE action IN ('read', 'view') 
+        OR name LIKE '%own%' 
+        OR name LIKE '%assigned%'
+        OR name LIKE '%user%'
+        ORDER BY resource ASC, action ASC
+      `);
+
+      const readOnlyPermissions = readOnlyPermissionsResult.rows;
+
+      // Assign permissions to the role
+      for (const permission of readOnlyPermissions) {
+        const existingRolePermissionResult = await this.database.query(
+          `SELECT * FROM role_permissions WHERE role_id = $1 AND permission_id = $2`,
+          [role.id, permission.id],
+        );
+
+        if (existingRolePermissionResult.rows.length === 0) {
+          await this.database.query(
+            `INSERT INTO role_permissions (role_id, permission_id, assigned_at) 
+             VALUES ($1, $2, NOW())`,
+            [role.id, permission.id],
+          );
+        }
+      }
+
+      return {
+        role: role.name,
+        permissionsAssigned: readOnlyPermissions.length,
+        message: `Read-only permissions seeded successfully to ${roleName} role`,
+      };
+    } catch (error) {
+      this.logger.error(`Error seeding read-only permissions to ${roleName}:`, error);
+      throw error;
+    }
   }
 }

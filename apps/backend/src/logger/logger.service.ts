@@ -1,94 +1,28 @@
-import { Injectable, ConsoleLogger, Scope } from '@nestjs/common';
-import { DatabaseService } from '../../database/database.service';
+import { Injectable, Logger } from '@nestjs/common';
 
-@Injectable({ scope: Scope.TRANSIENT })
-export class LoggerService extends ConsoleLogger {
-  constructor(private db: DatabaseService) {
+@Injectable()
+export class LoggerService extends Logger {
+  constructor() {
     super();
   }
 
-  async debug(
-    message: string,
-    context?: string,
-    userId?: string,
-    metadata?: any,
-  ) {
-    super.debug(message, context);
-    await this.saveLog('DEBUG', message, context, userId, metadata);
-  }
-
-  async log(
-    message: string,
-    context?: string,
-    userId?: string,
-    metadata?: any,
-  ) {
+  log(message: string, context?: string) {
     super.log(message, context);
-    await this.saveLog('INFO', message, context, userId, metadata);
   }
 
-  async warn(
-    message: string,
-    context?: string,
-    userId?: string,
-    metadata?: any,
-  ) {
+  error(message: string, trace?: string, context?: string) {
+    super.error(message, trace, context);
+  }
+
+  warn(message: string, context?: string) {
     super.warn(message, context);
-    await this.saveLog('WARNING', message, context, userId, metadata);
   }
 
-  async error(
-    message: string,
-    stack?: string,
-    context?: string,
-    userId?: string,
-    metadata?: any,
-  ) {
-    super.error(message, stack, context);
-    await this.saveLog('ERROR', message, context, userId, {
-      ...metadata,
-      stack,
-    });
+  debug(message: string, context?: string) {
+    super.debug(message, context);
   }
 
-  async fatal(
-    message: string,
-    context?: string,
-    userId?: string,
-    metadata?: any,
-  ) {
-    super.error(message, undefined, context);
-    await this.saveLog('FATAL', message, context, userId, metadata);
+  verbose(message: string, context?: string) {
+    super.verbose(message, context);
   }
-
-  private async saveLog(
-    level: 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR' | 'FATAL',
-    message: string,
-    context?: string,
-    userId?: string,
-    metadata?: any,
-  ) {
-    try {
-      const query = `
-        INSERT INTO logs (level, message, context, user_id, metadata, created_at)
-        VALUES ($1, $2, $3, $4, $5, NOW())
-      `;
-
-      const values = [
-        level,
-        message,
-        context || null,
-        userId || null,
-        metadata ? JSON.stringify(metadata) : null,
-      ];
-
-      await this.db.query(query, values);
-    } catch (error) {
-      super.error(
-        `Failed to save log to database: ${error.message}`,
-        error.stack,
-        'LoggerService',
-      );
-    }
-  }
-}
+} 

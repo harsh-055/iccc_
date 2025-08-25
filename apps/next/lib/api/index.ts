@@ -42,7 +42,7 @@ export const loginAction = await createServerActions<LoginParams, LoginResponse>
         return { data: null, error: response.error, status: response.status };
       }
   
-      // Set tokens in HttpOnly, Secure cookies
+            // Set tokens in HttpOnly, Secure cookies
       if (response.data?.accessToken) {
         const cookieStore = await cookies();
         cookieStore.set("accessToken", response.data.accessToken, {
@@ -52,7 +52,7 @@ export const loginAction = await createServerActions<LoginParams, LoginResponse>
           maxAge: 60 * 15, // 15 minutes expiry
         });
       }
-  
+
       if (response.data?.refreshToken) {
         const cookieStore = await cookies();
         cookieStore.set("refreshToken", response.data.refreshToken, {
@@ -62,7 +62,7 @@ export const loginAction = await createServerActions<LoginParams, LoginResponse>
           maxAge: 60 * 60 * 24 * 7, // 7 days expiry
         });
       }
-  
+
       return {
         data: { success: true } as unknown as LoginResponse, // or RegisterResponse
         error: null,
